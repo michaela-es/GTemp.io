@@ -1,0 +1,31 @@
+.top-bar {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  align-items: center;
+  background-color: white;    
+  color: black;                
+  padding: 12px 20px;
+  font-family: sans-serif;
+  gap: 12px;
+  border-bottom: 5px solid black; 
+}
+
+.left {
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 16px;
+  border: 1px solid gray;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.right {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
