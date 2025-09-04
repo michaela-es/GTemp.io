@@ -1,6 +1,7 @@
 import React from "react";
 import TopBar from "./components/TopBar.jsx";
 import FilterBar from "./components/FilterBar.jsx";
+import Listings from "./components/Listings.jsx";
 
 function App() {
   const tags = ["Action", "Adventure", "RPG", "Strategy"];
@@ -23,6 +24,7 @@ function App() {
         onTagSelect={handleTagSelect}
         onTypeSelect={handleTypeSelect}
       />
+      <Listings />  {/* This is where your list shows up */}
     </div>
   );
 }
