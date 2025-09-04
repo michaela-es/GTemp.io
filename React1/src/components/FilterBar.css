@@ -1,13 +1,31 @@
 .filter-bar {
-  display: grid;
-  grid-template-columns: auto auto auto auto;
+  display: flex;
+  justify-content: flex-start; /* left aligned */
+  gap: 2rem;
+  padding: 0.5rem 1.25rem;
+}
+
+.filter-group {
+  display: flex;
   align-items: center;
-  gap: 16px 24px;
-  padding: 10px 20px;
+  gap: 0.5rem; /* space between label and dropdown */
 }
 
 .filter-label {
   margin: 0;
-  font-size: 1rem;
   font-weight: 600;
+  font-size: 1rem;
+  white-space: nowrap; /* prevent wrapping */
+}
+
+@media (max-width: 600px) {
+  .filter-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .filter-group {
+    width: 100%;
+    justify-content: flex-start;
+  }
 }

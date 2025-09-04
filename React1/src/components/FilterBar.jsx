@@ -6,10 +6,14 @@ import "./FilterBar.css";
 function FilterBar({ tags = [], types = [], onTagSelect, onTypeSelect }) {
   return (
     <div className="filter-bar">
-      <Subheading className="filter-label">Game Tags</Subheading>
-      <Dropdown label="Select Tag" options={tags} onSelect={onTagSelect} />
-      <Subheading className="filter-label">Game Types</Subheading>
-      <Dropdown label="Select Type" options={types} onSelect={onTypeSelect} />
+      <div className="filter-group">
+        <Subheading className="filter-label">Game Tags</Subheading>
+        <Dropdown label="Select Tag" options={tags} onSelect={onTagSelect} />
+      </div>
+      <div className="filter-group">
+        <Subheading className="filter-label">Game Types</Subheading>
+        <Dropdown label="Select Type" options={types} onSelect={onTypeSelect} />
+      </div>
     </div>
   );
 }
