@@ -1,14 +1,13 @@
 .filter-bar {
-  display: flex;
-  gap: 40px;
+  display: grid;
+  grid-template-columns: auto auto auto auto;
   align-items: center;
-  padding: 20px 0;
-  font-family: sans-serif;
+  gap: 16px 24px;
+  padding: 10px 20px;
 }
 
-.filter-section {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 150px;
+.filter-label {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
 }
