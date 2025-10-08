@@ -1,5 +1,5 @@
 // CreateAccountModal.jsx
-import './CreateAccountModal.css';
+import '../static/CreateAccountModal.css';
 
 export default function CreateAccountModal({ onClose, onSwitchToLogin }) {
   return (
