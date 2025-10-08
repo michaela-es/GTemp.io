@@ -17,5 +17,5 @@ If you are developing a production application, we recommend using TypeScript wi
 
 
 ## user for login debug
-username: debug
+username: debug<br>
 password: 123
