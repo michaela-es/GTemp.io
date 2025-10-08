@@ -15,7 +15,7 @@ const App = () => {
     template_type: [],
     price_range: []
   });
-  const [activeSorts, setActiveSorts] = useState([]); // Array of active sorts
+  const [activeSorts, setActiveSorts] = useState([]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -34,33 +34,26 @@ const App = () => {
     loadData();
   }, []);
 
-  // Optimized: Use useMemo to prevent unnecessary re-sorting
   const sortedAndFilteredData = useMemo(() => {
-    // First, filter the data
     const filtered = data.filter(template => {
-      // Text search
       const matchesSearch = template.templateName.toLowerCase().includes(query.toLowerCase());
-      
-      // Filter logic
+
       const matchesEngine = filters.engine_type.length === 0 || 
-                           filters.engine_type.includes(template.engine_type);
+        filters.engine_type.includes(template.engine_type);
       
       const matchesType = filters.template_type.length === 0 || 
-                         filters.template_type.includes(template.template_type);
+        filters.template_type.includes(template.template_type);
       
       const matchesPrice = filters.price_range.length === 0 || 
-                          (filters.price_range.includes('Free') && template.price === 0) ||
-                          (filters.price_range.includes('Paid') && template.price > 0);
+        (filters.price_range.includes('Free') && template.price === 0) ||
+        (filters.price_range.includes('Paid') && template.price > 0);
       
       return matchesSearch && matchesEngine && matchesType && matchesPrice;
     });
 
-    // If no sorts active, return filtered data as-is
     if (activeSorts.length === 0) return filtered;
 
-    // Create a copy before sorting to avoid mutating original
     return [...filtered].sort((a, b) => {
-      // Apply multiple sorts in order of priority
       for (const sort of activeSorts) {
         let result = 0;
         switch (sort) {
@@ -80,20 +73,16 @@ const App = () => {
       }
       return 0;
     });
-  }, [data, query, filters, activeSorts]); // Only re-run when these dependencies change
+  }, [data, query, filters, activeSorts]);
 
   const handleSort = (sortType) => {
     setActiveSorts(prev => {
-      // If already active, remove it (toggle off)
       if (prev.includes(sortType)) {
         return prev.filter(s => s !== sortType);
       }
-      // Optional: Limit to 3 active sorts to prevent performance issues
       if (prev.length >= 3) {
-        // Remove the oldest sort and add the new one
         return [...prev.slice(1), sortType];
       }
-      // Otherwise add it to the active sorts
       return [...prev, sortType];
     });
   };
@@ -133,7 +122,6 @@ const App = () => {
         />
       </div>
 
-      {/* Sort Buttons Row */}
       <div className="sort-row">
         <SortButton
           label="Popular"
