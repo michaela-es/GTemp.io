@@ -15,7 +15,9 @@ const App = () => {
     template_type: [],
     price_range: []
   });
-  const [activeSorts, setActiveSorts] = useState([]); // Array of active sorts
+  const [activeSorts, setActiveSorts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     const loadData = async () => {
@@ -33,6 +35,11 @@ const App = () => {
 
     loadData();
   }, []);
+
+  // Reset to page 1 when filters, search, or sorts change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [query, filters, activeSorts]);
 
   // Optimized: Use useMemo to prevent unnecessary re-sorting
   const sortedAndFilteredData = useMemo(() => {
@@ -80,22 +87,115 @@ const App = () => {
       }
       return 0;
     });
-  }, [data, query, filters, activeSorts]); // Only re-run when these dependencies change
+  }, [data, query, filters, activeSorts]);
+
+  // Pagination calculations
+  const totalItems = sortedAndFilteredData.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentItems = sortedAndFilteredData.slice(startIndex, endIndex);
 
   const handleSort = (sortType) => {
     setActiveSorts(prev => {
-      // If already active, remove it (toggle off)
       if (prev.includes(sortType)) {
         return prev.filter(s => s !== sortType);
       }
-      // Optional: Limit to 3 active sorts to prevent performance issues
       if (prev.length >= 3) {
-        // Remove the oldest sort and add the new one
         return [...prev.slice(1), sortType];
       }
-      // Otherwise add it to the active sorts
       return [...prev, sortType];
     });
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const renderPaginationButtons = () => {
+    const buttons = [];
+    const maxVisiblePages = 5;
+
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    // Adjust start page if we're near the end
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    // Previous button
+    if (currentPage > 1) {
+      buttons.push(
+        <button
+          key="prev"
+          onClick={() => handlePageChange(currentPage - 1)}
+          className="pagination-btn"
+        >
+          ← Previous
+        </button>
+      );
+    }
+
+    // First page and ellipsis
+    if (startPage > 1) {
+      buttons.push(
+        <button
+          key={1}
+          onClick={() => handlePageChange(1)}
+          className="pagination-btn"
+        >
+          1
+        </button>
+      );
+      if (startPage > 2) {
+        buttons.push(<span key="ellipsis1" className="pagination-ellipsis">...</span>);
+      }
+    }
+
+    // Page numbers
+    for (let i = startPage; i <= endPage; i++) {
+      buttons.push(
+        <button
+          key={i}
+          onClick={() => handlePageChange(i)}
+          className={`pagination-btn ${currentPage === i ? 'active' : ''}`}
+        >
+          {i}
+        </button>
+      );
+    }
+
+    // Last page and ellipsis
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        buttons.push(<span key="ellipsis2" className="pagination-ellipsis">...</span>);
+      }
+      buttons.push(
+        <button
+          key={totalPages}
+          onClick={() => handlePageChange(totalPages)}
+          className="pagination-btn"
+        >
+          {totalPages}
+        </button>
+      );
+    }
+
+    // Next button
+    if (currentPage < totalPages) {
+      buttons.push(
+        <button
+          key="next"
+          onClick={() => handlePageChange(currentPage + 1)}
+          className="pagination-btn"
+        >
+          Next →
+        </button>
+      );
+    }
+
+    return buttons;
   };
 
   if (loading) return <div>Loading templates...</div>;
@@ -153,12 +253,12 @@ const App = () => {
       </div>
 
       <div className="templates-grid">
-        {sortedAndFilteredData.length > 0 ? (
-          sortedAndFilteredData.map((template, index) => (
+        {currentItems.length > 0 ? (
+          currentItems.map((template, index) => (
             <TemplateCard
-              key={index}
+              key={startIndex + index}
               templateName={template.templateName}
-              templateImg={template.templateImg}
+                            templateImg={template.templateImg}
               templateRating={template.templateRating}
               templateDls={template.templateDls}
               templateDesc={template.templateDesc}
@@ -173,6 +273,13 @@ const App = () => {
           </p>
         )}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="pagination">
+          {renderPaginationButtons()}
+        </div>
+      )}
     </div>
   );
 };
