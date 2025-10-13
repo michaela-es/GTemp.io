@@ -8,8 +8,7 @@ export const filterTemplates = (data, filters) => {
 
     const matchesPrice = filters.price_range.length === 0 || 
                         (filters.price_range.includes('Free') && template.price === 0) ||
-                        (filters.price_range.includes('Paid') && template.price > 0);
-
+                        (filters.price_range.includes('Paid') && template.price > 0);    
     return matchesEngine && matchesType && matchesPrice;
   });
 };

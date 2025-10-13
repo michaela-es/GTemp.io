@@ -1,8 +1,16 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom'
 
-const TemplateCard = ({ templateName, templateImg, templateRating, templateDls, templateDesc }) => {
+
+const TemplateCard = ({templateID, templateName, templateImg, templateRating, templateDls, templateDesc }) => {
+   const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/template/${templateID}`);
+  };
+
   return (
-    <div style={styles.card}>
+    <div style={styles.card} onClick={handleClick}>
       <img src={templateImg} alt={templateName} style={styles.image} />
       <h3 style={styles.title}>{templateName}</h3>
       {templateDesc && <p style={styles.description}>{templateDesc}</p>}
@@ -26,6 +34,7 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     gap: '8px',
+    cursor: 'pointer'
   },
   image: {
     width: '100%',
