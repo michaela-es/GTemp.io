@@ -1,0 +1,259 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+}
+
+.box {
+  flex: 1;
+}
+
+/* ===== BOX 1 (HEADER) ===== */
+.box1 {
+  background-color: red;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  flex: 0 0 auto; /* <-- shrink to content height */
+  height: auto;   /* <-- height adjusts automatically */
+}
+
+
+
+.left-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+}
+
+.site-name {
+  font-size: 1.5rem;
+  color: white;
+  font-weight: bold;
+}
+
+.middle-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.search-box {
+  position: relative;
+  width: 50%;
+  max-width: 400px;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 10px 45px 10px 15px;
+  border: none;
+  border-radius: 25px;
+  font-size: 1rem;
+}
+
+.search-button {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.search-icon {
+  width: 20px;
+  height: 20px;
+}
+
+
+.right-section .login-button {
+  background-color: white;
+  color: red;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* ===== BOX 2 ===== */
+.box2 {
+  background-color: green;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 15px 20px;
+  flex: 0 0 auto; /* <-- shrink to fit its content */
+  height: auto;   /* <-- height adjusts automatically */
+}
+
+
+.filter-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+/* === TOP ROW (Tagged / Type) === */
+.top-filters {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.dropdown-pair {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.top-label {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+}
+
+.top-dropdown {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  color: black;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  min-width: 120px;
+  cursor: pointer;
+}
+
+.top-dropdown-icon {
+  width: 18px;
+  height: 18px;
+  margin-left: 8px;
+}
+
+/* === BOTTOM ROW (Popular / Price Range) === */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.filter-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  position: relative;
+}
+
+.filter-text {
+  font-size: 1.2rem;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.filter-text:hover {
+  transform: scale(1.1);
+  color: yellow;
+}
+
+.filter-icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* ===== DROPDOWN MENU ===== */
+.dropdown-content {
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  top: 40px;
+  left: 0;
+  background-color: white;
+  color: black;
+  padding: 10px;
+  border-radius: 10px;
+  min-width: 200px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+}
+
+.dropdown:hover .dropdown-content {
+  display: flex;
+}
+
+.dropdown-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 5px 0;
+}
+
+/* === TOP DROPDOWNS (Tagged / Type) === */
+.dropdown-wrapper {
+  position: relative;
+}
+
+.top-dropdown-content {
+  position: absolute;
+  top: 40px; /* appears below the button */
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 8px;
+  padding: 6px;
+  min-width: 130px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  z-index: 20;
+}
+
+.dropdown-option {
+  padding: 6px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.dropdown-option:hover {
+  background-color: #e0e0e0;
+}
+
+
+.price-input {
+  width: 80px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.apply-button {
+  width: 100%;
+  padding: 8px;
+  background-color: green;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.apply-button:hover {
+  background-color: darkgreen;
+}

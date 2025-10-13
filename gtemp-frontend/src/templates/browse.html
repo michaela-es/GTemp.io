@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devset.io UI</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Configure Tailwind for Inter font -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7;
+        }
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+        /* Custom Radio Button Styling to match modern look */
+        input[type="radio"] {
+            /* Hide default radio */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            /* Custom size and border */
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 1px solid #d1d5db; /* gray-300 */
+            border-radius: 50%; /* Make it round */
+            cursor: pointer;
+            transition: background-color 0.15s, border-color 0.15s;
+            position: relative;
+        }
+        input[type="radio"]:checked {
+            border-color: #D90000; /* Updated devset-red */
+        }
+        input[type="radio"]:checked::before {
+            content: '';
+            display: block;
+            width: 0.75rem;
+            height: 0.75rem;
+            background-color: #D90000; /* Updated devset-red center dot */
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        /* Existing Checkbox Styling */
+        input[type="checkbox"] {
+            /* Hide default checkbox */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            /* Custom size and border */
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 1px solid #d1d5db; /* gray-300 */
+            border-radius: 0.25rem; /* rounded */
+            cursor: pointer;
+            transition: background-color 0.15s, border-color 0.15s;
+            /* Checkbox specific: Center the checkmark */
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 0.5rem;
+        }
+        input[type="checkbox"]:checked {
+            background-color: #D90000; /* Updated devset-red */
+            border-color: #D90000;
+            /* Checkmark icon (white) using Tailwind utility classes for accessibility */
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='white' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z'/%3E%3C/svg%3E");
+            background-size: 100%;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        /* Modal styling for better transition */
+        .modal-overlay {
+            transition: opacity 0.3s ease-in-out;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // Updated to user's requested color #D90000
+                        'devset-red': '#D90000',
+                        // Custom dark state for hover effect
+                        'devset-red-dark': '#B90000',
+                    }
+                }
+            }
+        }
+
+        // Helper function for modal transitions
+        function toggleModal(modalId, show) {
+            const modal = document.getElementById(modalId);
+            if (show) {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    modal.classList.add('opacity-100');
+                }, 10);
+            } else {
+                modal.classList.remove('opacity-100');
+                modal.classList.add('opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300); 
+            }
+        }
+
+        // Primary functions to toggle Login/Register
+        function toggleLoginModal(show) {
+            toggleModal('login-modal', show);
+        }
+
+        function toggleRegisterModal(show) {
+            toggleModal('register-modal', show);
+        }
+        
+        // Function to switch from Login to Register
+        function switchFromLoginToRegister() {
+            toggleLoginModal(false);
+            toggleRegisterModal(true);
+        }
+
+        // Function to switch from Register to Login
+        function switchFromRegisterToLogin() {
+            toggleRegisterModal(false);
+            toggleLoginModal(true);
+        }
+
+        // Handle clicks outside the modal content to close it
+        document.addEventListener('click', (e) => {
+            const loginModal = document.getElementById('login-modal');
+            const loginContent = document.getElementById('login-content');
+            const registerModal = document.getElementById('register-modal');
+            const registerContent = document.getElementById('register-content');
+
+            // Close Login Modal if click is on overlay
+            if (!loginModal.classList.contains('hidden') && e.target === loginModal) {
+                toggleLoginModal(false);
+            }
+            
+            // Close Register Modal if click is on overlay
+            if (!registerModal.classList.contains('hidden') && e.target === registerModal) {
+                toggleRegisterModal(false);
+            }
+        });
+    </script>
+</head>
+<body>
+
+    <div class="main-container">
+        <!-- 1. HEADER ROW -->
+        <header class="flex items-center justify-between px-4 py-3 md:px-6 border-b border-gray-100">
+            
+            <!-- Logo (Devset.io) -->
+            <div class="flex items-center min-w-[150px]">
+                <!-- Red Box (Uses updated devset-red color) -->
+                <div class="w-8 h-8 md:w-10 md:h-10 bg-devset-red mr-1 rounded-sm"></div>
+                <!-- Text -->
+                <span class="text-2xl md:text-3xl font-bold text-gray-900">Devset.io</span>
+            </div>
+
+            <!-- Search Bar (Middle) -->
+            <div class="flex-grow mx-4 max-w-md lg:max-w-2xl relative">
+                <input 
+                    type="text" 
+                    placeholder="search for games, jams, tags, or creators" 
+                    class="w-full h-10 p-2 pl-4 pr-10 bg-gray-100 border border-gray-200 focus:outline-none focus:ring-1 focus:ring-devset-red rounded-lg text-sm text-gray-700"
+                />
+                <!-- Search Icon -->
+                <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+
+            <!-- Log In Button (Right) -->
+            <button onclick="toggleLoginModal(true)" class="px-4 py-2 text-sm font-semibold border border-gray-300 hover:border-gray-500 rounded-lg text-gray-800 transition duration-150 ease-in-out whitespace-nowrap">
+                Log in
+            </button>
+        </header>
+
+        <!-- 2. FILTER & SORTING ROW -->
+        <div class="px-4 py-4 md:px-6">
+            
+            <!-- Filter Dropdowns (Top Alignment) -->
+            <div class="flex flex-wrap items-center gap-4 mb-4">
+                
+                <!-- Tagged Filter -->
+                <div class="flex items-center">
+                    <label class="font-semibold text-gray-700 text-lg mr-2">Tagged</label>
+                    <select class="p-2 border border-gray-300 rounded-lg bg-white appearance-none focus:outline-none focus:ring-1 focus:ring-blue-500 pr-8 text-sm cursor-pointer">
+                        <option selected>Engine</option>
+                        <option>Roblox Studio</option>
+                        <option>Unity3D</option>
+                        <option>Godot</option>
+                    </select>
+                </div>
+
+                <!-- Type Filter -->
+                <div class="flex items-center">
+                    <label class="font-semibold text-gray-700 text-lg mr-2">Type</label>
+                    <select class="p-2 border border-gray-300 rounded-lg bg-white appearance-none focus:outline-none focus:ring-1 focus:ring-blue-500 pr-8 text-sm cursor-pointer">
+                        <option selected>Type</option>
+                        <option>Action FPS/TPS (2D/3D)</option>
+                        <option>Adventure</option>
+                        <option>RPG</option>
+                        <option>RTS / Diplomacy</option>
+                        <option>Street Fight & Platformer</option>
+                        <option>Board Games</option>
+                        <option>Systems</option>
+                    </select>
+                </div>
+
+                <!-- Results Count -->
+                <span class="text-sm text-gray-500">(2 results)</span>
+            </div>
+
+            <!-- Sorting/Navigation Links (Bottom Alignment) -->
+            <div class="flex flex-wrap items-center gap-4 text-gray-600 font-medium border-t border-gray-100 pt-3">
+                
+                <!-- Filter Icon -->
+                <button class="flex items-center hover:text-devset-red transition duration-150 ease-in-out focus:outline-none">
+                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L15 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 0110 18v-6.586L3.293 6.707A1 1 0 013 6V4z"></path>
+                    </svg>
+                    Popular
+                </button>
+
+                <!-- Navigation Links -->
+                <a href="#" class="hover:text-devset-red transition duration-150 ease-in-out">Recently Published</a>
+                <a href="#" class="hover:text-devset-red transition duration-150 ease-in-out">Top Rated</a>
+
+                <!-- Price Range Dropdown Container (Updated to use Radio Buttons) -->
+                <div class="group relative z-10">
+                    <button class="flex items-center hover:text-devset-red transition duration-150 ease-in-out focus:outline-none">
+                        Price Range
+                        <svg class="w-4 h-4 ml-1 transform group-hover:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    
+                    <!-- Dropdown Menu Content -->
+                    <div class="absolute right-0 mt-3 w-64 bg-white border border-gray-200 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-focus-within:opacity-100 group-hover:visible group-focus-within:visible transition duration-200 ease-in-out p-4 space-y-3">
+                        
+                        <!-- Radio Button Options -->
+                        <div class="flex flex-col space-y-2 text-gray-800 text-base font-normal">
+                            
+                            <!-- Any Price -->
+                            <label class="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-1 -m-1 rounded-md">
+                                Any Price
+                                <input type="radio" name="price-sort" value="any-price" checked>
+                            </label>
+
+                            <!-- High to Low -->
+                            <label class="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-1 -m-1 rounded-md">
+                                High to Low
+                                <input type="radio" name="price-sort" value="high-to-low">
+                            </label>
+
+                            <!-- Low to High -->
+                            <label class="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-1 -m-1 rounded-md">
+                                Low to High
+                                <input type="radio" name="price-sort" value="low-to-high">
+                            </label>
+                        </div>
+
+                        <!-- Price Input Fields -->
+                        <div class="flex space-x-2 pt-2">
+                            <input 
+                                type="number" 
+                                placeholder="Min" 
+                                class="w-full p-2 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-devset-red text-sm"
+                            >
+                            <input 
+                                type="number" 
+                                placeholder="Max" 
+                                class="w-full p-2 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-devset-red text-sm"
+                            >
+                        </div>
+
+                        <!-- Apply Button -->
+                        <button class="w-full py-2 mt-2 font-semibold bg-gray-200 hover:bg-gray-300 rounded-lg text-gray-800 transition duration-150 ease-in-out">
+                            Apply
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Placeholder Content -->
+        <div class="p-6 text-center text-gray-500">
+            <p>Content area below the navigation bar...</p>
+        </div>
+    </div>
+
+    <!-- LOGIN MODAL (Initially hidden) -->
+    <div id="login-modal" class="modal-overlay hidden opacity-0 fixed inset-0 z-50 flex items-start justify-center pt-20 bg-black bg-opacity-50">
+        
+        <!-- Modal Content Container -->
+        <div id="login-content" class="bg-white w-full max-w-md mx-4 rounded-xl shadow-2xl transform transition-all duration-300 ease-in-out">
+            
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center p-5 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-900">Log in to your gtemp.io account</h2>
+                <button onclick="toggleLoginModal(false)" class="text-gray-400 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Body: Form -->
+            <div class="p-5 space-y-5">
+                
+                <!-- Username/Email Field -->
+                <div>
+                    <label for="username" class="block text-lg font-medium text-gray-700 mb-1">Username or email</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        placeholder="Required" 
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-devset-red"
+                    >
+                </div>
+
+                <!-- Password Field -->
+                <div>
+                    <label for="password" class="block text-lg font-medium text-gray-700 mb-1">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        placeholder="Required" 
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-devset-red"
+                    >
+                </div>
+
+                <!-- Log In Button and Links -->
+                <div class="flex items-center space-x-3">
+                    <!-- UPDATED: Log In button color -->
+                    <button class="px-6 py-2 bg-devset-red text-white font-semibold rounded-lg hover:bg-devset-red-dark transition duration-150 ease-in-out">
+                        Log in
+                    </button>
+                    <span class="text-gray-500">or</span>
+                    <!-- Link updated to switch modals -->
+                    <button onclick="switchFromLoginToRegister()" class="text-sm text-gray-600 hover:underline hover:text-devset-red focus:outline-none">Create account</button>
+                    <span class="text-gray-500">•</span>
+                    <a href="#" class="text-sm text-gray-600 hover:underline hover:text-devset-red">Forgot password</a>
+                </div>
+            </div>
+
+            <!-- Modal Footer: Social Login -->
+            <div class="p-5 border-t border-gray-200 space-y-3">
+                <p class="text-gray-700">Or log in with another site</p>
+                <button class="flex items-center justify-center w-full p-3 border border-gray-300 rounded-lg text-gray-800 hover:bg-gray-50 transition duration-150 ease-in-out">
+                    <!-- GitHub Icon (Inline SVG for simplicity) -->
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.418 2.867 8.134 6.833 9.489.5.092.682-.217.682-.483 0-.237-.009-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.455-1.152-1.112-1.464-1.112-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.528 2.341 1.082 2.91.824.092-.644.359-1.082.654-1.334-2.22-.252-4.555-1.115-4.555-4.927 0-1.082.388-1.977 1.029-2.672-.103-.252-.446-1.266.098-2.634 0 0 .84-.268 2.75 1.022A9.632 9.632 0 0112 7.5c.85.008 1.7.103 2.5.304 1.909-1.29 2.747-1.022 2.747-1.022.546 1.368.202 2.382.1 2.634.64.695 1.029 1.59 1.029 2.672 0 3.824-2.339 4.673-4.566 4.92.359.307.678.915.678 1.84 0 1.334-.012 2.41-.012 2.73 0 .268.18.578.688.484C19.132 20.155 22 16.44 22 12.017 22 6.484 17.522 2 12 2z" clip-rule="evenodd"/>
+                    </svg>
+                    Log in with GitHub
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- REGISTRATION MODAL (New, Initially hidden) -->
+    <div id="register-modal" class="modal-overlay hidden opacity-0 fixed inset-0 z-50 flex items-start justify-center pt-20 bg-black bg-opacity-50">
+        
+        <!-- Modal Content Container -->
+        <div id="register-content" class="bg-white w-full max-w-md mx-4 rounded-xl shadow-2xl transform transition-all duration-300 ease-in-out">
+            
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center p-5 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-900">Create an account on Devset.io</h2>
+                <button onclick="toggleRegisterModal(false)" class="text-gray-400 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Body: Registration Form -->
+            <div class="p-5 space-y-5">
+                
+                <!-- Username Field -->
+                <div>
+                    <label for="reg-username" class="block text-lg font-medium text-gray-700 mb-1">Username</label>
+                    <input 
+                        type="text" 
+                        id="reg-username" 
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-devset-red"
+                    >
+                </div>
+
+                <!-- Password Field -->
+                <div>
+                    <label for="reg-password" class="block text-lg font-medium text-gray-700 mb-1">Password</label>
+                    <input 
+                        type="password" 
+                        id="reg-password" 
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-devset-red"
+                    >
+                </div>
+
+                <!-- Repeat Password Field -->
+                <div>
+                    <label for="reg-repeat-password" class="block text-lg font-medium text-gray-700 mb-1">Repeat password</label>
+                    <input 
+                        type="password" 
+                        id="reg-repeat-password" 
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-devset-red"
+                    >
+                </div>
+
+                <!-- Email Field -->
+                <div>
+                    <label for="reg-email" class="block text-lg font-medium text-gray-700 mb-1">Your email address</label>
+                    <input 
+                        type="email" 
+                        id="reg-email" 
+                        placeholder="name@example.com"
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-devset-red"
+                    >
+                </div>
+
+                <!-- Terms and Conditions Checkbox -->
+                <div class="flex items-start">
+                    <input type="checkbox" id="accept-terms" name="accept-terms" class="mt-1">
+                    <label for="accept-terms" class="text-sm text-gray-600 ml-1">
+                        I accept the 
+                        <a href="#" class="text-devset-red hover:underline">Terms of Service</a> 
+                        and the 
+                        <a href="#" class="text-devset-red hover:underline">Terms and Conditions</a>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Modal Footer: Create Account and Log in Link -->
+            <div class="p-5 border-t border-gray-200 flex items-center space-x-3">
+                <!-- UPDATED: Create Account button color -->
+                <button class="px-6 py-2 bg-devset-red text-white font-semibold rounded-lg hover:bg-devset-red-dark transition duration-150 ease-in-out">
+                    Create account
+                </button>
+                <span class="text-gray-500">or already have an account?</span>
+                <!-- Link updated to switch modals -->
+                <button onclick="switchFromRegisterToLogin()" class="text-sm text-gray-600 hover:underline hover:text-devset-red focus:outline-none">Log in</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

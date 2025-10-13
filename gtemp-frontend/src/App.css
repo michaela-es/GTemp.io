@@ -1,0 +1,14 @@
+/* App.css */
+.container {
+  display: flex;
+  justify-content: center; /* center horizontally */
+  align-items: center;     /* center vertically */
+  height: 100vh;           /* full viewport height */
+}
+
+.red-box {
+  background-color: red;
+  width: 80%;       /* spans 80% of screen width */
+  max-width: 1200px;/* optional max width */
+  height: 200px;    /* adjust as needed */
+}
