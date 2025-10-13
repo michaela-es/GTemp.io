@@ -1,0 +1,7 @@
+export const searchTemplates = (data, query) => {
+  if (!query) return data;
+  
+  return data.filter(template => 
+    template.templateName.toLowerCase().includes(query.toLowerCase())
+  );
+};

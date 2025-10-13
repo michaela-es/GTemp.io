@@ -1,7 +1,5 @@
-export const filterTemplates = (data, query, filters) => {
+export const filterTemplates = (data, filters) => {
   return data.filter(template => {
-    const matchesSearch = template.templateName.toLowerCase().includes(query.toLowerCase());
-
     const matchesEngine = filters.engine_type.length === 0 || 
                          filters.engine_type.includes(template.engine_type);
 
@@ -12,6 +10,6 @@ export const filterTemplates = (data, query, filters) => {
                         (filters.price_range.includes('Free') && template.price === 0) ||
                         (filters.price_range.includes('Paid') && template.price > 0);
 
-    return matchesSearch && matchesEngine && matchesType && matchesPrice;
+    return matchesEngine && matchesType && matchesPrice;
   });
 };
