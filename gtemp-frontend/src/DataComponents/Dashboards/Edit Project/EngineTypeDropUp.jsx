@@ -1,7 +1,7 @@
 //EngineTypeDrop-up.jsx
 import React, { useState } from "react";
 
-const EngineTypeSelector = () => {
+const EngineTypeDropUp = () => {
   const [engineOpen, setEngineOpen] = useState(false);
   const [typeOpen, setTypeOpen] = useState(false);
   const [selectedEngine, setSelectedEngine] = useState("");
@@ -121,4 +121,4 @@ const EngineTypeSelector = () => {
   );
 };
 
-export default EngineTypeSelector;
+export default EngineTypeDropUp;
