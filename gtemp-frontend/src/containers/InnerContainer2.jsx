@@ -1,8 +1,8 @@
 //InnerContainer2.jsx
 import React, { useState, useEffect } from "react";
-import { ItemWithStats } from "../DataComponents/Dashboards/DashboardProjectStats"; // import the combined container
-import RightPanel from "../DataComponents/Dashboards/RightPanel"; // adjust path if needed
-import LeftPanel from "../DataComponents/Dashboards/LeftPanel"; // adjust path if needed
+import { ItemWithStats } from "../DataComponents/Dashboards/Projects/DashboardProjectStats"; // import the combined container
+import RightPanel from "../DataComponents/Dashboards/Edit Project/RightPanel"; // adjust path if needed
+import LeftPanel from "../DataComponents/Dashboards/Edit Project/LeftPanel"; // adju  st path if needed
 
 const InnerContainer2 = ({ activeInnerTab: propActiveInnerTab }) => {
   const [activeInnerTab, setActiveInnerTab] = useState(propActiveInnerTab || 1);
@@ -26,7 +26,7 @@ const InnerContainer2 = ({ activeInnerTab: propActiveInnerTab }) => {
   const innerContentStyle = {
     marginTop: "10px",
     backgroundColor: "#ff9999",
-    width: "95%",
+    width: "80%",
     flex: 1,
     display: "flex",
     justifyContent: "center",

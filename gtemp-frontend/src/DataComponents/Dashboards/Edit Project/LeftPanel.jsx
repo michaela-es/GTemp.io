@@ -1,6 +1,6 @@
 // LeftPanel.jsx
 import React, { useState } from "react";
-import EngineTypeDropUp from "./EngineTypeDrop-up";
+import EngineTypeDropUp from "./EngineTypeDropUp";
 
 const LeftPanel = () => {
   const [files, setFiles] = useState([]);
@@ -95,9 +95,9 @@ const LeftPanel = () => {
               border: "1px solid #ccc",
             }}
           >
-            <option value="">Select option</option>
-            <option value="option1">Option 1</option>
-            <option value="option2">Option 2</option>
+            <option value="">Select Visibility Option</option>
+            <option value="option1">Visible to Public</option>
+            <option value="option2">Visible to Owner Only</option>
           </select>
         </div>
 
