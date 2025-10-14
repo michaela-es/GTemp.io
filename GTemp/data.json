@@ -3,7 +3,7 @@
     "templateID": 1,
     "templateName": "Educational Environment",
     "templateImg": "/sample.png",
-    "templateRating": 5,
+    "templateRating": 4,
     "templateDls": 407,
     "templateDesc": "Educational Environment. Cross-platform compatible and versatile.",
     "engine_type": "Unity",
@@ -14,5 +14,21 @@
     "templateOwner": "GameDev Studios",
     "genre": "Educational",
     "isWishlisted": false
+  },
+  {
+   "templateID": 2,
+    "templateName": "Futuristic Cityscape",
+    "templateImg": "/sample.png",
+    "templateRating": 5,
+    "templateDls": 1023,
+    "templateDesc": "A vibrant futuristic city environment, perfect for sci-fi games.",
+    "engine_type": "Unreal",
+    "template_type": "code",
+    "price": 19.99,
+    "releaseDate": "2023-11-05",
+    "category": "Environment",
+    "templateOwner": "NextGen Studios",
+    "genre": "Sci-Fi",
+    "isWishlisted": true
   }
 ]
