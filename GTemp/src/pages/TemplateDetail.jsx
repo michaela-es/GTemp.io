@@ -7,50 +7,26 @@ import DescBox from '../components/DescBox';
 import ActionButton from '../components/ActionButton';
 import { DetailsBox } from '../components/DetailsBox';
 import RatingBox from '../components/RatingBox';
+import HeaderBar from '../components/HeaderBar';
+import { useTemplates } from '../contexts/TemplatesContext';
 
 const TemplateDetail = () => {
   const { templateID } = useParams();
-  const location = useLocation();
-  const [template, setTemplate] = useState(location.state?.template);
-  const [allTemplates, setAllTemplates] = useState(null);
-  const [loading, setLoading] = useState(!location.state?.template);
+  const { templates, loading } = useTemplates();
 
-  useEffect(() => {
-    if (template) return;
+  if (loading) return <div>Loading template...</div>;
+  if (!templates) return <div>Templates not available</div>;
 
-    const fetchTemplate = async () => {
-      setLoading(true);
-      try {
-        if (!allTemplates) {
-          const response = await fetch('/data.json');
-          const templates = await response.json();
-          setAllTemplates(templates);
-          
-          const foundTemplate = templates.find(t => t.templateID == templateID);
-          setTemplate(foundTemplate);
-        } else {
-          const foundTemplate = allTemplates.find(t => t.templateID == templateID);
-          setTemplate(foundTemplate);
-        }
-      } catch (error) {
-        console.error('Error fetching template:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  console.log('templates:', templates);
+  console.log('templateID:', templateID);
 
-    fetchTemplate();
-  }, [templateID, template, allTemplates]);
+  const template = templates.find(t => t.templateID === Number(templateID)); // convert to number here
 
-  if (loading) {
-    return <div>Loading template...</div>;
-  }
-
-  if (!template) {
-    return <div>Template not found</div>;
-  }
-
+  if (!template) return <div>Template not found</div>;
   return (
+<>
+  <HeaderBar />
+
   <div className="template-detail-container">
     <div className="sidebar">
       <IconButton
@@ -96,12 +72,11 @@ const TemplateDetail = () => {
           <HeadingText text="Rating" />
           <RatingBox templateRating={template.templateRating} />
         </div>
-
       </div>
     </div>
   </div>
-
   </div>
+  </>
   );
 
 

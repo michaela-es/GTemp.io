@@ -14,6 +14,11 @@ export const sortTemplates = (templates, activeSorts) => {
         case 'price':
           result = a.price - b.price;
           break;
+        case 'recent':
+          const dateA = new Date(a.releaseDate || 0);
+          const dateB = new Date(b.releaseDate || 0);
+          result = dateB - dateA;  
+          break;
         default:
           result = 0;
       }

@@ -1,62 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import MainPage from './pages/HomePage';
+import HomePage from './pages/HomePage';          // renamed MainPage to HomePage
+import SearchPage from './pages/SearchPage';
 import TemplateDetail from './pages/TemplateDetail';
-import './App.css';
+import { SearchProvider } from './contexts/SearchContext';
+import { TemplatesProvider } from './contexts/TemplatesContext';  // fixed typo: TemplateProvider → TemplatesProvider
+import { AppDataProvider } from './contexts/AppDataContext';
 
 const App = () => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [query, setQuery] = useState('');
-  const [filters, setFilters] = useState({
-    engine_type: [],
-    template_type: [],
-    price_range: []
-  });
-  const [activeSorts, setActiveSorts] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const dataResponse = await fetch('/data.json');
-        const templatesData = await dataResponse.json();
-        setData(templatesData);
-      } catch (error) {
-        console.error('Error loading data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadData();
-  }, []);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [query, filters, activeSorts]);
-
-  if (loading) return <div>Loading templates...</div>;
-
   return (
-    <Routes>
-      <Route path="/" element={
-        <MainPage
-          data={data}
-          query={query}
-          setQuery={setQuery}
-          filters={filters}
-          setFilters={setFilters}
-          activeSorts={activeSorts}
-          setActiveSorts={setActiveSorts}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          itemsPerPage={itemsPerPage}
-        />
-      } />
-      <Route path="/template/:templateID" element={<TemplateDetail />} />
-    </Routes>
+    <AppDataProvider>
+    <TemplatesProvider>
+      <SearchProvider>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/search" element={<SearchPage />} />
+          <Route path="/template/:templateID" element={<TemplateDetail />} />
+        </Routes>
+      </SearchProvider>
+    </TemplatesProvider>
+    </AppDataProvider>
   );
 };
 

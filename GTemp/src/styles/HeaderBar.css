@@ -1,0 +1,39 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.header-bar {
+  display: grid;
+  grid-template-columns: max-content 1fr max-content;
+  align-items: center;
+  gap: 1em;
+  padding: 0.5em 1em;
+  width: 100%;
+  box-sizing: border-box;
+  border-bottom: 1px solid #000;
+  overflow: hidden;
+  background-color: #c02055;
+  color: #fff;
+}
+
+.header-bar__heading {
+  color: inherit;
+  justify-self: start;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.header-bar__search {
+  justify-self: center;
+  min-width: 0;
+  max-width: 400px;
+  width: 100%;
+}
+
+.header-bar__action {
+  justify-self: end;
+  min-width: 0;
+}
