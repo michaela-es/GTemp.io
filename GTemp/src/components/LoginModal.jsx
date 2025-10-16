@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 
-export const RegisterModal = ({ isOpen, onClose, onRegister }) => {
+export const LoginModal = ({ isOpen, onClose, onLogin, onSwitchToRegister }) => {
   const [formData, setFormData] = useState({
-    email: '',
     username: '',
     password: '',
   });
@@ -16,7 +15,12 @@ export const RegisterModal = ({ isOpen, onClose, onRegister }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onRegister(formData); 
+    onLogin(formData); 
+  };
+
+  const handleRegisterClick = () => {
+    onClose(); // Close login modal
+    onSwitchToRegister(); // Open register modal
   };
 
   if (!isOpen) return null;
@@ -24,21 +28,13 @@ export const RegisterModal = ({ isOpen, onClose, onRegister }) => {
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <h2>Register</h2>
+        <h2>Log In</h2>
         <form onSubmit={handleSubmit}>
-          <input
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Email"
-            required
-          />
           <input
             name="username"
             value={formData.username}
             onChange={handleChange}
-            placeholder="Username"
+            placeholder="Username or Email"
             required
           />
           <input
@@ -50,10 +46,23 @@ export const RegisterModal = ({ isOpen, onClose, onRegister }) => {
             required
           />
           <div className="modal-buttons">
-            <button type="submit">Register</button>
+            <button type="submit">Log In</button>
             <button type="button" onClick={onClose}>Cancel</button>
           </div>
         </form>
+        
+        {/* Register link */}
+        <div className="auth-switch">
+          <p>Don't have an account? 
+            <button 
+              type="button" 
+              className="link-button" 
+              onClick={handleRegisterClick}
+            >
+              Register here
+            </button>
+          </p>
+        </div>
       </div>
     </div>
   );

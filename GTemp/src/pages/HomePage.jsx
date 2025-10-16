@@ -9,7 +9,7 @@ import SortRow from '../components/SortRow';
 import TemplateGrid from '../components/TemplateGrid';
 import HeaderBar from '../components/HeaderBar';
 import { useSearch } from '../contexts/SearchContext';import useFiltersAndPagination from '../hooks/useFiltersAndPagination';
-import { useTemplates } from '../contexts/TemplatesContext';  // Import context hook
+import { useTemplates } from '../contexts/TemplatesContext'; 
 import '../App.css';
 
 const HomePage = () => {
@@ -38,10 +38,6 @@ const HomePage = () => {
   const handlePageChange = useCallback((page) => {
     setCurrentPage(page);
   }, [setCurrentPage]);
-
-  const handleActionClick = () => {
-    // Your action here
-  };
 
   if (loading) {
     return <div>Loading templates...</div>;
