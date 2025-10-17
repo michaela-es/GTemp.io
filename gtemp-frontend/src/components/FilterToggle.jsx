@@ -1,4 +1,3 @@
-// components/FilterToggle.jsx
 import React, { useState } from 'react';
 
 const FilterToggle = ({ 
