@@ -1,3 +1,6 @@
+
+
+
 import React, { useState } from "react";
 import { styles } from "../DataComponents/Credentials/styles";
 import ProfileSection from "../DataComponents/Credentials/Profile Settings/ProfileInstance";
@@ -8,23 +11,61 @@ import CreditAccountItem from "../DataComponents/Credentials/Bank Accounts/Credi
 const InnerContainer3 = () => {
   const [activeInnerTab, setActiveInnerTab] = useState(1);
   const [mode, setMode] = useState("profile");
-  const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
 
-  const innerInnerTabs = ["Inner-inner 1", "Inner-inner 2"];
+  const innerInnerTabs = ["Profile Settings", "Bank Accounts"];
+
+  const tabsStyle = { display: "flex", width: "100%" };
+
+  const tabStyle = (tabNumber) => ({
+    flex: 1, // each tab takes equal width
+    padding: "2px 0",
+    textAlign: "center",
+    cursor: "pointer",
+    backgroundColor: "#ffffff",
+    color: activeInnerTab === tabNumber ? "#d90000" : "#000000",
+    fontWeight: activeInnerTab === tabNumber ? "bold" : "normal",
+    border: "1px solid #ccc",
+    borderBottom: activeInnerTab === tabNumber ? "2px solid #d90000" : "1px solid #ccc",
+    margin: "0",
+    borderRadius: "0",
+    boxSizing: "border-box",
+  });
+
+  const innerContentStyle = {
+    backgroundColor: "#ff9999",
+    width: "100%",
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    borderRadius: "8px",
+    padding: "10px 20px",
+    boxSizing: "border-box",
+    overflowY: "auto",
+    scrollbarWidth: "none",        // Firefox
+    msOverflowStyle: "none",       // IE + Edge
+  };
 
   return (
-    <div className="inner-container" style={styles.container}>
+    <div
+      className="inner-container"
+      style={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        margin: "0 250px",
+        minWidth: 0,
+        overflow: "hidden",
+      }}
+    >
       {/* Tabs */}
-      <div style={styles.tabs}>
+      <div style={tabsStyle}>
         {innerInnerTabs.map((label, index) => (
           <div
             key={index}
-            style={styles.tab(index + 1, activeInnerTab)}
-            onClick={() => {
-              setActiveInnerTab(index + 1);
-              setMode("profile");
-            }}
+            style={tabStyle(index + 1)}
+            onClick={() => setActiveInnerTab(index + 1)}
           >
             {label}
           </div>
@@ -32,14 +73,16 @@ const InnerContainer3 = () => {
       </div>
 
       {/* Content */}
-      <div style={styles.innerContent}>
-        {activeInnerTab === 1 ? (
+      <div style={innerContentStyle}>
+        {activeInnerTab === 1 && (
           <>
             {mode === "profile" && <ProfileSection setMode={setMode} />}
             {mode === "security" && <SecuritySection setMode={setMode} />}
             {mode === "delete" && <DeleteSection setMode={setMode} />}
           </>
-        ) : (
+        )}
+
+        {activeInnerTab === 2 && (
           <div style={styles.creditContainer}>
             <h2 style={styles.creditHeader}>Credit Accounts</h2>
 

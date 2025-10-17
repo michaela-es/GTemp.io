@@ -1,20 +1,20 @@
 // ThreeVerticalContainers.jsx
 import { useState } from 'react';
-import '../static/ThreeVerticalContainers.css';
-import FirstContainer from './FirstContainer';
+import '../../static/Body.css';
+import FirstContainer from './Header';
 
 // Modals
-import LoginModal from './LoginModal';
-import CreateAccountModal from './CreateAccountModal';
-import UserSection from './UserSection'; // ✅ Import
+import LoginModal from '../authentication/LoginModal';
+import CreateAccountModal from '../authentication/CreateAccountModal';
+import ProfileDropDown from '../ProfileDropDown'; // ✅ Import
 
 // Assets
-import searchIcon from '../assets/search-icon.svg';
-import logoImage from '../assets/logo.png';
-import filterIcon from '../assets/filter-icon.svg';
-import dropDownIcon from '../assets/drop-down.svg';
+import searchIcon from '../../assets/search-icon.svg';
+import logoImage from '../../assets/logo.png';
+import filterIcon from '../../assets/filter-icon.svg';
+import dropDownIcon from '../../assets/drop-down.svg';
 
-export default function ThreeVerticalContainers() {
+export default function Body() {
   const [selectedPrice, setSelectedPrice] = useState('any');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
@@ -236,7 +236,7 @@ export default function ThreeVerticalContainers() {
       {/* CREATE ACCOUNT MODAL */}
       {activeModal === 'create' && (
         <CreateAccountModal
-          onClose={() => setActiveModal(null)}
+          onClose={() => setActiveModal(null)}  
           onSwitchToLogin={() => setActiveModal('login')}
         />
       )}

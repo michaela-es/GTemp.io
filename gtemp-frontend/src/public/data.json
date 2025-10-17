@@ -1,0 +1,35 @@
+[
+  {
+    "templateName": "2D Platformer Starter Kit",
+    "templateImg": "/sample.png",
+    "templateRating": 4,
+    "templateDls": 120,
+    "templateDesc": "A clean 2D platformer template compatible with Unity.",
+    "engine_type": "Unity",
+    "template_type": "template",
+    "publishDate": "2023-08-01",
+    "price": 0
+  },
+  {
+    "templateName": "Fantasy Character Sprites",
+    "templateImg": "/sample.png",
+    "templateRating": 5,
+    "templateDls": 300,
+    "templateDesc": "High quality fantasy character sprites for RPG games.",
+    "engine_type": "Any",
+    "template_type": "sprite",
+    "publishDate": "2023-09-15",
+    "price": 19.99
+  },
+  {
+    "templateName": "3D Racing Game Template",
+    "templateImg": "/sample.png",
+    "templateRating": 3,
+    "templateDls": 90,
+    "templateDesc": "Basic 3D racing game setup for Unity or Unreal Engine.",
+    "engine_type": "Unity/Unreal",
+    "template_type": "template",
+    "publishDate": "2023-07-20",
+    "price": 29.99
+  }
+]

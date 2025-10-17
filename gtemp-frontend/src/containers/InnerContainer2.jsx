@@ -11,32 +11,44 @@ const InnerContainer2 = ({ activeInnerTab: propActiveInnerTab }) => {
     if (propActiveInnerTab) setActiveInnerTab(propActiveInnerTab);
   }, [propActiveInnerTab]);
 
-  const innerInnerTabs = ["Inner-inner 1", "Inner-inner 2"];
+  const innerInnerTabs = ["Creation Statistics", "Create New Project"];
 
   const tabsStyle = { display: "flex", backgroundColor: "#ffcccc" };
   const tabStyle = (tabNumber) => ({
-    flex: 1,
-    padding: "10px",
+    flex: 1, // each tab takes equal width
+    padding: "2px 0",
     textAlign: "center",
     cursor: "pointer",
-    backgroundColor: activeInnerTab === tabNumber ? "#ff6666" : "#ffcccc",
+    backgroundColor: "#ffffff",
+    color: activeInnerTab === tabNumber ? "#d90000" : "#000000",
     fontWeight: activeInnerTab === tabNumber ? "bold" : "normal",
+    border: "1px solid #ccc",
+    borderBottom: activeInnerTab === tabNumber ? "2px solid #d90000" : "1px solid #ccc",
+    margin: "0",
+    borderRadius: "0",
+    boxSizing: "border-box",
   });
 
   const innerContentStyle = {
-    marginTop: "10px",
     backgroundColor: "#ff9999",
-    width: "80%",
+    width: "100%", // full width inside the container
     flex: 1,
     display: "flex",
-    justifyContent: "center",
-    alignItems: "flex-start",
-    borderRadius: "8px",
-    padding: "20px",
+    flexDirection: "column",
+    padding: "10px 0px",
+    boxSizing: "border-box",
+    overflowX: "hidden",
   };
 
   return (
-    <div className="inner-container" style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
+    <div className="inner-container" style={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        margin: "0 250px",
+        minWidth: 0,
+        overflowX: "hidden",
+      }}>
       {/* Tabs */}
       <div style={tabsStyle}>
         {innerInnerTabs.map((label, index) => (
@@ -66,17 +78,7 @@ const InnerContainer2 = ({ activeInnerTab: propActiveInnerTab }) => {
         )}
 
         {activeInnerTab === 2 && (
-          <div
-            style={{
-              display: "flex",
-              width: "100%",
-              flex: 1,
-              overflowY: "auto",
-              justifyContent: "space-between", // Pushes panels to edges
-              padding: "0 20px", // Adds horizontal padding to container
-              gap: "40px", // Extra gap between panels
-            }}
-          >
+          <div style={{ display: "flex"}}>
             {/* Left Panel */}
             <div style={{ flex: 1 }}>
               <LeftPanel />

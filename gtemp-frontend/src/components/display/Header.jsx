@@ -1,8 +1,8 @@
 // FirstContainer.js
 import React from 'react';
-import UserSection from './UserSection';
-import searchIcon from '../assets/search-icon.svg';
-import logoImage from '../assets/logo.png';
+import ProfileDropDown from '../ProfileDropDown';
+import searchIcon from '../../assets/search-icon.svg';
+import logoImage from '../../assets/logo.png';
 
 export default function FirstContainer({ 
   isLoggedIn, 
@@ -26,7 +26,7 @@ export default function FirstContainer({
         </div>
       </div>
 
-      <UserSection
+      <ProfileDropDown
         isLoggedIn={isLoggedIn}
         username={username}
         onLoginClick={onLoginClick}

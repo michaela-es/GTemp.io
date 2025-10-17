@@ -2,25 +2,34 @@ import React, { useState } from "react";
 import RatingsView from "../DataComponents/MyLibrary/RatedViewed";
 import PurchasesView from "../DataComponents/MyLibrary/DownloadedPurchased";
 import WishlistView from "../DataComponents/MyLibrary/Wishlisted";
+import { ItemWithStats } from "../DataComponents/Dashboards/Projects/DashboardProjectStats"; // import the combined container
+import RightPanel from "../DataComponents/Dashboards/Edit Project/RightPanel"; // adjust path if needed
+import LeftPanel from "../DataComponents/Dashboards/Edit Project/LeftPanel"; // adju  st path if needed
 
 const InnerContainer1 = () => {
   const [activeInnerTab, setActiveInnerTab] = useState(1);
-  const innerInnerTabs = ["Ratings", "Purchases", "Wishlist"];
+  const innerInnerTabs = ["Rated & Viewed", "Downloaded & Purchased", "Wishlisted"];
 
-  const tabsStyle = { display: "flex", backgroundColor: "#ffcccc" };
+  const tabsStyle = { display: "flex", width: "100%" };
+
   const tabStyle = (tabNumber) => ({
-    flex: 1,
-    padding: "10px",
+    flex: 1, // each tab takes equal width
+    padding: "2px 0",
     textAlign: "center",
     cursor: "pointer",
-    backgroundColor: activeInnerTab === tabNumber ? "#ff6666" : "#ffcccc",
+    backgroundColor: "#ffffff",
+    color: activeInnerTab === tabNumber ? "#d90000" : "#000000",
     fontWeight: activeInnerTab === tabNumber ? "bold" : "normal",
+    border: "1px solid #ccc",
+    borderBottom: activeInnerTab === tabNumber ? "2px solid #d90000" : "1px solid #ccc",
+    margin: "0",
+    borderRadius: "0",
+    boxSizing: "border-box",
   });
 
   const innerContentStyle = {
-    marginTop: "10px",
     backgroundColor: "#ff9999",
-    width: "80%",
+    width: "100%", // full width inside the container
     flex: 1,
     display: "flex",
     flexDirection: "column",
@@ -36,7 +45,7 @@ const InnerContainer1 = () => {
         flex: 1,
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
+        margin: "0 250px", // horizontal margin
       }}
     >
       {/* Inner-Inner Tabs */}
