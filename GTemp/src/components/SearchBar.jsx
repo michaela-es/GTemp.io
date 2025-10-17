@@ -1,16 +1,31 @@
-// components/SearchBar.jsx
 import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useSearch } from '../contexts/SearchContext';
+const SearchBar = () => {
+  const { query, setQuery } = useSearch();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-const SearchBar = ({ query, setQuery }) => {
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      if (location.pathname !== '/') {
+        navigate('/search');
+      } else {
+      }
+    }
+  };
+
   return (
+    <>
     <input
-      type="text"
-      placeholder="Search templates..."
       value={query}
       onChange={(e) => setQuery(e.target.value)}
-      className="search-input" // Using CSS class instead of inline styles
+      onKeyDown={handleKeyDown}
+      placeholder="Search templates..."
+      className="search-input"
     />
+
+    </>
   );
 };
-
 export default SearchBar;

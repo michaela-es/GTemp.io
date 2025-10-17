@@ -1,0 +1,94 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.header-bar {
+  display: grid;
+  grid-template-columns: max-content 1fr max-content;
+  align-items: center;
+  gap: 1em;
+  padding: 0.5em 1em;
+  width: 100%;
+  box-sizing: border-box;
+  border-bottom: 1px solid #000;
+  overflow: hidden;
+  background-color: #c02055;
+  color: #fff;
+}
+
+.header-bar__heading {
+  color: inherit;
+  justify-self: start;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.header-bar__search {
+  justify-self: center;
+  min-width: 0;
+  max-width: 400px;
+  width: 100%;
+}
+
+.header-bar__action {
+  justify-self: end;
+  min-width: 0;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.close-button {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 1001;
+}.auth-switch {
+  margin-top: 1rem;
+  text-align: center;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.auth-switch p {
+  margin: 0;
+  color: #666;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: #007bff;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 0.25rem;
+}
+
+.link-button:hover {
+  color: #0056b3;
+}
