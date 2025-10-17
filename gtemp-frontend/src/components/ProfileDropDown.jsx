@@ -1,11 +1,11 @@
 // UserSection.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../static/UserSection.css";
+import "../static/ProfileDropDown.css";
 import profileIcon from "../assets/profile-icon.svg";
 import dropDownIcon from "../assets/drop-down.svg";
 
-export default function UserSection({ isLoggedIn, username, onLoginClick, onLogout }) {
+export default function ProfileDropDown({ isLoggedIn, username, onLoginClick, onLogout }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 

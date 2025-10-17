@@ -107,8 +107,6 @@ export const styles = {
   },
   backButton: {
     position: "absolute",
-    top: "20px",
-    left: "20px",
     backgroundColor: "#ff6666",
     border: "none",
     borderRadius: "6px",

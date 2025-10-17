@@ -1,4 +1,4 @@
-// DashboardStyles.js
+//Style.js
 
 // 🔹 Layout containers
 export const tabsStyle = {

@@ -1,6 +1,6 @@
 // LoginModal.jsx
 import { useState } from 'react';
-import '../static/LoginModal.css';
+import '../../static/LoginModal.css';
 
 export default function LoginModal({ onClose, onSwitchToCreateAccount, onLoginSuccess }) {
   const [usernameOrEmail, setUsernameOrEmail] = useState('');

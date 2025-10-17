@@ -1,12 +1,15 @@
-// LeftPanel.jsx
 import React, { useState } from "react";
 import EngineTypeDropUp from "./EngineTypeDropUp";
+import { styles } from "../styles";
 
 const LeftPanel = () => {
   const [files, setFiles] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [price, setPrice] = useState("250.00");
+  const [selectedPricing, setSelectedPricing] = useState("₱0 or donation");
   const maxFiles = 5;
 
+  // === File Handling ===
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
     addFiles(selectedFiles);
@@ -41,32 +44,94 @@ const LeftPanel = () => {
     setFiles(updatedFiles);
   };
 
+  // === Price Input Handling ===
+  const handlePriceChange = (e) => {
+    let value = e.target.value;
+    if (/^\d*\.?\d{0,2}$/.test(value)) setPrice(value);
+  };
+
+  const handlePriceBlur = () => {
+    let num = parseFloat(price);
+
+    if (selectedPricing === "No Payment") {
+      setPrice("0.00");
+      return;
+    }
+
+    if (isNaN(num) || num < 250) num = 250;
+    setPrice(num.toFixed(2));
+  };
+
+  // === Pricing Logic ===
+  const renderPricingField = () => {
+    if (selectedPricing === "₱0 or donation") {
+      return (
+        <>
+          <label style={styles.label}>Suggested Donation</label>
+          {renderPriceInput(false)}
+        </>
+      );
+    }
+    if (selectedPricing === "Paid") {
+      return (
+        <>
+          <label style={styles.label}>Price</label>
+          {renderPriceInput(false)}
+        </>
+      );
+    }
+    if (selectedPricing === "No Payment") {
+      return (
+        <>
+          <label style={styles.label}>Pricing Unavailable</label>
+          {renderPriceInput(true)}
+        </>
+      );
+    }
+  };
+
+  const renderPriceInput = (disabled) => (
+    <div style={styles.currencyInputContainer}>
+      <span style={styles.pesoSymbol}>₱</span>
+      <input
+        type="text"
+        inputMode="decimal"
+        value={disabled ? "0.00" : price}
+        onChange={handlePriceChange}
+        onBlur={handlePriceBlur}
+        disabled={disabled}
+        style={{
+          ...styles.inputPricing,
+          paddingLeft: "25px",
+          ...(disabled ? styles.disabledInput : {}),
+        }}
+      />
+    </div>
+  );
+
   return (
-    <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "20px" }}>
-      {/* Title Section */}
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <label style={{ marginBottom: "8px", fontWeight: "bold" }}>Title</label>
-        <input
-          type="text"
-          placeholder="Enter title..."
-          style={{ padding: "10px", borderRadius: "5px", border: "1px solid #ccc", width: "100%" }}
-        />
+    <div style={styles.leftPanelContainer}>
+      {/* Title */}
+      <div style={styles.sectionColumn}>
+        <label style={styles.label}>Title</label>
+        <input type="text" placeholder="Enter title..." style={styles.inputTitle} />
       </div>
 
-      {/* Pricing Section */}
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <label style={{ marginBottom: "8px", fontWeight: "bold" }}>Pricing</label>
-        <div style={{ display: "flex", gap: "10px" }}>
-          {["$0 or donation", "Paid", "No Payment"].map((option, index) => (
+      {/* Pricing */}
+      <div style={styles.sectionColumn}>
+        <label style={styles.label}>Pricing</label>
+        <div style={styles.pricingOptions}>
+          {["₱0 or donation", "Paid", "No Payment"].map((option) => (
             <button
-              key={index}
+              key={option}
+              onClick={() => {
+                setSelectedPricing(option);
+                if (option === "No Payment") setPrice("0.00");
+                else setPrice("250.00");
+              }}
               style={{
-                flex: 1,
-                padding: "10px",
-                borderRadius: "5px",
-                border: "1px solid #ccc",
-                cursor: "pointer",
-                backgroundColor: "#fff",
+                ...styles.pricingButton,
+                ...(selectedPricing === option ? styles.activePricingButton : {}),
               }}
             >
               {option}
@@ -75,160 +140,76 @@ const LeftPanel = () => {
         </div>
       </div>
 
-      {/* Suggested Donation + Upload File Section */}
-      <div style={{ display: "flex", gap: "20px", alignItems: "flex-start" }}>
-        {/* Suggested Donation */}
-        <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-          <label style={{ marginBottom: "8px", fontWeight: "bold" }}>Suggested Donation</label>
-          <input
-            type="number"
-            min={2}
-            step={1}
-            placeholder="$2"
-            style={{ padding: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
-          />
-          <select
-            style={{
-              marginTop: "10px",
-              padding: "10px",
-              borderRadius: "5px",
-              border: "1px solid #ccc",
-            }}
-          >
+      {/* Price / Donation + Upload Section */}
+      <div style={styles.flexRow}>
+        <div style={styles.sectionColumn}>
+          {renderPricingField()}
+          <select style={styles.selectBox}>
             <option value="">Select Visibility Option</option>
             <option value="option1">Visible to Public</option>
             <option value="option2">Visible to Owner Only</option>
           </select>
         </div>
 
-        {/* Upload File */}
-        <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-          <label style={{ marginBottom: "8px", fontWeight: "bold" }}>Upload Files (max 5)</label>
-
-          {/* Hidden file input */}
+        {/* Upload Section */}
+        <div style={styles.sectionColumn}>
+          <label style={styles.label}>Upload Files (max 5)</label>
           <input
             type="file"
             id="fileInput"
-            style={{ display: "none" }}
+            style={styles.hiddenInput}
             onChange={handleFileChange}
             multiple
           />
-
-          {/* Choose File Button */}
           <button
             onClick={() => document.getElementById("fileInput").click()}
-            style={{
-              padding: "10px",
-              borderRadius: "5px",
-              border: "1px solid #ccc",
-              cursor: "pointer",
-              backgroundColor: "#fff",
-            }}
+            style={styles.uploadButton}
           >
             Choose Files
           </button>
-
-          {/* Drag-and-Drop Container */}
           <div
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             style={{
-                marginTop: "10px",
-                height: "80px", // fixed height
-                border: `2px dashed ${isDragging ? "#4CAF50" : "#ccc"}`,
-                borderRadius: "5px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "flex-start",
-                alignItems: "center",
-                color: "#888",
-                padding: "10px",
-                transition: "border 0.2s",
-                overflowY: "auto", // scroll when too many files
-                gap: "5px",
-                width: "100%",
+              ...styles.dropZone,
+              border: `2px dashed ${isDragging ? "#4CAF50" : "#ccc"}`,
+              minHeight: `${Math.min(files.length )}px`, // expands until 200px
+              minWidth: "139px",
             }}
-            >
-            {files.length === 0
-                ? "Drag & drop files here or click 'Choose Files'"
-                : files.map((file, index) => (
-                    <div
-                    key={index}
-                    style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        width: "100%",
-                    }}
-                    >
-                    <span>{file.name}</span>
-                    <button
-                        onClick={() => removeFile(index)}
-                        style={{
-                        border: "none",
-                        background: "transparent",
-                        color: "red",
-                        cursor: "pointer",
-                        fontWeight: "bold",
-                        }}
-                    >
-                        ×
-                    </button>
-                  </div>
-                ))}
-            </div>
-
+          >
+            {files.length === 0 ? (
+              "Drag & drop files here or click 'Choose Files'"
+            ) : (
+              files.map((file, index) => (
+                <div key={index} style={styles.fileRow}>
+                  <span>{file.name}</span>
+                  <button
+                    onClick={() => removeFile(index)}
+                    style={styles.removeFileButton}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Description Section */}
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <label style={{ marginBottom: "8px", fontWeight: "bold" }}>Description</label>
-        <textarea
-          placeholder="Enter description..."
-          style={{
-            padding: "10px",
-            borderRadius: "5px",
-            border: "1px solid #ccc",
-            width: "100%",
-            minHeight: "80px",
-          }}
-        />
+      {/* Description */}
+      <div style={styles.sectionColumn}>
+        <label style={styles.label}>Description</label>
+        <textarea placeholder="Enter description..." style={styles.textArea} />
       </div>
 
-      {/* Two Drop-up Buttons */}
+      {/* Drop-up buttons */}
       <EngineTypeDropUp />
 
-      {/* Action Buttons */}
-      <div style={{ display: "flex", gap: "10px" }}>
-        <button
-          style={{
-            flex: 1,
-            padding: "12px",
-            borderRadius: "5px",
-            border: "none",
-            cursor: "pointer",
-            backgroundColor: "#4CAF50",
-            color: "#fff",
-            fontWeight: "bold",
-          }}
-        >
-          Save & view page
-        </button>
-        <button
-          style={{
-            flex: 1,
-            padding: "12px",
-            borderRadius: "5px",
-            border: "none",
-            cursor: "pointer",
-            backgroundColor: "#f44336",
-            color: "#fff",
-            fontWeight: "bold",
-          }}
-        >
-          Delete Project
-        </button>
+      {/* Actions */}
+      <div style={styles.actionButtons}>
+        <button style={styles.saveButton}>Save & view page</button>
+        <button style={styles.deleteButton}>Delete Project</button>
       </div>
     </div>
   );

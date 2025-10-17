@@ -12,7 +12,7 @@ const DownloadedPurchased = () => {
       <div style={topRowStyle}>
         <div style={filterStyle}>
           <img src={filterIcon} alt="Filter" style={{ width: 30, height: 30 }} />
-          <span>Doawnloaded & Purchased</span>
+          <span>Filters</span>
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value)}

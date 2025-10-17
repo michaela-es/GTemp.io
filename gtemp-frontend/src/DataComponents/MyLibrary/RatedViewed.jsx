@@ -12,7 +12,7 @@ const RatedViewed = () => {
       <div style={topRowStyle}>
         <div style={filterStyle}>
           <img src={filterIcon} alt="Filter" style={{ width: 30, height: 30 }} />
-          <span>Rated & Viewed</span>
+          <span>Filters</span>
           <select
             value={rating}
             onChange={(e) => setRating(e.target.value)}
@@ -35,11 +35,11 @@ const RatedViewed = () => {
         <div style={{ display: "flex", gap: "20px" }}>
           <div style={boxStyle("blue")}>
             <div style={{ fontSize: "1.5rem" }}>0</div>
-            <div>Rate</div>
+            <div>Rated</div>
           </div>
           <div style={boxStyle("green")}>
             <div style={{ fontSize: "1.5rem" }}>0</div>
-            <div>Comment</div>
+            <div>Commented</div>
           </div>
         </div>
       </div>
