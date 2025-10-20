@@ -1,44 +1,32 @@
 import React from 'react';
-import { useWishlist } from '../../contexts/WishlistContext';
+import { useAuth } from '../../contexts/UserContext';
 import { useTemplates } from '../../contexts/TemplatesContext';
+import { useWishlist } from '../../contexts/WishlistContext';
 import TemplateGrid from '../TemplateGrid';
-import HeaderBar from '../HeaderBar';
-import "../../styles/WishList.css";
 
-
-
-const WishlistContainer = () => {
-  const { wishlist, wishlistCount } = useWishlist();
+const WishListContainer = () => {
+  const { user } = useAuth();
   const { templates, loading } = useTemplates();
+  const { wishlist, wishlistCount } = useWishlist();
 
-  if (loading) return <div>Loading...</div>;
+  if (user === undefined) return <div>Loading user info...</div>;
+  if (!user) return <div>Please log in to view your wishlist.</div>;
+  if (loading) return <div>Loading templates...</div>;
 
-  const wishlistedTemplates = templates.filter(template => 
+  const wishlistedTemplates = templates.filter(template =>
     wishlist.includes(template.templateID)
   );
 
   return (
-    <div className="app-container">
-      <HeaderBar />
-      <div className="wishlist-page">
-        <div className="wishlist-header">
-          <h1>My Wishlist</h1>
-          <p className="wishlist-count">
-            {wishlistCount} {wishlistCount === 1 ? 'template' : 'templates'} saved
-          </p>
-        </div>
-        
-        {wishlistCount > 0 ? (
-          <TemplateGrid templates={wishlistedTemplates} />
-        ) : (
-          <div className="empty-wishlist">
-            <h2>Your wishlist is empty</h2>
-            <p>Start browsing templates and add them to your wishlist!</p>
-          </div>
-        )}
-      </div>
+    <div>
+
+      {wishlistCount === 0 ? (
+        <p>Your wishlist is empty.</p>
+      ) : (
+        <TemplateGrid templates={wishlistedTemplates} />
+      )}
     </div>
   );
 };
 
-export default WishlistContainer;
+export default WishListContainer;

@@ -16,15 +16,24 @@ const TemplateDetail = () => {
   const { templateID } = useParams();
   const { user } = useAuth();
   const { templates, loading } = useTemplates();
-  const { wishlist, toggleWishlist } = useWishlist();
+
+  const { wishlist, isInWishlist, toggleWishlist } = useWishlist();
 
   if (loading) return <div>Loading template...</div>;
   if (!templates) return <div>Templates not available</div>;
 
-  const template = templates.find(t => t.templateID === Number(templateID));
+  const templateIdNum = Number(templateID);
+  const template = templates.find(t => t.templateID === templateIdNum);
   if (!template) return <div>Template not found</div>;
 
-  const isWishlisted = wishlist.includes(template.templateID);
+  const isWishlisted = isInWishlist(template.templateID);
+  console.log('WishlistContainer user:', user);
+  console.log('WishlistContainer wishlist:', wishlist);
+  const handleClick = () => {
+    console.log('wishlist:', wishlist);
+    console.log('template IDs:', templates.map(t => t.templateID));
+    toggleWishlist(template.templateID);
+  };
 
   return (
     <>
@@ -34,20 +43,19 @@ const TemplateDetail = () => {
         <div className="sidebar">
           <IconButton
             imgSrc={
-              isWishlisted
-                ? "https://www.svgrepo.com/show/535436/heart.svg"
-                : "https://www.svgrepo.com/show/532473/heart.svg"
+              isInWishlist(template.templateID)
+                ? 'https://www.svgrepo.com/show/535436/heart.svg'
+                : 'https://www.svgrepo.com/show/532473/heart.svg'
             }
-            name={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
-            onClick={() => {
-              if (!user) {
-                alert("Please log in to use the wishlist.");
-                return;
-              }
-              toggleWishlist(template.templateID);
-            }}
-            className={isWishlisted ? "wishlisted" : ""}
+            name={
+              isInWishlist(template.templateID)
+                ? 'Remove from Wishlist'
+                : 'Add to Wishlist'
+            }
+            onClick={handleClick}
+            className={isInWishlist(template.templateID) ? 'wishlisted' : ''}
           />
+
 
           <IconButton
             imgSrc="https://www.svgrepo.com/show/532718/star-sharp.svg"

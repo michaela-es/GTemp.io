@@ -1,93 +1,79 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './UserContext';
 
 const WishlistContext = createContext();
 
 export const WishlistProvider = ({ children }) => {
-  const [wishlists, setWishlists] = useState({}); 
   const { user } = useAuth();
-  
-  const wishlist = useMemo(() => {
-    if (!user) return [];
-    return wishlists[user.id] || [];
-  }, [user, wishlists]);
+  const userId = user?.id?.toString() || null;
 
-  const wishlistCount = wishlist.length;
+  const [wishlist, setWishlist] = useState([]);
 
+  // Load wishlist for current user when userId changes
   useEffect(() => {
-    const saved = localStorage.getItem('wishlists');
-    if (saved) {
-      setWishlists(JSON.parse(saved));
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('wishlists', JSON.stringify(wishlists));
-  }, [wishlists]);
-
-  const addToWishlist = (templateID) => {
-    if (!user) {
-      alert('Please login to add to wishlist');
+    if (!userId) {
+      setWishlist([]); // no user, empty wishlist
       return;
     }
-    
-    setWishlists(prev => {
-      const userWishlist = prev[user.id] || [];
-      if (!userWishlist.includes(templateID)) {
-        return {
-          ...prev,
-          [user.id]: [...userWishlist, templateID]
-        };
+
+    try {
+      const savedWishlist = localStorage.getItem(`wishlist_${userId}`);
+      if (savedWishlist) {
+        setWishlist(JSON.parse(savedWishlist));
+      } else {
+        setWishlist([]);
       }
-      return prev;
-    });
+    } catch {
+      setWishlist([]);
+    }
+  }, [userId]);
+
+  // Save wishlist for current user when it changes
+  useEffect(() => {
+    if (!userId) return; // don’t save if no user
+    localStorage.setItem(`wishlist_${userId}`, JSON.stringify(wishlist));
+  }, [wishlist, userId]);
+
+  // Wishlist operations
+  const addToWishlist = (templateID) => {
+    if (!userId) return;
+    setWishlist((prev) => (prev.includes(templateID) ? prev : [...prev, templateID]));
   };
 
   const removeFromWishlist = (templateID) => {
-    if (!user) return;
-    
-    setWishlists(prev => ({
-      ...prev,
-      [user.id]: (prev[user.id] || []).filter(id => id !== templateID)
-    }));
+    if (!userId) return;
+    setWishlist((prev) => prev.filter(id => id !== templateID));
   };
 
   const toggleWishlist = (templateID) => {
-    if (!user) {
+    if (!userId) {
       alert('Please login to manage wishlist');
       return;
     }
-
-    if (wishlist.includes(templateID)) {
-      removeFromWishlist(templateID);
-    } else {
-      addToWishlist(templateID);
-    }
+    setWishlist((prev) =>
+      prev.includes(templateID) ? prev.filter(id => id !== templateID) : [...prev, templateID]
+    );
   };
 
-  const isInWishlist = (templateID) => {
-    return wishlist.includes(templateID);
-  };
+  const isInWishlist = (templateID) => wishlist.includes(templateID);
 
   const clearWishlist = () => {
-    if (!user) return;
-    setWishlists(prev => ({
-      ...prev,
-      [user.id]: []
-    }));
+    if (!userId) return;
+    setWishlist([]);
   };
 
   return (
-    <WishlistContext.Provider value={{
-      wishlist,
-      wishlistCount,
-      wishlists,
-      addToWishlist,
-      removeFromWishlist,
-      toggleWishlist,
-      isInWishlist,
-      clearWishlist
-    }}>
+    <WishlistContext.Provider
+      value={{
+        wishlist,
+        wishlistCount: wishlist.length,
+        addToWishlist,
+        removeFromWishlist,
+        toggleWishlist,
+        isInWishlist,
+        clearWishlist,
+      }}
+    >
       {children}
     </WishlistContext.Provider>
   );

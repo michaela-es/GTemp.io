@@ -18,7 +18,6 @@ const SearchPage = () => {
   return (
     <div className="app-container">
       <HeaderBar />
-      <h1>Search Results for: "{query}"</h1>
       <TemplateGrid templates={results} query={query} />
     </div>
   );
