@@ -1,0 +1,78 @@
+/* UserSection.css */
+
+/* User section (when logged in) */
+.user-section {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  background-color: #f3f4f6; /* light gray background */
+  padding: 4px 8px;
+  border-radius: 8px;
+  gap: 6px;
+  position: relative;
+  transition: background 0.2s;
+}
+
+.user-section:hover {
+  background-color: #e5e7eb;
+}
+
+/* User icon */
+.user-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Username text */
+.username {
+  font-weight: 500;
+  color: #111827; /* almost black */
+}
+
+/* Dropdown arrow */
+.dropdown-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Dropdown menu */
+.user-menu {
+  position: absolute;
+  top: 110%; /* slightly below the user-section */
+  right: 0;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  min-width: 140px;
+  overflow: hidden;
+  z-index: 100;
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Individual menu items */
+.user-menu p {
+  margin: 0;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #111827;
+  transition: background 0.2s;
+}
+
+.user-menu p:hover {
+  background-color: #f3f4f6;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
