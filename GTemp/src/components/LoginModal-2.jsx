@@ -1,34 +1,21 @@
 import React, { useState } from 'react';
-import { useAuth } from '../contexts/UserContext'; 
 
-export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
+export const LoginModal = ({ isOpen, onClose, onLogin, onSwitchToRegister }) => {
   const [formData, setFormData] = useState({
-    email: '', 
+    username: '',
     password: '',
   });
-  const [error, setError] = useState('');
-  const { login } = useAuth();
 
   const handleChange = (e) => {
     setFormData({ 
       ...formData, 
       [e.target.name]: e.target.value 
     });
-    if (error) setError('');
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setError('');
-
-    const success = login(formData.email, formData.password);
-    
-    if (success) {
-      console.log('Login successful!');
-      onClose(); 
-    } else {
-      setError('Invalid email or password');
-    }
+    onLogin(formData); 
   };
 
   const handleRegisterClick = () => {
@@ -44,11 +31,10 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
         <h2>Log In</h2>
         <form onSubmit={handleSubmit}>
           <input
-            name="email"
-            type="email"
-            value={formData.email}
+            name="username"
+            value={formData.username}
             onChange={handleChange}
-            placeholder="Email" 
+            placeholder="Username or Email"
             required
           />
           <input
@@ -59,9 +45,6 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
             placeholder="Password"
             required
           />
-          
-          {error && <div className="error-message">{error}</div>}
-          
           <div className="modal-buttons">
             <button type="submit">Log In</button>
             <button type="button" onClick={onClose}>Cancel</button>

@@ -1,4 +1,3 @@
-// components/SortButton.jsx
 import React from 'react';
 
 const SortButton = ({ 

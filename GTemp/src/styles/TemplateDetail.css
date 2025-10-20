@@ -17,6 +17,19 @@ p{
   min-height: 80vh;
 }
 
+.icon-button.wishlisted {
+  background: #121212;
+  color: white;
+}
+
+.icon-button.wishlisted img {
+  filter: invert(25%) sepia(85%) saturate(3734%) hue-rotate(340deg) brightness(85%) contrast(105%);
+}
+
+.icon-button.wishlisted:hover {
+  background: #ffcccc;
+}
+
 .sidebar {
   display: flex;
   flex-direction: column;

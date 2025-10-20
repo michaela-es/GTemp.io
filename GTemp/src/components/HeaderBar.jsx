@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
-import { useSearch } from '../contexts/SearchContext';
-import { useAuth } from '../contexts/AuthContext'; // Add this import!
 import ActionButton from './ActionButton';
 import SearchBar from './SearchBar';
 import HeadingText from './HeadingText';
 import { RegisterModal } from './RegisterModal';
 import { LoginModal } from './LoginModal';
+import { useAuth } from '../contexts/UserContext';
 import '../styles/HeaderBar.css';
 import UserMenu from './UserMenu'; 
  
 const HeaderBar = ({ headingText = "GTemp.io" }) => {
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const { register, login, currentUser, logout, loading, error } = useAuth(); // Now this will work
+  const { user: currentUser, login, logout } = useAuth();
 
   const handleOpenLogin = () => {
     setIsLoginModalOpen(true); 
@@ -25,10 +24,9 @@ const HeaderBar = ({ headingText = "GTemp.io" }) => {
 
   const handleRegister = async (formData) => {
     try {
-      await register(formData);
-      console.log('Registration successful!');
+      console.log('Registration data:', formData);
+      alert('Registration would happen here');
       handleCloseModals();
-      alert('Registration successful!');
     } catch (error) {
       console.error('Registration failed:', error);
       alert(`Registration failed: ${error.message}`);
@@ -37,10 +35,13 @@ const HeaderBar = ({ headingText = "GTemp.io" }) => {
 
   const handleLogin = async (formData) => {
     try {
-      await login(formData);
-      console.log('Login successful!');
-      handleCloseModals();
-      alert('Login successful!');
+      const success = login(formData.email, formData.password);
+      if (success) {
+        console.log('Login successful!');
+        handleCloseModals();
+      } else {
+        throw new Error('Invalid credentials');
+      }
     } catch (error) {
       console.error('Login failed:', error);
       alert(`Login failed: ${error.message}`);
@@ -55,13 +56,6 @@ const HeaderBar = ({ headingText = "GTemp.io" }) => {
   const handleSwitchToLogin = () => {
     setIsRegisterModalOpen(false);
     setIsLoginModalOpen(true);
-  };
-
-  const getButtonText = () => {
-    if (currentUser) {
-      return `Logout (${currentUser.username})`;
-    }
-    return "Log In";
   };
 
   const handleAuthClick = () => {
@@ -82,20 +76,17 @@ const HeaderBar = ({ headingText = "GTemp.io" }) => {
         <SearchBar />
       </div>
 
+      <div className="header-bar__action">
+        {currentUser ? (
+          <UserMenu user={currentUser} onLogout={logout} />
+        ) : (
+          <ActionButton 
+            name="Log In" 
+            onClick={handleOpenLogin} 
+          />
+        )}
+      </div>
 
-    <div className="header-bar__action">
-      {currentUser ? (
-        <UserMenu user={currentUser} onLogout={logout} />
-      ) : (
-        <ActionButton 
-          name="Log In" 
-          onClick={handleOpenLogin} 
-          disabled={loading} 
-        />
-      )}
-    </div>
-
-      {/* Modals */}
       <RegisterModal 
         isOpen={isRegisterModalOpen}
         onClose={handleCloseModals}
@@ -106,7 +97,6 @@ const HeaderBar = ({ headingText = "GTemp.io" }) => {
       <LoginModal 
         isOpen={isLoginModalOpen}
         onClose={handleCloseModals}
-        onLogin={handleLogin}
         onSwitchToRegister={handleSwitchToRegister}
       />
     </div>
