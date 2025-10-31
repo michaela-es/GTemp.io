@@ -9,7 +9,7 @@ const ProjectItem = ({ image, title, timeAgo, initialRating = 0, comment = "My c
     <div
       style={{
         display: "flex",
-        backgroundColor: "#ffe6e6",
+        backgroundColor: "#f5f5f5ff",
         borderRadius: "10px",
         padding: "15px",
         width: "100%",
@@ -23,15 +23,15 @@ const ProjectItem = ({ image, title, timeAgo, initialRating = 0, comment = "My c
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          width: "120px",
+          width: "130px",
         }}
       >
         <img
           src={image || gameCover}
           alt={title}
           style={{
-            width: "100px",
-            height: "100px",
+            width: "50px",
+            height: "50px",
             borderRadius: "8px",
             objectFit: "cover",
             marginBottom: "8px",
@@ -47,10 +47,9 @@ const ProjectItem = ({ image, title, timeAgo, initialRating = 0, comment = "My c
           paddingLeft: "20px",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center",
         }}
       >
-        <div style={{ fontSize: "0.9rem", marginBottom: "5px" }}>{timeAgo}</div>
+        <div style={{ fontSize: "0.7rem", marginBottom: "5px" }}>{timeAgo}</div>
 
         {/* ⭐ Rating Stars */}
         <div style={{ display: "flex", alignItems: "center", marginBottom: "5px" }}>
@@ -60,7 +59,7 @@ const ProjectItem = ({ image, title, timeAgo, initialRating = 0, comment = "My c
               onClick={() => setUserRating(star)}
               style={{
                 color: star <= userRating ? "#cc0000" : "#ccc",
-                fontSize: "1.5rem",
+                fontSize: "1.0rem",
                 cursor: "pointer",
                 transition: "color 0.2s",
                 userSelect: "none",

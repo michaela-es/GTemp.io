@@ -1,4 +1,4 @@
-//Style.js
+// styles.js
 
 // 🔹 Layout containers
 export const tabsStyle = {
@@ -46,11 +46,12 @@ export const filterStyle = {
 
 // 🔹 Info boxes (Rate, Comment, Downloaded, Purchased, etc.)
 export const boxStyle = (bgColor) => ({
-  width: "80px",
-  height: "80px",
+  width: "100px",
+  height: "70px",
   backgroundColor: bgColor,
-  color: "white",
+  color: "black",
   borderRadius: "8px",
+  border: "1px solid #d9d9d9",
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
@@ -58,3 +59,44 @@ export const boxStyle = (bgColor) => ({
   fontWeight: "bold",
   fontSize: "1rem",
 });
+
+// 🔹 Dropdown styles
+export const dropdownContainer = {
+  position: "relative",
+  display: "inline-block",
+};
+
+export const dropdownButton = {
+  padding: "8px",
+  borderRadius: "3px",
+  border: "1px solid #D9D9D9",
+  fontSize: "10px",
+  backgroundColor: "#fff",
+  cursor: "pointer",
+  textAlign: "left",
+  minWidth: "120px",
+};
+
+export const dropdownMenu = {
+  position: "absolute",
+  top: "100%",
+  left: 0,
+  width: "100%",
+  backgroundColor: "#fff",
+  border: "1px solid #ccc",
+  borderRadius: "3px",
+  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+  zIndex: 10,
+};
+
+export const dropdownItem = {
+  padding: "6px 8px",
+  fontSize: "10px",
+  cursor: "pointer",
+  transition: "all 0.15s ease",
+};
+
+export const dropdownItemHover = {
+  backgroundColor: "#FFDADA",
+  color: "#D90000",
+};

@@ -7,6 +7,10 @@ const LeftPanel = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [price, setPrice] = useState("250.00");
   const [selectedPricing, setSelectedPricing] = useState("₱0 or donation");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedVisibility, setSelectedVisibility] = useState("Select Visibility Option");
+  const [hoveredItem, setHoveredItem] = useState(null);
+
   const maxFiles = 5;
 
   // === File Handling ===
@@ -144,11 +148,37 @@ const LeftPanel = () => {
       <div style={styles.flexRow}>
         <div style={styles.sectionColumn}>
           {renderPricingField()}
-          <select style={styles.selectBox}>
-            <option value="">Select Visibility Option</option>
-            <option value="option1">Visible to Public</option>
-            <option value="option2">Visible to Owner Only</option>
-          </select>
+          <div style={styles.dropdownContainer}>
+            <div
+              style={styles.dropdownButton}
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
+              {selectedVisibility}
+            </div>
+
+            {isDropdownOpen && (
+              <div style={styles.dropdownMenu}>
+                {["Visible to Public", "Visible to Owner Only"].map((option, index) => (
+                  <div
+                    key={index}
+                    onClick={() => {
+                      setSelectedVisibility(option);
+                      setIsDropdownOpen(false);
+                    }}
+                    onMouseEnter={() => setHoveredItem(index)}
+                    onMouseLeave={() => setHoveredItem(null)}
+                    style={{
+                      ...styles.dropdownItem,
+                      ...(hoveredItem === index ? styles.dropdownItemHover : {}),
+                    }}
+                  >
+                    {option}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
         </div>
 
         {/* Upload Section */}

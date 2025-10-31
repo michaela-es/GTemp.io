@@ -19,13 +19,13 @@ export const styles = {
   inputTitle: {
     padding: "8px",
     borderRadius: "3px",
-    border: "0.25px solid #555",
+    border: "1px solid #D9D9D9",
     fontSize: "10px",
   },
   inputPricing: {
     padding: "8px",
     borderRadius: "3px 3px 0px 0px",
-    border: "0.25px solid #555",
+    border: "1px solid #D9D9D9",
     fontSize: "10px",
   },
   pricingOptions: {
@@ -34,7 +34,7 @@ export const styles = {
   },
   pricingButton: {
     padding: "2px 5px",
-    border: "0.25px solid #888",
+    border: "1px solid #d9d9d9",
     borderRadius: "2px",
     backgroundColor: "#fff",
     cursor: "pointer",
@@ -47,9 +47,45 @@ export const styles = {
   selectBox: {
     padding: "8px",
     borderRadius: "0px 0px 3px 3px",
-    border: "0.25px solid #555",
+    border: "0.25px solid #D9D9D9",
     fontSize: "10px",
   },
+    /* === Custom Dropdown styles === */
+  dropdownContainer: {
+    position: "relative",
+    width: "100%",
+  },
+  dropdownButton: {
+    padding: "8px",
+    borderRadius: "0px 0px 3px 3px",
+    border: "1px solid #D9D9D9",
+    fontSize: "10px",
+    backgroundColor: "#fff",
+    cursor: "pointer",
+    textAlign: "left",
+  },
+  dropdownMenu: {
+    position: "absolute",
+    top: "100%",
+    left: 0,
+    width: "100%",
+    backgroundColor: "#fff",
+    border: "1px solid #ccc",
+    borderRadius: "3px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+    zIndex: 10,
+  },
+  dropdownItem: {
+    padding: "6px 8px",
+    fontSize: "10px",
+    cursor: "pointer",
+    transition: "all 0.15s ease",
+  },
+  dropdownItemHover: {
+    backgroundColor: "#FFDADA",
+    color: "#D90000",
+  },
+
   hiddenInput: {
     display: "none",
   },
@@ -88,7 +124,7 @@ export const styles = {
     minHeight: "100px",
     maxWidth: "321px",
     borderRadius: "3px 3px 0px 0px",
-    border: "0.25px solid #555",
+    border: "1px solid #D9D9D9",
     padding: "8px",
     fontSize: "10px",
   },
@@ -124,7 +160,7 @@ export const styles = {
   },
   dropUpButton: {
     padding: "2px",
-    border: "0.25px solid #888",
+    border: "1px solid #D9D9D9",
     borderRadius: "0px 0px 3px 3px",
     backgroundColor: "#fff",
     cursor: "pointer",
@@ -136,7 +172,7 @@ export const styles = {
     left: 0,
     backgroundColor: "#fff",
     border: "1px solid #ccc",
-    borderRadius: "5px",
+    borderRadius: "1px",
     width: "168px",
     boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
     zIndex: 1,
@@ -144,7 +180,11 @@ export const styles = {
   dropUpItem: {
     padding: "2px 12px",
     cursor: "pointer",
+    transition: "all 0.2s ease",
+    fontSize: "9px",
   },
+
+
 
   /* === RightPanel styles === */
   rightPanelContainer: {
@@ -212,16 +252,17 @@ export const styles = {
 
   /* === ItemWithStats styles === */
   statBox: {
-    width: "80px",
-    height: "80px",
-    color: "white",
-    borderRadius: "8px",
+    width: "60px",
+    height: "50px",
+    color: "black",
+    borderRadius: "3.5px",
+    border: "1px solid #d9d9d9",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
     fontWeight: "bold",
-    fontSize: "1rem",
+    fontSize: "0.6rem",
   },
   statValue: {
     fontSize: "1.2rem",
@@ -229,11 +270,12 @@ export const styles = {
   itemCard: {
     display: "flex",
     backgroundColor: "#fff",
-    borderRadius: "8px",
+    borderRadius: "3.5px",
+    border: "1px solid #d9d9d9",
+    marginLeft: "25px",
     padding: "10px",
-    width: "450px",
+    width: "380px",
     gap: "10px",
-    boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
   },
   itemImage: {
     width: "80px",
@@ -276,7 +318,7 @@ export const styles = {
   editButton: {
     padding: "3px 6px",
     borderRadius: "5px",
-    border: "1px solid #888",
+    border: "1px solid #D9D9D9",
     backgroundColor: "#fff",
     cursor: "pointer",
   },
@@ -291,7 +333,7 @@ export const styles = {
   },
   statsGroup: {
     display: "flex",
-    gap: "10px",
+    gap: "2px",
   },
   currencyInputContainer: {
     position: "relative",

@@ -2,10 +2,28 @@
 import React, { useState } from "react";
 import filterIcon from "../../assets/filter-icon.svg";
 import ProjectItem from "./ProjectItem";
-import { topRowStyle, filterStyle, boxStyle } from "./styles";
+import {
+  topRowStyle,
+  filterStyle,
+  boxStyle,
+  dropdownContainer,
+  dropdownButton,
+  dropdownMenu,
+  dropdownItem,
+  dropdownItemHover,
+} from "./styles";
 
 const RatedViewed = () => {
   const [rating, setRating] = useState("Any Rating");
+  const [isOpen, setIsOpen] = useState(false);
+  const [hoverIndex, setHoverIndex] = useState(null);
+
+  const ratingOptions = ["Any Rating", "5 Star", "4 Star", "3 Star", "2 Star", "1 Star"];
+
+  const handleSelect = (value) => {
+    setRating(value);
+    setIsOpen(false);
+  };
 
   return (
     <>
@@ -13,38 +31,53 @@ const RatedViewed = () => {
         <div style={filterStyle}>
           <img src={filterIcon} alt="Filter" style={{ width: 30, height: 30 }} />
           <span>Filters</span>
-          <select
-            value={rating}
-            onChange={(e) => setRating(e.target.value)}
-            style={{
-              padding: "5px 10px",
-              borderRadius: "5px",
-              border: "1px solid #ccc",
-              cursor: "pointer",
-            }}
+
+          {/* Custom dropdown */}
+          <div
+            style={dropdownContainer}
+            onMouseLeave={() => setIsOpen(false)}
           >
-            <option>Any Rating</option>
-            <option>5 Star</option>
-            <option>4 Star</option>
-            <option>3 Star</option>
-            <option>2 Star</option>
-            <option>1 Star</option>
-          </select>
+            <div
+              style={dropdownButton}
+              onClick={() => setIsOpen((prev) => !prev)}
+            >
+              {rating} ▼
+            </div>
+
+            {isOpen && (
+              <div style={dropdownMenu}>
+                {ratingOptions.map((option, i) => (
+                  <div
+                    key={option}
+                    style={{
+                      ...dropdownItem,
+                      ...(hoverIndex === i ? dropdownItemHover : {}),
+                    }}
+                    onMouseEnter={() => setHoverIndex(i)}
+                    onMouseLeave={() => setHoverIndex(null)}
+                    onClick={() => handleSelect(option)}
+                  >
+                    {option}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         <div style={{ display: "flex", gap: "20px" }}>
-          <div style={boxStyle("blue")}>
+          <div style={boxStyle("white")}>
             <div style={{ fontSize: "1.5rem" }}>0</div>
             <div>Rated</div>
           </div>
-          <div style={boxStyle("green")}>
+          <div style={boxStyle("white")}>
             <div style={{ fontSize: "1.5rem" }}>0</div>
             <div>Commented</div>
           </div>
         </div>
       </div>
 
-      {/* Use item component */}
+      {/* Project Item */}
       <ProjectItem
         title="Awesome Game"
         timeAgo="2 hours ago"

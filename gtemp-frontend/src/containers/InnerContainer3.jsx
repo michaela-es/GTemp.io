@@ -34,12 +34,12 @@ const InnerContainer3 = () => {
   });
 
   const innerContentStyle = {
-    backgroundColor: "#ff9999",
+    backgroundColor: "#ffffff",
+    border: "1px solid #d9d9d9",
     width: "100%",
     flex: 1,
     display: "flex",
     flexDirection: "column",
-    borderRadius: "8px",
     padding: "10px 20px",
     boxSizing: "border-box",
     overflowY: "auto",

@@ -46,11 +46,11 @@ export const ItemWithStats = ({ itemProps, onEdit }) => (
   <div style={styles.itemWithStatsContainer}>
     <ItemCard {...itemProps} onEdit={onEdit} />
     <div style={styles.statsGroup}>
-      <StatBox label="Views" value={0} bgColor="#ffc0cb" />
-      <StatBox label="Downloads" value={0} bgColor="#ff69b4" />
-      <StatBox label="Revenue" value="$0.00" bgColor="#dda0dd" />
-      <StatBox label="Rating" value="0.000" bgColor="#800080" />
-      <StatBox label="Wishlist" value={0} bgColor="#8a2be2" />
+      <StatBox label="Views" value={0} bgColor="#fff" />
+      <StatBox label="Downloads" value={0} bgColor="#fff" />
+      <StatBox label="Revenue" value="$0.00" bgColor="#fff" />
+      <StatBox label="Rating" value="0.000" bgColor="#fff" />
+      <StatBox label="Wishlist" value={0} bgColor="#fff" />
     </div>
   </div>
 );

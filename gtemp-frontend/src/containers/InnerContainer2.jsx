@@ -30,7 +30,8 @@ const InnerContainer2 = ({ activeInnerTab: propActiveInnerTab }) => {
   });
 
   const innerContentStyle = {
-    backgroundColor: "#ff9999",
+    backgroundColor: "#ffffff",
+    border: "1px solid #D9D9D9",
     width: "100%", // full width inside the container
     flex: 1,
     display: "flex",

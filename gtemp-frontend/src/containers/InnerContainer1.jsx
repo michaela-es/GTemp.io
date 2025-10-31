@@ -28,12 +28,12 @@ const InnerContainer1 = () => {
   });
 
   const innerContentStyle = {
-    backgroundColor: "#ff9999",
+    backgroundColor: "#ffffff",
     width: "100%", // full width inside the container
     flex: 1,
     display: "flex",
     flexDirection: "column",
-    borderRadius: "8px",
+    border:"1px solid #d9d9d9",
     padding: "10px 20px",
     boxSizing: "border-box",
   };
