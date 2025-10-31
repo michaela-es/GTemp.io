@@ -9,7 +9,7 @@ const Wishlist = () => {
       <div style={topRowStyle}>
         <div></div>
         <div style={{ display: "flex", gap: "20px" }}>
-          <div style={boxStyle("blue")}>
+          <div style={boxStyle("white")}>
             <div style={{ fontSize: "1.5rem" }}>0</div>
             <div>Wishlisted</div>
           </div>
