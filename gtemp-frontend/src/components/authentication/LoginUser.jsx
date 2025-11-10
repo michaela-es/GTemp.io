@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import '../../static/LoginModal.css';
-
-export default function LoginModal({ onClose, onSwitchToCreateAccount, onLoginSuccess }) {
+import RegisterUser from './RegisterUser';
+export default function LoginModal({ onClose, onLoginSuccess }) {
   const [formData, setFormData] = useState({
     usernameOrEmail: '',
     password: ''
@@ -10,7 +10,8 @@ export default function LoginModal({ onClose, onSwitchToCreateAccount, onLoginSu
   
   const { login, loading, error, setError } = useAuth();
   const [localError, setLocalError] = useState('');
-
+  const [showRegister, setShowRegister] = useState(false);
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -45,7 +46,29 @@ export default function LoginModal({ onClose, onSwitchToCreateAccount, onLoginSu
     }
   };
 
+  const handleSwitchToRegister = () => {
+    setShowRegister(true);
+  };
+
+  const handleSwitchToLogin = () => {
+    setShowRegister(false);
+  };
+
+  const handleCloseAll = () => {
+    setShowRegister(false);
+    onClose();
+  };
+
   const displayError = localError || error;
+
+  if (showRegister) {
+    return (
+      <RegisterUser 
+        onClose={handleCloseAll}
+        onSwitchToLogin={handleSwitchToLogin}
+      />
+    );
+  }
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -92,7 +115,7 @@ export default function LoginModal({ onClose, onSwitchToCreateAccount, onLoginSu
           <div className="modal-footer">
             <p 
               className="modal-link create-account" 
-              onClick={loading ? undefined : onSwitchToCreateAccount}
+              onClick={loading ? undefined : handleSwitchToRegister}
             >
               Create account
             </p>
