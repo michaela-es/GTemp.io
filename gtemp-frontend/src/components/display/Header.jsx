@@ -1,15 +1,25 @@
-// FirstContainer.js
 import React from 'react';
+import { useAuth } from '../../context/AuthContext';
 import ProfileDropDown from '../ProfileDropDown';
 import searchIcon from '../../assets/search-icon.svg';
 import logoImage from '../../assets/logo.png';
 
 export default function FirstContainer({ 
-  isLoggedIn, 
-  username, 
   onLoginClick, 
-  onLogout 
 }) {
+  const { currentUser, logout, loading } = useAuth();
+
+  const isLoggedIn = !!currentUser;
+  const username = currentUser?.username;
+
+  const handleAuthAction = () => {
+    if (isLoggedIn) {
+      logout();
+    } else {
+      onLoginClick?.();
+    }
+  };
+
   return (
     <div className="box box1">
       <div className="left-section">
@@ -29,8 +39,9 @@ export default function FirstContainer({
       <ProfileDropDown
         isLoggedIn={isLoggedIn}
         username={username}
-        onLoginClick={onLoginClick}
-        onLogout={onLogout}
+        onLoginClick={handleAuthAction}
+        onLogout={logout}
+        isLoading={loading}
       />
     </div>
   );
