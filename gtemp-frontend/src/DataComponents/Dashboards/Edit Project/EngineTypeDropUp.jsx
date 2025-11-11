@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { styles } from "../styles";
 
-const EngineTypeDropUp = ({ onSelect }) => {
+const EngineTypeDropUp = () => {
   const [engineOpen, setEngineOpen] = useState(false);
   const [typeOpen, setTypeOpen] = useState(false);
   const [selectedEngine, setSelectedEngine] = useState("");
@@ -20,24 +20,9 @@ const EngineTypeDropUp = ({ onSelect }) => {
     "Systems",
   ];
 
-  const handleEngineSelect = (engine) => {
-    setSelectedEngine(engine);
-    setEngineOpen(false);
-    if (onSelect) {
-      onSelect(engine, selectedType);
-    }
-  };
-
-  const handleTypeSelect = (type) => {
-    setSelectedType(type);
-    setTypeOpen(false);
-    if (onSelect) {
-      onSelect(selectedEngine, type);
-    }
-  };
-
   return (
     <div style={styles.dropUpContainer}>
+      {/* Engine */}
       <div style={styles.dropUpWrapper}>
         <button
           onClick={() => setEngineOpen(!engineOpen)}
@@ -52,7 +37,10 @@ const EngineTypeDropUp = ({ onSelect }) => {
                 key={index}
                 onMouseEnter={() => setHoveredEngine(index)}
                 onMouseLeave={() => setHoveredEngine(null)}
-                onClick={() => handleEngineSelect(item)}
+                onClick={() => {
+                  setSelectedEngine(item);
+                  setEngineOpen(false);
+                }}
                 style={{
                   ...styles.dropUpItem,
                   backgroundColor:
@@ -70,6 +58,7 @@ const EngineTypeDropUp = ({ onSelect }) => {
         )}
       </div>
 
+      {/* Type */}
       <div style={styles.dropUpWrapper}>
         <button
           onClick={() => setTypeOpen(!typeOpen)}
@@ -84,7 +73,10 @@ const EngineTypeDropUp = ({ onSelect }) => {
                 key={index}
                 onMouseEnter={() => setHoveredType(index)}
                 onMouseLeave={() => setHoveredType(null)}
-                onClick={() => handleTypeSelect(item)}
+                onClick={() => {
+                  setSelectedType(item);
+                  setTypeOpen(false);
+                }}
                 style={{
                   ...styles.dropUpItem,
                   backgroundColor:
