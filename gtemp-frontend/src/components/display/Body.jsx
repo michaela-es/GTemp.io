@@ -4,8 +4,8 @@ import '../../static/Body.css';
 import FirstContainer from './Header';
 
 // Modals
-import LoginModal from '../authentication/LoginModal';
-import CreateAccountModal from '../authentication/CreateAccountModal';
+import LoginUser from '../authentication/LoginUser';
+import RegisterUser from '../authentication/RegisterUser';
 import ProfileDropDown from '../ProfileDropDown'; // ✅ Import
 
 // Assets
@@ -226,16 +226,16 @@ export default function Body() {
       {/* THIRD CONTAINER */}
       <div className="box box3"></div>
       {activeModal === 'login' && (
-        <LoginModal
+        <LoginUser
           onClose={() => setActiveModal(null)}
           onSwitchToCreateAccount={() => setActiveModal('create')}
-          onLoginSuccess={handleLoginSuccess} // ✅ Pass down handler
+          onLoginSuccess={handleLoginSuccess} 
         />
       )}
 
       {/* CREATE ACCOUNT MODAL */}
       {activeModal === 'create' && (
-        <CreateAccountModal
+        <RegisterUser
           onClose={() => setActiveModal(null)}  
           onSwitchToLogin={() => setActiveModal('login')}
         />
