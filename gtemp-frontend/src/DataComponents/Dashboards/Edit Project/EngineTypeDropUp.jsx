@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { styles } from "../styles";
 
-const EngineTypeDropUp = () => {
+const EngineTypeDropUp = ({ onSelect }) => {
   const [engineOpen, setEngineOpen] = useState(false);
   const [typeOpen, setTypeOpen] = useState(false);
   const [selectedEngine, setSelectedEngine] = useState("");
@@ -20,9 +20,24 @@ const EngineTypeDropUp = () => {
     "Systems",
   ];
 
+  const handleEngineSelect = (engine) => {
+    setSelectedEngine(engine);
+    setEngineOpen(false);
+    if (onSelect) {
+      onSelect(engine, selectedType);
+    }
+  };
+
+  const handleTypeSelect = (type) => {
+    setSelectedType(type);
+    setTypeOpen(false);
+    if (onSelect) {
+      onSelect(selectedEngine, type);
+    }
+  };
+
   return (
     <div style={styles.dropUpContainer}>
-      {/* Engine */}
       <div style={styles.dropUpWrapper}>
         <button
           onClick={() => setEngineOpen(!engineOpen)}
@@ -37,10 +52,7 @@ const EngineTypeDropUp = () => {
                 key={index}
                 onMouseEnter={() => setHoveredEngine(index)}
                 onMouseLeave={() => setHoveredEngine(null)}
-                onClick={() => {
-                  setSelectedEngine(item);
-                  setEngineOpen(false);
-                }}
+                onClick={() => handleEngineSelect(item)}
                 style={{
                   ...styles.dropUpItem,
                   backgroundColor:
@@ -58,7 +70,6 @@ const EngineTypeDropUp = () => {
         )}
       </div>
 
-      {/* Type */}
       <div style={styles.dropUpWrapper}>
         <button
           onClick={() => setTypeOpen(!typeOpen)}
@@ -73,10 +84,7 @@ const EngineTypeDropUp = () => {
                 key={index}
                 onMouseEnter={() => setHoveredType(index)}
                 onMouseLeave={() => setHoveredType(null)}
-                onClick={() => {
-                  setSelectedType(item);
-                  setTypeOpen(false);
-                }}
+                onClick={() => handleTypeSelect(item)}
                 style={{
                   ...styles.dropUpItem,
                   backgroundColor:
