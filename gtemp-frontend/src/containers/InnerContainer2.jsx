@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { ItemWithStats } from "../DataComponents/Dashboards/Projects/DashboardProjectStats"; // import the combined container
 import RightPanel from "../DataComponents/Dashboards/Edit Project/RightPanel"; // adjust path if needed
 import LeftPanel from "../DataComponents/Dashboards/Edit Project/LeftPanel"; // adju  st path if needed
-
+import UploadTemplateForm from "../DataComponents/UploadTemplateForm";
 const InnerContainer2 = ({ activeInnerTab: propActiveInnerTab }) => {
   const [activeInnerTab, setActiveInnerTab] = useState(propActiveInnerTab || 1);
 
@@ -82,7 +82,8 @@ const InnerContainer2 = ({ activeInnerTab: propActiveInnerTab }) => {
           <div style={{ display: "flex"}}>
             {/* Left Panel */}
             <div style={{ flex: 1 }}>
-              <LeftPanel />
+              {/* <LeftPanel /> */}
+              <UploadTemplateForm />
             </div>
 
             {/* Right Panel */}

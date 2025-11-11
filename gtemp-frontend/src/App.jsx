@@ -2,17 +2,20 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Body from "./components/display/Body";
 import UserDashboardsPage from "./containers/UserDashboards";
-
+import { AuthProvider } from "./context/AuthContext";
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Body/>} />
-        <Route path="/dashboard" element={<UserDashboardsPage />} />
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Body/>} />
+          <Route path="/dashboard" element={<UserDashboardsPage />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
+
 
 export default App;
 
