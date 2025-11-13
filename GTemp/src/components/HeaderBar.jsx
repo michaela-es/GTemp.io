@@ -4,14 +4,14 @@ import { useAuth } from '../contexts/AuthContext';
 import ActionButton from './ActionButton';
 import SearchBar from './SearchBar';
 import HeadingText from './HeadingText';
-import { RegisterUser } from './RegisterModal';
+import { RegisterModal } from './RegisterModal';
 import { LoginModal } from './LoginModal';
 import '../styles/HeaderBar.css';
 
 const HeaderBar = ({ headingText = "GTemp.io" }) => {
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const { currentUser, logout, loading } = useAuth(); 
+  const { currentUser, logout, login, loading } = useAuth(); 
   const handleOpenLogin = () => {
     setIsLoginModalOpen(true); 
   };
@@ -38,6 +38,17 @@ const HeaderBar = ({ headingText = "GTemp.io" }) => {
     }
     return "Log In";
   };
+
+    const handleLogin = async (formData) => {
+    try {
+      await login(formData);
+      handleCloseModals();
+    } catch (err) {
+      console.error("Login failed:", err);
+      alert(err.message || "Login failed");
+    }
+  };
+
 
   const handleAuthClick = () => {
     if (currentUser) {
@@ -74,6 +85,7 @@ const HeaderBar = ({ headingText = "GTemp.io" }) => {
       <LoginModal 
         isOpen={isLoginModalOpen}
         onClose={handleCloseModals}
+        onLogin={handleLogin} 
         onSwitchToRegister={handleSwitchToRegister}
       />
     </div>
