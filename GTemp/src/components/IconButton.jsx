@@ -1,14 +1,8 @@
-import React from 'react';
-import '../styles/IconButton.css';
-
-const IconButton = ({ imgSrc, name }) => {
+const IconButton = ({ imgSrc, name, onClick, className }) => {
   return (
-    <button className="icon-button btn btn-light text-dark" title={name}>
-      <img src={imgSrc} alt={name} className="icon-img" />
-      <span className="icon-label">{name}</span>
-      
+    <button className={`icon-button ${className}`} onClick={onClick}>
+      <img src={imgSrc} alt={name} />
     </button>
   );
 };
-
 export default IconButton;

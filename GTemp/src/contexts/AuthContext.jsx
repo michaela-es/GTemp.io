@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useState } from 'react';
-import { userService } from '../services/api';
+import { userService } from '../services'; // <- only this one
+
 const API_BASE = 'http://localhost:8080/api';
 const AuthContext = createContext();
+const USE_LOCAL_DATA = true;
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -12,7 +14,10 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(null);
+const [currentUser, setCurrentUser] = useState(() => {
+  const saved = localStorage.getItem('currentUser');
+  return saved ? JSON.parse(saved) : null;
+});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -30,26 +35,27 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
+const login = async (loginData) => {
+  setLoading(true);
+  setError(null);
+  try {
+    const result = await userService.login(loginData);
+    setCurrentUser(result);
+    localStorage.setItem('currentUser', JSON.stringify(result)); // persist
+    return result;
+  } catch (err) {
+    setError(err.message);
+    throw err;
+  } finally {
+    setLoading(false);
+  }
+};
 
-  const login = async (loginData) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const result = await userService.login(loginData);
-      setCurrentUser(result);
-      return result;
-    } catch (err) {
-      setError(err.message);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const logout = () => {
-    setCurrentUser(null);
-    setError(null);
-  };
+const logout = () => {
+  setCurrentUser(null);
+  setError(null);
+  localStorage.removeItem('currentUser'); // clear on logout
+};
 
   const value = {
     currentUser,

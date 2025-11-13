@@ -17,3 +17,7 @@ button.icon-button:active {
   background-color: #f5c6cb;
   border: 2px solid rgb(255, 121, 121);
 }
+
+.icon-button.wishlisted img {
+  filter: invert(37%) sepia(90%) saturate(7500%) hue-rotate(350deg) brightness(90%) contrast(100%);
+}

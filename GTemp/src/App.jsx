@@ -7,11 +7,13 @@ import { SearchProvider } from './contexts/SearchContext';
 import { TemplatesProvider } from './contexts/TemplatesContext';
 import { AppDataProvider } from './contexts/AppDataContext';
 import { AuthProvider } from './contexts/AuthContext';
+import { WishlistProvider } from './contexts/WishlistContext';
 
 const App = () => {
   return (
       <AuthProvider> 
         <AppDataProvider>
+          <WishlistProvider>
           <TemplatesProvider>
             <SearchProvider>
               <Routes>
@@ -21,6 +23,7 @@ const App = () => {
               </Routes>
             </SearchProvider>
           </TemplatesProvider>
+          </WishlistProvider>
         </AppDataProvider>
       </AuthProvider>
   );
