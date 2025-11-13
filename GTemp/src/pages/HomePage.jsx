@@ -51,16 +51,18 @@ const HomePage = () => {
     <div className="app-container">
       <HeaderBar />
 
-      <FilterRow
-        filters={filters}
-        setFilters={setFilters}
-        filterConfig={filterConfig}
-      />
+      <div className="filters-sort-container">
+        <FilterRow
+          filters={filters}
+          setFilters={setFilters}
+          filterConfig={filterConfig}
+        />
 
-      <SortRow
-        activeSorts={activeSorts}
-        setActiveSorts={setActiveSorts}
-      />
+        <SortRow
+          activeSorts={activeSorts}
+          setActiveSorts={setActiveSorts}
+        />
+      </div>
 
       <TemplateGrid 
         templates={currentItems} 
