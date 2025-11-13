@@ -1,0 +1,41 @@
+/* Header stays fixed */
+.header-bar {
+  display: grid;
+  grid-template-columns: max-content 1fr max-content;
+  align-items: center;
+  gap: 1em;
+  padding: 0.5em 1em;
+  width: 100%;
+  box-sizing: border-box;
+  border-bottom: 1px solid #000;
+  background-color: #c02055;
+  color: #fff;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+/* Add top padding to container to offset the fixed header */
+.wishlist-page-container {
+  padding-top: 70px; /* match roughly the header height */
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+/* Reduce extra top margin on h1 */
+.wishlist-page-container h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 1.5rem 0; /* remove default top margin */
+  color: #222;
+}
+
+/* Centered empty message */
+.wishlist-page-container p {
+  font-size: 1.2rem;
+  color: #666;
+  text-align: center;
+  margin-top: 1.5rem; /* smaller than before */
+}
