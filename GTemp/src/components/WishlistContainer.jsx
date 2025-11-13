@@ -2,7 +2,6 @@ import { useAuth } from "../contexts/AuthContext";
 import TemplateGrid from "./TemplateGrid";
 import { useWishlist } from "../contexts/WishlistContext";
 import { useTemplates } from "../contexts/TemplatesContext";
-import '../styles/Wishlist.css'; 
 const WishListContainer = () => {
   const { currentUser } = useAuth();
   const { templates, loading } = useTemplates();
