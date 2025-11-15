@@ -1,18 +1,39 @@
-// LoginModal.jsx
-import { useState } from 'react';
-import '../../static/LoginModal.css';
+import { useState } from "react";
+import "../../static/LoginModal.css";
 
-export default function LoginModal({ onClose, onSwitchToCreateAccount, onLoginSuccess }) {
-  const [usernameOrEmail, setUsernameOrEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const handleLogin = () => {
-    if (usernameOrEmail === 'debug' && password === '123') {
-      onLoginSuccess('debug');
-    } else {
-      setError('Invalid username or password');
+export default function LoginModal({ onClose, onLoginSuccess, onSwitchToCreateAccount }) {
+  const [usernameOrEmail, setUsernameOrEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleLogin = async () => {
+    setError("");
+    if (!usernameOrEmail || !password) {
+      setError("Please fill in all fields");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:8080/users");
+      const users = await response.json();
+
+      const user = users.find(
+        (u) => u.username === usernameOrEmail || u.email === usernameOrEmail
+      );
+
+      if (user && user.password === password) { // plaintext for now; hash later for production
+        onLoginSuccess(user.username);
+        setUsernameOrEmail("");
+        setPassword("");
+        onClose();
+      } else {
+        setError("Invalid username/email or password");
+      }
+    } catch (err) {
+      setError("Server error");
     }
   };
+
   return (
     <div className="modal-overlay">
       <div className="modal-window">
@@ -48,9 +69,8 @@ export default function LoginModal({ onClose, onSwitchToCreateAccount, onLoginSu
           <p className="modal-link create-account" onClick={onSwitchToCreateAccount}>
             Create account
           </p>
-        <p className="modal-link forgot-password">Forgot Password</p>
+          <p className="modal-link forgot-password">Forgot Password</p>
         </div>
-
 
         <button className="modal-close" onClick={onClose}>
           ✕
