@@ -1,9 +1,7 @@
-//InnerContainer2.jsx
 import React, { useState, useEffect } from "react";
-import { ItemWithStats } from "../DataComponents/Dashboards/Projects/DashboardProjectStats"; // import the combined container
-import RightPanel from "../DataComponents/Dashboards/Edit Project/RightPanel"; // adjust path if needed
-import LeftPanel from "../DataComponents/Dashboards/Edit Project/LeftPanel"; // adju  st path if needed
+import { ItemWithStats } from "../DataComponents/Dashboards/Projects/DashboardProjectStats";
 import UploadTemplateForm from "../DataComponents/UploadTemplateForm";
+
 const InnerContainer2 = ({ activeInnerTab: propActiveInnerTab }) => {
   const [activeInnerTab, setActiveInnerTab] = useState(propActiveInnerTab || 1);
 
@@ -15,7 +13,7 @@ const InnerContainer2 = ({ activeInnerTab: propActiveInnerTab }) => {
 
   const tabsStyle = { display: "flex", backgroundColor: "#ffcccc" };
   const tabStyle = (tabNumber) => ({
-    flex: 1, // each tab takes equal width
+    flex: 1,
     padding: "2px 0",
     textAlign: "center",
     cursor: "pointer",
@@ -32,7 +30,7 @@ const InnerContainer2 = ({ activeInnerTab: propActiveInnerTab }) => {
   const innerContentStyle = {
     backgroundColor: "#ffffff",
     border: "1px solid #D9D9D9",
-    width: "100%", // full width inside the container
+    width: "100%",
     flex: 1,
     display: "flex",
     flexDirection: "column",
@@ -42,14 +40,17 @@ const InnerContainer2 = ({ activeInnerTab: propActiveInnerTab }) => {
   };
 
   return (
-    <div className="inner-container" style={{
+    <div
+      className="inner-container"
+      style={{
         flex: 1,
         display: "flex",
         flexDirection: "column",
         margin: "0 250px",
         minWidth: 0,
         overflowX: "hidden",
-      }}>
+      }}
+    >
       {/* Tabs */}
       <div style={tabsStyle}>
         {innerInnerTabs.map((label, index) => (
@@ -79,23 +80,13 @@ const InnerContainer2 = ({ activeInnerTab: propActiveInnerTab }) => {
         )}
 
         {activeInnerTab === 2 && (
-          <div style={{ display: "flex"}}>
-            {/* Left Panel */}
+          <div style={{ display: "flex" }}>
+            {/* Only Left Panel (UploadTemplateForm) */}
             <div style={{ flex: 1 }}>
-              {/* <LeftPanel /> */}
               <UploadTemplateForm />
-            </div>
-
-            {/* Right Panel */}
-            <div style={{ flex: 1 }}>
-              <RightPanel />
             </div>
           </div>
         )}
-
-
-
-
       </div>
     </div>
   );

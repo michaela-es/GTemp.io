@@ -1,332 +1,323 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
+import { useDropzone } from "react-dropzone";
 import { styles } from "./Dashboards/styles";
 import EngineTypeDropUp from "./Dashboards/Edit Project/EngineTypeDropUp";
 import FileUploadService from "../services/FileUploadService";
+
 const UploadTemplateForm = () => {
   const [formData, setFormData] = useState({
     templateTitle: "",
     templateDesc: "",
     engine: "",
-    type: ""
+    type: "",
   });
+
+  const [coverImage, setCoverImage] = useState(null);
+  const [templateImages, setTemplateImages] = useState([]);
   const [files, setFiles] = useState([]);
-  const [isDragging, setIsDragging] = useState(false);
+
   const [price, setPrice] = useState("250.00");
   const [selectedPricing, setSelectedPricing] = useState("Paid");
   const [selectedVisibility, setSelectedVisibility] = useState("Visible to Public");
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState("");
 
   const maxFiles = 5;
+  const maxImages = 5;
 
+  // -----------------------------
+  // Input handlers
+  // -----------------------------
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleFileChange = (e) => {
-    const selectedFiles = Array.from(e.target.files);
-    addFiles(selectedFiles);
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = (e) => {
-    e.preventDefault();
-    setIsDragging(false);
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const droppedFiles = Array.from(e.dataTransfer.files);
-    addFiles(droppedFiles);
-  };
-
-  const addFiles = (newFiles) => {
-    const combinedFiles = [...files, ...newFiles].slice(0, maxFiles);
-    setFiles(combinedFiles);
-  };
-
-  const removeFile = (index) => {
-    const updatedFiles = files.filter((_, i) => i !== index);
-    setFiles(updatedFiles);
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handlePriceChange = (e) => {
-    let value = e.target.value;
+    const value = e.target.value;
     if (/^\d*\.?\d{0,2}$/.test(value)) setPrice(value);
   };
 
   const handlePriceBlur = () => {
+    if (selectedPricing === "No Payment") return setPrice("0.00");
     let num = parseFloat(price);
-    if (selectedPricing === "No Payment") {
-      setPrice("0.00");
-      return;
-    }
     if (isNaN(num) || num < 250) num = 250;
     setPrice(num.toFixed(2));
   };
 
-  const handleEngineTypeSelect = (engine, type) => {
-    setFormData(prev => ({
-      ...prev,
-      engine,
-      type
-    }));
+  const handleEngineTypeSelect = (engine, type) =>
+    setFormData((prev) => ({ ...prev, engine, type }));
+
+  const handlePricingSelect = (option) => {
+    setSelectedPricing(option);
+    if (option === "No Payment") setPrice("0.00");
+    else if (option === "Paid") setPrice("250.00");
+    else setPrice("0.00");
   };
 
+  const handleVisibilitySelect = (option) => {
+    setSelectedVisibility(option);
+    setIsDropdownOpen(false);
+  };
+
+  // -----------------------------
+  // Dropzone handlers
+  // -----------------------------
+  const onDropCover = useCallback((acceptedFiles) => {
+    if (acceptedFiles.length) setCoverImage(acceptedFiles[0]);
+  }, []);
+
+  const onDropImages = useCallback((acceptedFiles) => {
+    setTemplateImages((prev) => [...prev, ...acceptedFiles].slice(0, maxImages));
+  }, []);
+
+  const onDropFiles = useCallback((acceptedFiles) => {
+    setFiles((prev) => [...prev, ...acceptedFiles].slice(0, maxFiles));
+  }, []);
+
+  const { getRootProps: getCoverProps, getInputProps: getCoverInputProps } = useDropzone({
+    onDrop: onDropCover,
+    accept: { "image/*": [] },
+    maxFiles: 1,
+  });
+
+  const { getRootProps: getImagesProps, getInputProps: getImagesInputProps } = useDropzone({
+    onDrop: onDropImages,
+    accept: { "image/*": [] },
+  });
+
+  const { getRootProps: getFilesProps, getInputProps: getFilesInputProps } = useDropzone({
+    onDrop: onDropFiles,
+  });
+
+  const handleRemoveImage = (index) =>
+    setTemplateImages((prev) => prev.filter((_, i) => i !== index));
+  const handleRemoveFile = (index) => setFiles((prev) => prev.filter((_, i) => i !== index));
+
+  // -----------------------------
+  // Form submit - FIXED VERSION
+  // -----------------------------
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (isSubmitting) return;
+    e.preventDefault();
+    if (isSubmitting) return;
 
-  setIsSubmitting(true);
-  setMessage("");
+    // Validation
+    if (!formData.templateTitle.trim()) return setMessage("Error: Title is required");
+    if (!formData.engine || !formData.type)
+      return setMessage("Error: Engine and Type are required");
+    if (!coverImage) return setMessage("Error: Cover image is required");
 
-  if (!formData.templateTitle.trim()) {
-    setMessage("Error: Title is required");
-    setIsSubmitting(false);
-    return;
-  }
+    setIsSubmitting(true);
+    setMessage("");
 
-  if (!formData.engine || !formData.type) {
-    setMessage("Error: Please select Engine and Type");
-    setIsSubmitting(false);
-    return;
-  }
+    try {
+      const templateData = {
+        templateTitle: formData.templateTitle.trim(),
+        templateDesc: formData.templateDesc.trim(),
+        price: selectedPricing === "No Payment" ? 0 : parseFloat(price) || 0,
+        visibility: selectedVisibility === "Visible to Public",
+        engine: formData.engine,
+        type: formData.type,
+        views: 0,
+        downloads: 0,
+        rating: 0,
+        averageRating: 0,
+        wishlistCount: 0,
+        isWishlisted: false,
+        revenue: 0
+      };
 
-  try {
-    const finalPrice =
-      selectedPricing === "No Payment" ? 0 : parseFloat(price) || 0;
+      const formDataToSend = new FormData();
+      
+      // Use Blob approach to ensure JSON is sent correctly
+      const templateBlob = new Blob([JSON.stringify(templateData)], {
+        type: 'application/json'
+      });
+      formDataToSend.append("template", templateBlob);
+      
+      formDataToSend.append("coverImage", coverImage);
+      templateImages.forEach((img) => formDataToSend.append("images", img));
+      files.forEach((file) => formDataToSend.append("files", file));
 
-    const templateData = {
-      templateTitle: formData.templateTitle.trim(),
-      price: finalPrice,
-      templateDesc: formData.templateDesc.trim(),
-      visibility: selectedVisibility === "Visible to Public",
-      engine: formData.engine,
-      type: formData.type,
-    };
+      // Debug what's being sent
+      console.log("Template data:", templateData);
+      console.log("FormData entries:");
+      for (let [key, value] of formDataToSend.entries()) {
+        if (value instanceof Blob) {
+          console.log(`${key}: Blob (${value.type}, ${value.size} bytes)`);
+        } else if (value instanceof File) {
+          console.log(`${key}: ${value.name} (${value.size} bytes)`);
+        } else {
+          console.log(`${key}:`, value);
+        }
+      }
 
-    console.log("Submitting template with files:", templateData, files);
-
-    const savedTemplate = await FileUploadService.uploadTemplate(templateData, files);
-
-    setMessage("Template created successfully!");
-    console.log("Saved template:", savedTemplate);
-
-    setFormData({ templateTitle: "", templateDesc: "", engine: "", type: "" });
-    setFiles([]);
-    setPrice("250.00");
-    setSelectedPricing("Paid");
-    setSelectedVisibility("Visible to Public");
-  } catch (error) {
-    console.error("Submission error:", error);
-    setMessage(`Error: ${error.response?.data || error.message}`);
-  } finally {
-    setIsSubmitting(false);
-  }
-};
-
-  const renderPricingField = () => {
-    if (selectedPricing === "₱0 or donation") {
-      return (
-        <>
-          <label style={styles.label}>Suggested Donation</label>
-          {renderPriceInput(false)}
-        </>
-      );
-    }
-    if (selectedPricing === "Paid") {
-      return (
-        <>
-          <label style={styles.label}>Price</label>
-          {renderPriceInput(false)}
-        </>
-      );
-    }
-    if (selectedPricing === "No Payment") {
-      return (
-        <>
-          <label style={styles.label}>Pricing Unavailable</label>
-          {renderPriceInput(true)}
-        </>
-      );
+      // Pass the FormData object directly
+      const response = await FileUploadService.uploadTemplate(formDataToSend);
+      
+      console.log("Success:", response.data);
+      setMessage("Template created successfully!");
+      
+      // Reset form
+      setFormData({ templateTitle: "", templateDesc: "", engine: "", type: "" });
+      setCoverImage(null);
+      setTemplateImages([]);
+      setFiles([]);
+      setPrice("250.00");
+      setSelectedPricing("Paid");
+      setSelectedVisibility("Visible to Public");
+    } catch (err) {
+      console.error("Upload error:", err);
+      const errorMessage =
+        err.response?.data?.details ||
+        err.response?.data?.error ||
+        err.message ||
+        "Unknown error";
+      setMessage(`Error: ${errorMessage}`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const renderPriceInput = (disabled) => (
-    <div style={styles.currencyInputContainer}>
-      <span style={styles.pesoSymbol}>₱</span>
-      <input
-        type="text"
-        inputMode="decimal"
-        value={disabled ? "0.00" : price}
-        onChange={handlePriceChange}
-        onBlur={handlePriceBlur}
-        disabled={disabled}
-        style={{
-          ...styles.inputPricing,
-          paddingLeft: "25px",
-          ...(disabled ? styles.disabledInput : {}),
-        }}
-      />
-    </div>
-  );
-
+  // -----------------------------
+  // JSX
+  // -----------------------------
   return (
     <form onSubmit={handleSubmit} style={styles.leftPanelContainer}>
       {message && (
-        <div style={{
-          padding: "10px",
-          marginBottom: "15px",
-          borderRadius: "4px",
-          backgroundColor: message.includes("Error") ? "#ffebee" : "#e8f5e8",
-          color: message.includes("Error") ? "#c62828" : "#2e7d32",
-          ...styles.label
-        }}>
+        <div
+          style={{
+            padding: "10px",
+            marginBottom: "15px",
+            borderRadius: "4px",
+            backgroundColor: message.includes("Error") ? "#ffebee" : "#e8f5e8",
+            color: message.includes("Error") ? "#c62828" : "#2e7d32",
+            ...styles.label,
+          }}
+        >
           {message}
         </div>
       )}
 
+      {/* Title */}
       <div style={styles.sectionColumn}>
         <label style={styles.label}>Title *</label>
-        <input 
-          type="text" 
+        <input
+          type="text"
           name="templateTitle"
           value={formData.templateTitle}
           onChange={handleInputChange}
-          placeholder="Enter title..." 
+          placeholder="Enter title..."
           style={styles.inputTitle}
-          required 
+          required
         />
       </div>
 
-      <div style={styles.sectionColumn}>
-        <label style={styles.label}>Pricing *</label>
-        <div style={styles.pricingOptions}>
-          {["₱0 or donation", "Paid", "No Payment"].map((option) => (
-            <button
-              key={option}
-              type="button"
-              onClick={() => {
-                setSelectedPricing(option);
-                if (option === "No Payment") setPrice("0.00");
-                else if (option === "Paid") setPrice("250.00");
-                else setPrice("0.00");
-              }}
-              style={{
-                ...styles.pricingButton,
-                ...(selectedPricing === option ? styles.activePricingButton : {}),
-              }}
-            >
-              {option}
-            </button>
-          ))}
-        </div>
-      </div>
-
+      {/* Pricing & Visibility */}
       <div style={styles.flexRow}>
         <div style={styles.sectionColumn}>
-          {renderPricingField()}
-          
-          <label style={styles.label}>Visibility *</label>
-          <div style={styles.dropdownContainer}>
-            <div
-              style={styles.dropdownButton}
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            >
-              {selectedVisibility}
-            </div>
+          <label style={styles.label}>Pricing *</label>
+          <div style={styles.pricingOptions}>
+            {["₱0 or donation", "Paid", "No Payment"].map((option) => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => handlePricingSelect(option)}
+                style={{
+                  ...styles.pricingButton,
+                  ...(selectedPricing === option ? styles.activePricingButton : {}),
+                }}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
 
-            {isDropdownOpen && (
-              <div style={styles.dropdownMenu}>
-                {["Visible to Public", "Visible to Owner Only"].map((option, index) => (
-                  <div
-                    key={index}
-                    onClick={() => {
-                      setSelectedVisibility(option);
-                      setIsDropdownOpen(false);
-                    }}
-                    style={styles.dropdownItem}
-                  >
-                    {option}
-                  </div>
-                ))}
+          <div style={styles.sectionColumn}>
+            <label style={styles.label}>Visibility *</label>
+            <div style={styles.dropdownContainer}>
+              <div
+                style={styles.dropdownButton}
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              >
+                {selectedVisibility}
               </div>
-            )}
+              {isDropdownOpen && (
+                <div style={styles.dropdownMenu}>
+                  {["Visible to Public", "Visible to Owner Only"].map((option, idx) => (
+                    <div
+                      key={idx}
+                      onClick={() => handleVisibilitySelect(option)}
+                      style={styles.dropdownItem}
+                    >
+                      {option}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
+        {/* Cover Image Dropzone */}
         <div style={styles.sectionColumn}>
-          <label style={styles.label}>Upload Files (max {maxFiles})</label>
-          <input
-            type="file"
-            id="fileInput"
-            style={styles.hiddenInput}
-            onChange={handleFileChange}
-            multiple
-          />
-          <button
-            type="button"
-            onClick={() => document.getElementById("fileInput").click()}
-            style={styles.uploadButton}
-          >
-            Choose Files
-          </button>
-          <div
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            style={{
-              ...styles.dropZone,
-              border: `2px dashed ${isDragging ? "#4CAF50" : "#ccc"}`,
-              minHeight: "100px",
-              minWidth: "139px",
-            }}
-          >
-            {files.length === 0 ? (
-              "Drag & drop files here or click 'Choose Files'"
-            ) : (
-              files.map((file, index) => (
-                <div key={index} style={styles.fileRow}>
-                  <span style={{ fontSize: "12px" }}>{file.name}</span>
-                  <button
-                    type="button"
-                    onClick={() => removeFile(index)}
-                    style={styles.removeFileButton}
-                  >
-                    ×
-                  </button>
-                </div>
-              ))
-            )}
+          <label style={styles.label}>Cover Image *</label>
+          <div {...getCoverProps()} style={styles.dropzone}>
+            <input {...getCoverInputProps()} />
+            {coverImage ? coverImage.name : "Drag & drop or click to select cover image"}
           </div>
-          <div style={{ fontSize: "12px", color: "#666", marginTop: "5px" }}>
-            {files.length} / {maxFiles} files
+        </div>
+
+        {/* Template Images Dropzone */}
+        <div style={styles.sectionColumn}>
+          <label style={styles.label}>Template Images (max {maxImages})</label>
+          <div {...getImagesProps()} style={styles.dropzone}>
+            <input {...getImagesInputProps()} />
+            Drag & drop images here or click to select
+          </div>
+          <div>
+            {templateImages.map((img, idx) => (
+              <span key={idx} style={{ marginRight: "5px" }}>
+                {img.name} <button type="button" onClick={() => handleRemoveImage(idx)}>×</button>
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Additional Files Dropzone */}
+        <div style={styles.sectionColumn}>
+          <label style={styles.label}>Additional Files (max {maxFiles})</label>
+          <div {...getFilesProps()} style={styles.dropzone}>
+            <input {...getFilesInputProps()} />
+            Drag & drop files here or click to select
+          </div>
+          <div>
+            {files.map((file, idx) => (
+              <div key={idx} style={styles.fileRow}>
+                <span style={{ fontSize: "12px" }}>{file.name}</span>
+                <button type="button" onClick={() => handleRemoveFile(idx)} style={styles.removeFileButton}>×</button>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
+      {/* Description */}
       <div style={styles.sectionColumn}>
         <label style={styles.label}>Description</label>
-        <textarea 
+        <textarea
           name="templateDesc"
           value={formData.templateDesc}
           onChange={handleInputChange}
-          placeholder="Enter description..." 
+          placeholder="Enter description..."
           style={styles.textArea}
           rows="4"
         />
       </div>
 
+      {/* Engine & Type */}
       <div style={styles.sectionColumn}>
         <label style={styles.label}>Engine & Type *</label>
         <EngineTypeDropUp onSelect={handleEngineTypeSelect} />
@@ -337,19 +328,18 @@ const UploadTemplateForm = () => {
         )}
       </div>
 
+      {/* Action Buttons */}
       <div style={styles.actionButtons}>
-        <button 
-          type="submit" 
-          style={styles.saveButton}
-          disabled={isSubmitting}
-        >
+        <button type="submit" style={styles.saveButton} disabled={isSubmitting}>
           {isSubmitting ? "Creating..." : "Save & View Page"}
         </button>
-        <button 
-          type="button" 
+        <button
+          type="button"
           style={styles.deleteButton}
           onClick={() => {
             setFormData({ templateTitle: "", templateDesc: "", engine: "", type: "" });
+            setCoverImage(null);
+            setTemplateImages([]);
             setFiles([]);
             setPrice("250.00");
             setSelectedPricing("Paid");

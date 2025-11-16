@@ -3,21 +3,12 @@ import axios from 'axios';
 const API_BASE_URL = 'http://localhost:8080/api';
 
 class FileUploadService {
-  uploadTemplate(templateData, files) {
-    const formData = new FormData();
-    formData.append('template', JSON.stringify(templateData));
-    
-    if (files && files.length > 0) {
-      files.forEach(file => {
-        formData.append('files', file);
-      });
-    }
-
+  uploadTemplate(formData) {
     return axios.post(`${API_BASE_URL}/templates`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
-    }).then(response => response.data);
+    });
   }
 }
 
