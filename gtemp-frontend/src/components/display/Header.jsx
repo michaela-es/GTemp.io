@@ -60,14 +60,8 @@ export default function FirstContainer() {
         </div>
       </div>
 
-      <ProfileDropDown
-        isLoggedIn={isLoggedIn}
-        username={username}
-        onLoginClick={handleAuthAction}
-        onLogout={logout}
-        isLoading={loading}
-      />
-
+      <ProfileDropDown/>
+      
       {isLoginModalOpen && (
         <LoginModal 
           onClose={handleCloseModals}
