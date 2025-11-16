@@ -3,12 +3,16 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Body from "./components/display/Body";
 import UserDashboardsPage from "./containers/UserDashboards";
 import { AuthProvider } from "./context/AuthContext";
+import Home from "./pages/Home";
+import TemplateDetail from './pages/TemplateDetail';
+
 function App() {
   return (
     <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/" element={<Body/>} />
+          <Route path="/" element={<Home/>} />
+          <Route path="/template/:id" element={<TemplateDetail />} />
           <Route path="/dashboard" element={<UserDashboardsPage />} />
         </Routes>
       </Router>

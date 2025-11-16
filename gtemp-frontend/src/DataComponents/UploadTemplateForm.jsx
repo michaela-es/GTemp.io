@@ -3,7 +3,7 @@ import { useDropzone } from "react-dropzone";
 import { styles } from "./Dashboards/styles";
 import EngineTypeDropUp from "./Dashboards/Edit Project/EngineTypeDropUp";
 import FileUploadService from "../services/FileUploadService";
-
+import { useAuth } from "../context/AuthContext";
 const UploadTemplateForm = () => {
   const [formData, setFormData] = useState({
     templateTitle: "",
@@ -11,6 +11,10 @@ const UploadTemplateForm = () => {
     engine: "",
     type: "",
   });
+  const userId = JSON.parse(localStorage.getItem('currentUser') || '{}')?.userID;
+  console.log("User ID:", userId);
+
+  console.log("user id:" + userId);
 
   const [coverImage, setCoverImage] = useState(null);
   const [templateImages, setTemplateImages] = useState([]);
@@ -27,9 +31,6 @@ const UploadTemplateForm = () => {
   const maxFiles = 5;
   const maxImages = 5;
 
-  // -----------------------------
-  // Input handlers
-  // -----------------------------
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -62,9 +63,6 @@ const UploadTemplateForm = () => {
     setIsDropdownOpen(false);
   };
 
-  // -----------------------------
-  // Dropzone handlers
-  // -----------------------------
   const onDropCover = useCallback((acceptedFiles) => {
     if (acceptedFiles.length) setCoverImage(acceptedFiles[0]);
   }, []);
@@ -96,14 +94,10 @@ const UploadTemplateForm = () => {
     setTemplateImages((prev) => prev.filter((_, i) => i !== index));
   const handleRemoveFile = (index) => setFiles((prev) => prev.filter((_, i) => i !== index));
 
-  // -----------------------------
-  // Form submit - FIXED VERSION
-  // -----------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
 
-    // Validation
     if (!formData.templateTitle.trim()) return setMessage("Error: Title is required");
     if (!formData.engine || !formData.type)
       return setMessage("Error: Engine and Type are required");
@@ -122,6 +116,7 @@ const UploadTemplateForm = () => {
         type: formData.type,
         views: 0,
         downloads: 0,
+        templateOwner: userId,
         rating: 0,
         averageRating: 0,
         wishlistCount: 0,
@@ -131,7 +126,6 @@ const UploadTemplateForm = () => {
 
       const formDataToSend = new FormData();
       
-      // Use Blob approach to ensure JSON is sent correctly
       const templateBlob = new Blob([JSON.stringify(templateData)], {
         type: 'application/json'
       });
@@ -141,7 +135,6 @@ const UploadTemplateForm = () => {
       templateImages.forEach((img) => formDataToSend.append("images", img));
       files.forEach((file) => formDataToSend.append("files", file));
 
-      // Debug what's being sent
       console.log("Template data:", templateData);
       console.log("FormData entries:");
       for (let [key, value] of formDataToSend.entries()) {
@@ -154,13 +147,11 @@ const UploadTemplateForm = () => {
         }
       }
 
-      // Pass the FormData object directly
       const response = await FileUploadService.uploadTemplate(formDataToSend);
       
       console.log("Success:", response.data);
       setMessage("Template created successfully!");
       
-      // Reset form
       setFormData({ templateTitle: "", templateDesc: "", engine: "", type: "" });
       setCoverImage(null);
       setTemplateImages([]);
@@ -181,9 +172,6 @@ const UploadTemplateForm = () => {
     }
   };
 
-  // -----------------------------
-  // JSX
-  // -----------------------------
   return (
     <form onSubmit={handleSubmit} style={styles.leftPanelContainer}>
       {message && (
@@ -201,7 +189,6 @@ const UploadTemplateForm = () => {
         </div>
       )}
 
-      {/* Title */}
       <div style={styles.sectionColumn}>
         <label style={styles.label}>Title *</label>
         <input
@@ -215,7 +202,6 @@ const UploadTemplateForm = () => {
         />
       </div>
 
-      {/* Pricing & Visibility */}
       <div style={styles.flexRow}>
         <div style={styles.sectionColumn}>
           <label style={styles.label}>Pricing *</label>
@@ -261,7 +247,6 @@ const UploadTemplateForm = () => {
           </div>
         </div>
 
-        {/* Cover Image Dropzone */}
         <div style={styles.sectionColumn}>
           <label style={styles.label}>Cover Image *</label>
           <div {...getCoverProps()} style={styles.dropzone}>
@@ -270,7 +255,6 @@ const UploadTemplateForm = () => {
           </div>
         </div>
 
-        {/* Template Images Dropzone */}
         <div style={styles.sectionColumn}>
           <label style={styles.label}>Template Images (max {maxImages})</label>
           <div {...getImagesProps()} style={styles.dropzone}>
@@ -286,7 +270,6 @@ const UploadTemplateForm = () => {
           </div>
         </div>
 
-        {/* Additional Files Dropzone */}
         <div style={styles.sectionColumn}>
           <label style={styles.label}>Additional Files (max {maxFiles})</label>
           <div {...getFilesProps()} style={styles.dropzone}>
@@ -304,7 +287,6 @@ const UploadTemplateForm = () => {
         </div>
       </div>
 
-      {/* Description */}
       <div style={styles.sectionColumn}>
         <label style={styles.label}>Description</label>
         <textarea
@@ -317,7 +299,6 @@ const UploadTemplateForm = () => {
         />
       </div>
 
-      {/* Engine & Type */}
       <div style={styles.sectionColumn}>
         <label style={styles.label}>Engine & Type *</label>
         <EngineTypeDropUp onSelect={handleEngineTypeSelect} />
@@ -328,7 +309,6 @@ const UploadTemplateForm = () => {
         )}
       </div>
 
-      {/* Action Buttons */}
       <div style={styles.actionButtons}>
         <button type="submit" style={styles.saveButton} disabled={isSubmitting}>
           {isSubmitting ? "Creating..." : "Save & View Page"}

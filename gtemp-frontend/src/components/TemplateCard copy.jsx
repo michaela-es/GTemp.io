@@ -1,32 +1,22 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom'
 
-const TemplateCard = ({ 
-  id,                   
-  template_title,         
-  coverImagePath,       
-  rating,               
-  downloads,          
-  templateDesc          
-}) => {
-  const navigate = useNavigate();
+
+const TemplateCard = ({templateID, templateName, templateImg, templateRating, templateDls, templateDesc }) => {
+   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/template/${id}`);  
+    navigate(`/template/${templateID}`);
   };
 
   return (
     <div style={styles.card} onClick={handleClick}>
-      <img 
-        src={coverImagePath || '/default-cover.jpg'}  
-        alt={template_title} 
-        style={styles.image} 
-      />
-      <h3 style={styles.title}>{template_title}</h3>  
+      <img src={templateImg} alt={templateName} style={styles.image} />
+      <h3 style={styles.title}>{templateName}</h3>
       {templateDesc && <p style={styles.description}>{templateDesc}</p>}
       <div style={styles.stats}>
-        <span>⭐ {rating || 0}</span>      
-        <span>⬇️ {downloads || 0}</span>   
+        <span>⭐ {templateRating}</span>
+        <span>⬇️ {templateDls}</span>
       </div>
     </div>
   );

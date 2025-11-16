@@ -4,7 +4,7 @@ import SearchBar from '../components/SearchBar';
 import FilterToggle from '../components/FilterToggle';
 import SortButton from '../components/SortButton';
 import Pagination from '../components/Pagination';
-import filterConfig from '../filterConfig.json';
+import filterConfig from '../filterConfig.json'
 import useTemplateManager from '../hooks/useTemplateManager';
 
 const HomePage = ({ 
@@ -43,14 +43,14 @@ const HomePage = ({
       <div className="filter-row">
         <FilterToggle
           title="Engine Type"
-          options={filterConfig.engine_type}
-          selectedValues={filters.engine_type}
+          options={filterConfig.engine}
+          selectedValues={filters.engine}
           onSelectionChange={(newSelection) => setFilters(prev => ({ ...prev, engine_type: newSelection }))}
         />
         <FilterToggle
           title="Template Type"
-          options={filterConfig.template_type}
-          selectedValues={filters.template_type}
+          options={filterConfig.sortType}
+          selectedValues={filters.type}
           onSelectionChange={(newSelection) => setFilters(prev => ({ ...prev, template_type: newSelection }))}
         />
         <FilterToggle

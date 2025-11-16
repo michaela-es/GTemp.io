@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import IconButton from '../components/IconButton';
 import '../styles/TemplateDetail.css';
@@ -8,36 +8,54 @@ import ActionButton from '../components/ActionButton';
 import { DetailsBox } from '../components/DetailsBox';
 import RatingBox from '../components/RatingBox';
 import HeaderBar from '../components/HeaderBar';
-import { useTemplates } from '../contexts/TemplatesContext';
-import { useWishlist } from '../contexts/WishlistContext';
-import { useAuth } from '../contexts/AuthContext';
 
 const TemplateDetail = () => {
-  const { templateID } = useParams(); 
-  const { templates, loading } = useTemplates(); 
-  const { wishlist, isInWishlist, toggleWishlist, loadingWishlist } = useWishlist(); 
+  const { id } = useParams(); 
+  const [template, setTemplate] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const templateIdNum = Number(templateID); 
+  useEffect(() => {
+    const fetchTemplate = async () => {
+      try {
+        console.log('Fetching template with ID:', id);
+        const response = await fetch(`http://localhost:8080/api/templates/${id}`);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch template: ${response.status}`);
+        }
+        
+        const templateData = await response.json();
+        console.log('Template data received:', templateData);
+        setTemplate(templateData);
+      } catch (err) {
+        console.error('Error fetching template:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const { currentUser } = useAuth(); 
-  console.log('=== USER DEBUG ===');
-  console.log('Full currentUser object:', currentUser);
-  console.log('User ID:', currentUser?.id);
-  console.log('All user keys:', currentUser ? Object.keys(currentUser) : 'No user');
+    fetchTemplate();
+  }, [id]);
 
-  if (loading || loadingWishlist) return <div>Loading template...</div>;
-  if (!templates) return <div>Templates not available</div>;
+  // Fix image URL function
+  const getImageUrl = (path) => {
+    if (!path) return '/default-cover.jpg';
+    const cleanPath = path.replace(/\\/g, '/');
+    return `http://localhost:8080/${cleanPath}`;
+  };
 
-const template = templates.find(t => Number(t.templateID) === templateIdNum);
+  if (loading) return <div>Loading template...</div>;
+  if (error) return <div>Error: {error}</div>;
   if (!template) return <div>Template not found</div>;
 
-  console.log('=== WISHLIST DEBUG ===');
-  console.log('Template ID:', template.templateID, 'Type:', typeof template.templateID);
-  console.log('Current wishlist:', wishlist);
-  console.log('Is in wishlist:', isInWishlist(template.templateID));
+  // For now, using simplified wishlist logic - you can add proper context later
+  const isInWishlist = false; // Temporary - replace with your wishlist context
+  const toggleWishlist = () => console.log('Wishlist toggled'); // Temporary
 
   const handleWishlistClick = () => {
-    toggleWishlist(template.templateID);
+    toggleWishlist(template.id);
   };
 
   return (
@@ -48,13 +66,13 @@ const template = templates.find(t => Number(t.templateID) === templateIdNum);
         <div className="sidebar">
           <IconButton
             imgSrc={
-              isInWishlist(template.templateID)
+              isInWishlist
                 ? 'https://www.svgrepo.com/show/535436/heart.svg' 
                 : 'https://www.svgrepo.com/show/532473/heart.svg' 
             }
-            name={isInWishlist(template.templateID) ? 'Remove from Wishlist' : 'Add to Wishlist'}
+            name={isInWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
             onClick={handleWishlistClick}
-            className={isInWishlist(template.templateID) ? 'wishlisted' : ''}
+            className={isInWishlist ? 'wishlisted' : ''}
           />
 
           <IconButton
@@ -66,7 +84,8 @@ const template = templates.find(t => Number(t.templateID) === templateIdNum);
         <div className="details">
           <div className="details-grid">
             <div className="details-left">
-              <HeadingText text={template.templateName} />
+              {/* Note: Using templateTitle instead of templateName */}
+              <HeadingText text={template.templateTitle} />
               <DescBox text={template.templateDesc} />
 
               <DetailsBox
@@ -86,15 +105,17 @@ const template = templates.find(t => Number(t.templateID) === templateIdNum);
             </div>
 
             <div className="details-right">
+              {/* Using coverImagePath instead of templateImg and fixing the URL */}
               <img
-                src={template.templateImg}
-                alt={template.templateName}
+                src={getImageUrl(template.coverImagePath)}
+                alt={template.templateTitle}
                 className="template-image"
               />
 
               <div className="rating-div">
                 <HeadingText text="Rating" />
-                <RatingBox templateRating={template.templateRating} />
+                {/* Using rating instead of templateRating */}
+                <RatingBox templateRating={template.rating} />
               </div>
             </div>
           </div>
