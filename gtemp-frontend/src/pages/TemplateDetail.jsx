@@ -7,8 +7,7 @@ import DescBox from '../components/DescBox';
 import ActionButton from '../components/ActionButton';
 import { DetailsBox } from '../components/DetailsBox';
 import RatingBox from '../components/RatingBox';
-import HeaderBar from '../components/HeaderBar';
-
+import FirstContainer from '../components/display/Header';
 const TemplateDetail = () => {
   const { id } = useParams(); 
   const [template, setTemplate] = useState(null);
@@ -58,7 +57,7 @@ const TemplateDetail = () => {
 
   return (
     <>
-      <HeaderBar />
+      <FirstContainer />
 
       <div className="template-detail-container">
         <div className="sidebar">
