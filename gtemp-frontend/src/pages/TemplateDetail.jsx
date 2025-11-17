@@ -1,72 +1,122 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
-
+import { useParams } from 'react-router-dom';
+import IconButton from '../components/IconButton';
+import '../styles/TemplateDetail.css';
+import HeadingText from '../components/HeadingText';
+import DescBox from '../components/DescBox';
+import ActionButton from '../components/ActionButton';
+import { DetailsBox } from '../components/DetailsBox';
+import RatingBox from '../components/RatingBox';
+import FirstContainer from '../components/display/Header';
 const TemplateDetail = () => {
-  const { templateID } = useParams();
-  const location = useLocation();
-  const [template, setTemplate] = useState(location.state?.template);
-  const [allTemplates, setAllTemplates] = useState(null);
-  const [loading, setLoading] = useState(!location.state?.template);
+  const { id } = useParams(); 
+  const [template, setTemplate] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (template) return;
-
     const fetchTemplate = async () => {
-      setLoading(true);
       try {
-        if (!allTemplates) {
-          const response = await fetch('/data.json');
-          const templates = await response.json();
-          setAllTemplates(templates);
-          
-          const foundTemplate = templates.find(t => t.templateID == templateID);
-          setTemplate(foundTemplate);
-        } else {
-          const foundTemplate = allTemplates.find(t => t.templateID == templateID);
-          setTemplate(foundTemplate);
+        console.log('Fetching template with ID:', id);
+        const response = await fetch(`http://localhost:8080/api/templates/${id}`);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch template: ${response.status}`);
         }
-      } catch (error) {
-        console.error('Error fetching template:', error);
+        
+        const templateData = await response.json();
+        console.log('Template data received:', templateData);
+        setTemplate(templateData);
+      } catch (err) {
+        console.error('Error fetching template:', err);
+        setError(err.message);
       } finally {
         setLoading(false);
       }
     };
 
     fetchTemplate();
-  }, [templateID, template, allTemplates]);
+  }, [id]);
 
-  if (loading) {
-    return <div>Loading template...</div>;
-  }
+  const getImageUrl = (path) => {
+    if (!path) return '/default-cover.jpg';
+    const cleanPath = path.replace(/\\/g, '/');
+    return `http://localhost:8080/${cleanPath}`;
+  };
 
-  if (!template) {
-    return <div>Template not found</div>;
-  }
+  if (loading) return <div>Loading template...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (!template) return <div>Template not found</div>;
+
+  const isInWishlist = false;
+  const toggleWishlist = () => console.log('Wishlist toggled');
+
+  const handleWishlistClick = () => {
+    toggleWishlist(template.id);
+  };
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>{template.templateName}</h1>
-      <p style={styles.description}>{template.templateDesc}</p>
-    </div>
-  );
-};
+    <>
+      <FirstContainer />
 
-const styles = {
-  container: {
-    padding: '20px',
-    maxWidth: '800px',
-    margin: '0 auto'
-  },
-  title: {
-    fontSize: '2rem',
-    marginBottom: '1rem',
-    color: '#333'
-  },
-  description: {
-    fontSize: '1.1rem',
-    color: '#666',
-    lineHeight: '1.6'
-  }
+      <div className="template-detail-container">
+        <div className="sidebar">
+          <IconButton
+            imgSrc={
+              isInWishlist
+                ? 'https://www.svgrepo.com/show/535436/heart.svg' 
+                : 'https://www.svgrepo.com/show/532473/heart.svg' 
+            }
+            name={isInWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
+            onClick={handleWishlistClick}
+            className={isInWishlist ? 'wishlisted' : ''}
+          />
+
+          <IconButton
+            imgSrc="https://www.svgrepo.com/show/532718/star-sharp.svg"
+            name="Rate"
+          />
+        </div>
+
+        <div className="details">
+          <div className="details-grid">
+            <div className="details-left">
+              <HeadingText text={template.templateTitle} />
+              <DescBox text={template.templateDesc} />
+
+              <DetailsBox
+                releaseDate={template.releaseDate ? new Date(template.releaseDate).toLocaleDateString() : 'Not specified'}
+                engine={template.engine}
+                templateOwner={template.templateOwner}
+                type={template.type}
+              />
+
+              <HeadingText text="Download" />
+              <section style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <ActionButton name="Download Now" />
+                <p>Name your own price</p>
+              </section>
+
+              <HeadingText text="Comments" />
+            </div>
+
+            <div className="details-right">
+              <img
+                src={getImageUrl(template.coverImagePath)}
+                alt={template.templateTitle}
+                className="template-image"
+              />
+
+              <div className="rating-div">
+                <HeadingText text="Rating" />
+                <RatingBox templateRating={template.rating} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default TemplateDetail;
