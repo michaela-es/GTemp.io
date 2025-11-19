@@ -1,72 +1,60 @@
+// LeftPanel.jsx
 import React, { useState } from "react";
 import EngineTypeDropUp from "./EngineTypeDropUp";
 import { styles } from "../styles";
 
-const LeftPanel = () => {
-  const [files, setFiles] = useState([]);
-  const [isDragging, setIsDragging] = useState(false);
-  const [price, setPrice] = useState("250.00");
-  const [selectedPricing, setSelectedPricing] = useState("₱0 or donation");
+const LeftPanel = ({
+  title,
+  onTitleChange,
+  description,
+  onDescriptionChange,
+  price,
+  onPriceChange,
+  onPriceBlur,
+  selectedPricing,
+  onPricingSelect,
+  selectedVisibility,
+  onVisibilitySelect,
+  files,
+  addFiles,
+  removeFile,
+  engine,
+  type,
+  onEngineTypeSelect,
+  onSave,
+  onClear,
+  isSubmitting,
+  message,
+}) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedVisibility, setSelectedVisibility] = useState("Select Visibility Option");
   const [hoveredItem, setHoveredItem] = useState(null);
 
   const maxFiles = 5;
 
-  // === File Handling ===
+  // file input handler (converts FileList to Array)
   const handleFileChange = (e) => {
-    const selectedFiles = Array.from(e.target.files);
+    const selectedFiles = Array.from(e.target.files || []);
     addFiles(selectedFiles);
   };
 
+  // drag & drop handlers for files (optional)
+  const [isDragging, setIsDragging] = useState(false);
   const handleDragOver = (e) => {
     e.preventDefault();
     setIsDragging(true);
   };
-
   const handleDragLeave = (e) => {
     e.preventDefault();
     setIsDragging(false);
   };
-
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragging(false);
-    const droppedFiles = Array.from(e.dataTransfer.files);
+    const droppedFiles = Array.from(e.dataTransfer.files || []);
     addFiles(droppedFiles);
     e.dataTransfer.clearData();
   };
 
-  const addFiles = (newFiles) => {
-    const combinedFiles = [...files, ...newFiles].slice(0, maxFiles);
-    setFiles(combinedFiles);
-  };
-
-  const removeFile = (index) => {
-    const updatedFiles = [...files];
-    updatedFiles.splice(index, 1);
-    setFiles(updatedFiles);
-  };
-
-  // === Price Input Handling ===
-  const handlePriceChange = (e) => {
-    let value = e.target.value;
-    if (/^\d*\.?\d{0,2}$/.test(value)) setPrice(value);
-  };
-
-  const handlePriceBlur = () => {
-    let num = parseFloat(price);
-
-    if (selectedPricing === "No Payment") {
-      setPrice("0.00");
-      return;
-    }
-
-    if (isNaN(num) || num < 250) num = 250;
-    setPrice(num.toFixed(2));
-  };
-
-  // === Pricing Logic ===
   const renderPricingField = () => {
     if (selectedPricing === "₱0 or donation") {
       return (
@@ -101,8 +89,8 @@ const LeftPanel = () => {
         type="text"
         inputMode="decimal"
         value={disabled ? "0.00" : price}
-        onChange={handlePriceChange}
-        onBlur={handlePriceBlur}
+        onChange={(e) => onPriceChange(e.target.value)}
+        onBlur={onPriceBlur}
         disabled={disabled}
         style={{
           ...styles.inputPricing,
@@ -115,10 +103,32 @@ const LeftPanel = () => {
 
   return (
     <div style={styles.leftPanelContainer}>
+      {/* Message */}
+      {message && (
+        <div
+          style={{
+            padding: "10px",
+            marginBottom: "15px",
+            borderRadius: "4px",
+            backgroundColor: message.includes("Error") ? "#ffebee" : "#e8f5e8",
+            color: message.includes("Error") ? "#c62828" : "#2e7d32",
+            ...styles.label,
+          }}
+        >
+          {message}
+        </div>
+      )}
+
       {/* Title */}
       <div style={styles.sectionColumn}>
-        <label style={styles.label}>Title</label>
-        <input type="text" placeholder="Enter title..." style={styles.inputTitle} />
+        <label style={styles.label}>Title *</label>
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => onTitleChange(e.target.value)}
+          placeholder="Enter title..."
+          style={styles.inputTitle}
+        />
       </div>
 
       {/* Pricing */}
@@ -128,15 +138,12 @@ const LeftPanel = () => {
           {["₱0 or donation", "Paid", "No Payment"].map((option) => (
             <button
               key={option}
-              onClick={() => {
-                setSelectedPricing(option);
-                if (option === "No Payment") setPrice("0.00");
-                else setPrice("250.00");
-              }}
+              onClick={() => onPricingSelect(option)}
               style={{
                 ...styles.pricingButton,
                 ...(selectedPricing === option ? styles.activePricingButton : {}),
               }}
+              type="button"
             >
               {option}
             </button>
@@ -148,6 +155,7 @@ const LeftPanel = () => {
       <div style={styles.flexRow}>
         <div style={styles.sectionColumn}>
           {renderPricingField()}
+
           <div style={styles.dropdownContainer}>
             <div
               style={styles.dropdownButton}
@@ -162,7 +170,7 @@ const LeftPanel = () => {
                   <div
                     key={index}
                     onClick={() => {
-                      setSelectedVisibility(option);
+                      onVisibilitySelect(option);
                       setIsDropdownOpen(false);
                     }}
                     onMouseEnter={() => setHoveredItem(index)}
@@ -178,12 +186,11 @@ const LeftPanel = () => {
               </div>
             )}
           </div>
-
         </div>
 
         {/* Upload Section */}
         <div style={styles.sectionColumn}>
-          <label style={styles.label}>Upload Files (max 5)</label>
+          <label style={styles.label}>Upload Files (max {maxFiles})</label>
           <input
             type="file"
             id="fileInput"
@@ -194,6 +201,7 @@ const LeftPanel = () => {
           <button
             onClick={() => document.getElementById("fileInput").click()}
             style={styles.uploadButton}
+            type="button"
           >
             Choose Files
           </button>
@@ -204,7 +212,7 @@ const LeftPanel = () => {
             style={{
               ...styles.dropZone,
               border: `2px dashed ${isDragging ? "#4CAF50" : "#ccc"}`,
-              minHeight: `${Math.min(files.length )}px`, // expands until 200px
+              minHeight: `${Math.min(files.length)}px`,
               minWidth: "139px",
             }}
           >
@@ -217,6 +225,7 @@ const LeftPanel = () => {
                   <button
                     onClick={() => removeFile(index)}
                     style={styles.removeFileButton}
+                    type="button"
                   >
                     ×
                   </button>
@@ -230,16 +239,33 @@ const LeftPanel = () => {
       {/* Description */}
       <div style={styles.sectionColumn}>
         <label style={styles.label}>Description</label>
-        <textarea placeholder="Enter description..." style={styles.textArea} />
+        <textarea
+          value={description}
+          onChange={(e) => onDescriptionChange(e.target.value)}
+          placeholder="Enter description..."
+          style={styles.textArea}
+        />
       </div>
 
-      {/* Drop-up buttons */}
-      <EngineTypeDropUp />
+      {/* Engine & Type */}
+      <div style={styles.sectionColumn}>
+        <label style={styles.label}>Engine & Type *</label>
+        <EngineTypeDropUp onSelect={onEngineTypeSelect} selectedEngine={engine} selectedType={type} />
+        {engine && type && (
+          <div style={{ marginTop: "8px", fontSize: "14px", color: "#666" }}>
+            Selected: {engine} - {type}
+          </div>
+        )}
+      </div>
 
       {/* Actions */}
       <div style={styles.actionButtons}>
-        <button style={styles.saveButton}>Save & view page</button>
-        <button style={styles.deleteButton}>Delete Project</button>
+        <button style={styles.saveButton} onClick={onSave} disabled={isSubmitting} type="button">
+          {isSubmitting ? "Creating..." : "Save & view page"}
+        </button>
+        <button style={styles.deleteButton} onClick={onClear} type="button">
+          Clear Form
+        </button>
       </div>
     </div>
   );

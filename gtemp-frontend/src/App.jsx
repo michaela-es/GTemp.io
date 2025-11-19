@@ -11,7 +11,7 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/" element={<Home/>} />
+          <Route path="/" element={<Body/>} />
           <Route path="/template/:id" element={<TemplateDetail />} />
           <Route path="/dashboard" element={<UserDashboardsPage />} />
         </Routes>
