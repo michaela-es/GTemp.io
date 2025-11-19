@@ -12,7 +12,6 @@ export const userService = {
       ...userData,
     };
 
-    // Since we can’t actually write to public/users.json, store new users in localStorage
     const storedUsers = JSON.parse(localStorage.getItem("registeredUsers") || "[]");
     storedUsers.push(newUser);
     localStorage.setItem("registeredUsers", JSON.stringify(storedUsers));
@@ -20,12 +19,10 @@ export const userService = {
     return newUser;
   },
 
-  // 🔹 "Login" - matches credentials against users.json + locally registered users
   login: async (loginData) => {
     const response = await fetch("/users.json");
     const users = await response.json();
 
-    // Combine users.json with local registered ones
     const storedUsers = JSON.parse(localStorage.getItem("registeredUsers") || "[]");
     const allUsers = [...users, ...storedUsers];
 

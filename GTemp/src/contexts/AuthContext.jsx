@@ -3,7 +3,7 @@ import { userService } from '../services'; // <- only this one
 
 const API_BASE = 'http://localhost:8080/api';
 const AuthContext = createContext();
-const USE_LOCAL_DATA = true;
+const USE_LOCAL_DATA = false;
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

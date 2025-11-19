@@ -10,6 +10,7 @@ import { TemplatesProvider } from './contexts/TemplatesContext';
 import { AppDataProvider } from './contexts/AppDataContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { WishlistProvider } from './contexts/WishlistContext';
+import { CommentsProvider } from './contexts/CommentsContext';
 const App = () => {
   return (
       <AuthProvider> 
@@ -21,7 +22,16 @@ const App = () => {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/wishlist" element={<WishlistPage />} />
                 <Route path="/search" element={<SearchPage />} />
-                <Route path="/template/:templateID" element={<TemplateDetail />} />
+                
+                    <Route
+                      path="/template/:templateID"
+                      element={
+                        <CommentsProvider>
+                          <TemplateDetail />
+                        </CommentsProvider>
+                      }
+                    />
+
               </Routes>
             </SearchProvider>
           </TemplatesProvider>
