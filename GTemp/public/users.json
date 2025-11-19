@@ -2,7 +2,10 @@
   {
     "id": 1,
     "username": "mikay",
-    "email": "neverendingmidnightsun",
     "password": "admin123"
+  },{
+    "id": 2,
+    "username": "kevin",
+    "password": "worklikeajobapplication!334@"
   }
 ]

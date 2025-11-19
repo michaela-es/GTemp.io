@@ -12,9 +12,8 @@
     "releaseDate": "2024-01-15",
     "category": "Environment",
     "templateOwner": "GameDev Studios",
-    "genre": "Educational",
-    "isWishlisted": false
-  },
+    "genre": "Educational"
+    },
   {
    "templateID": 2,
     "templateName": "Futuristic Cityscape",
@@ -28,7 +27,6 @@
     "releaseDate": "2025-11-05",
     "category": "Environment",
     "templateOwner": "NextGen Studios",
-    "genre": "Sci-Fi",
-    "isWishlisted": true
+    "genre": "Sci-Fi"
   }
 ]

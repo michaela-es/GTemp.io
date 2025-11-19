@@ -7,11 +7,10 @@ import useTemplateManager from '../hooks/useTemplateManager';
 import FilterRow from '../components/FilterRow';
 import SortRow from '../components/SortRow';
 import TemplateGrid from '../components/TemplateGrid';
-import HeaderBar from '../components/HeaderBar';
 import { useSearch } from '../contexts/SearchContext';import useFiltersAndPagination from '../hooks/useFiltersAndPagination';
 import { useTemplates } from '../contexts/TemplatesContext'; 
 import '../App.css';
-
+import HeaderBar from '../components/HeaderBar';
 const HomePage = () => {
   const { templates, loading } = useTemplates();
 
