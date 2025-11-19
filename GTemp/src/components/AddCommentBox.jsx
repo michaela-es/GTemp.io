@@ -6,6 +6,10 @@ const AddCommentBox = ({ templateId }) => {
   const [text, setText] = useState("");
   const { addComment } = useContext(CommentsContext);
 console.log(currentUser)
+
+    if (!currentUser){
+        return null;
+    }
   const submit = () => {
     if (!text.trim()) return;
     addComment({

@@ -17,7 +17,9 @@ const ReplyBox = ({ templateId, parentId, onClose}) => {
     setText("");
     onClose?.();
   };
-
+    if (!currentUser){
+        return null;
+    }
   return (
     <div style={{ marginTop: 8 }}>
       <textarea
