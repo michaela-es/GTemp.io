@@ -1,9 +1,0 @@
-export const searchTemplates = (templates, query) => {
-  if (!query) return templates;
-  const lowerQuery = query.toLowerCase();
-
-  return templates.filter(template =>
-    template.templateName.toLowerCase().includes(lowerQuery) ||
-    template.templateDesc.toLowerCase().includes(lowerQuery)
-  );
-};

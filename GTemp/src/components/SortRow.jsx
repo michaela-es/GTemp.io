@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import SortButton from '../components/SortButton';
 
-const SortRow = ({ activeSorts, setActiveSorts }) => {
+const SortRow = ({ activeSorts = [], setActiveSorts }) => {
   const handleSort = useCallback((sortType) => {
     setActiveSorts(prev =>
       prev.includes(sortType)
@@ -39,6 +39,10 @@ const SortRow = ({ activeSorts, setActiveSorts }) => {
       />
     </div>
   );
+};
+
+SortRow.defaultProps = {
+  activeSorts: []
 };
 
 export default SortRow;

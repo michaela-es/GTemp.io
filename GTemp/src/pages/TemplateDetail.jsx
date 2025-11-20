@@ -72,7 +72,7 @@ const TemplateDetail = () => {
               <HeadingText text="Download" />
               <section style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <ActionButton name="Download Now" />
-                <p>{template.price === 0 ? 'Free' : `$${template.price}`}</p>
+                <p>{template.price === 0 ? 'Free' : `${template.price}`}</p>
               </section>
 
               <HeadingText text="Comments" />

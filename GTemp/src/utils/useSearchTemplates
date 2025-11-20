@@ -1,0 +1,32 @@
+import { useMemo, useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+
+export const searchTemplates = (templates, query) => {
+  if (!query || typeof query !== 'string') return templates;  
+  const lowerQuery = query.toLowerCase();
+
+  return templates.filter(
+    (template) =>
+      template.templateName.toLowerCase().includes(lowerQuery) ||
+      template.templateDesc.toLowerCase().includes(lowerQuery)
+  );
+};
+
+
+export const useSearchTemplates = (templates, debounceMs = 300) => {
+  const [searchParams] = useSearchParams();
+  const queryParam = searchParams.get('q') || '';
+
+  const [debouncedQuery, setDebouncedQuery] = useState(queryParam);
+
+  useEffect(() => {
+    const handler = setTimeout(() => setDebouncedQuery(queryParam), debounceMs);
+    return () => clearTimeout(handler);
+  }, [queryParam, debounceMs]);
+
+  const results = useMemo(() => {
+    return searchTemplates(templates, debouncedQuery);
+  }, [templates, debouncedQuery]);
+
+  return results;
+};

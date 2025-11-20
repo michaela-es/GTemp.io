@@ -4,23 +4,19 @@ import SearchBar from '../components/SearchBar';
 import FilterToggle from '../components/FilterToggle';
 import SortButton from '../components/SortButton';
 import Pagination from '../components/Pagination';
-import filterConfig from '../filterConfig.json'
+import filterConfig from '../filterConfig.json';
 import useTemplateManager from '../hooks/useTemplateManager';
+import { useTemplates } from '../contexts/TemplatesContext';
+import { useSearch } from '../contexts/SearchContext';
+import { useFilters } from '../contexts/FiltersContext';
 
-const HomePage = ({ 
-  data, 
-  query, 
-  setQuery, 
-  filters, 
-  setFilters, 
-  activeSorts, 
-  setActiveSorts, 
-  currentPage, 
-  setCurrentPage, 
-  itemsPerPage = 10 
-}) => {
+const HomePage = () => {
+  const { templates, loading } = useTemplates();
+  const { query, setQuery } = useSearch();
+  const { filters, setFilters, activeSorts, setActiveSorts, currentPage, setCurrentPage, itemsPerPage } = useFilters();
+
   const { paginatedItems: currentItems, totalPages } = useTemplateManager(
-    data, query, filters, activeSorts, currentPage, itemsPerPage
+    templates || [], query, filters, activeSorts, currentPage, itemsPerPage
   );
 
   const handleSort = useCallback((sortType) => {
@@ -32,25 +28,24 @@ const HomePage = ({
     );
   }, [setActiveSorts]);
 
-  const handlePageChange = useCallback((page) => {
-    setCurrentPage(page);
-  }, [setCurrentPage]);
+  const handlePageChange = useCallback((page) => setCurrentPage(page), [setCurrentPage]);
+
+  if (loading) return <div>Loading templates...</div>;
 
   return (
     <div className="app-container">
-      <SearchBar query={query} setQuery={setQuery} />
 
       <div className="filter-row">
         <FilterToggle
           title="Engine Type"
           options={filterConfig.engine}
-          selectedValues={filters.engine}
+          selectedValues={filters.engine_type}
           onSelectionChange={(newSelection) => setFilters(prev => ({ ...prev, engine_type: newSelection }))}
         />
         <FilterToggle
           title="Template Type"
           options={filterConfig.sortType}
-          selectedValues={filters.type}
+          selectedValues={filters.template_type}
           onSelectionChange={(newSelection) => setFilters(prev => ({ ...prev, template_type: newSelection }))}
         />
         <FilterToggle
@@ -60,39 +55,24 @@ const HomePage = ({
           onSelectionChange={(newSelection) => setFilters(prev => ({ ...prev, price_range: newSelection }))}
         />
       </div>
-
       <div className="sort-row">
-        <SortButton
-          label="Popular"
-          isActive={activeSorts.includes('popular')}
-          onClick={() => handleSort('popular')}
-        />
-        <SortButton
-          label="Rating"
-          isActive={activeSorts.includes('rating')}
-          onClick={() => handleSort('rating')}
-        />
-        <SortButton
-          label="Price"
-          isActive={activeSorts.includes('price')}
-          onClick={() => handleSort('price')}
-        />
+        <SortButton label="Popular" isActive={activeSorts.includes('popular')} onClick={() => handleSort('popular')} />
+        <SortButton label="Rating" isActive={activeSorts.includes('rating')} onClick={() => handleSort('rating')} />
+        <SortButton label="Price" isActive={activeSorts.includes('price')} onClick={() => handleSort('price')} />
       </div>
 
       <div className="templates-grid">
-        {currentItems.length > 0 ? (
-          currentItems.map((template, index) => (
-            <TemplateCard
-              key={index}
-              templateID={template.templateID} 
-              templateName={template.templateName}
-              templateImg={template.templateImg}
-              templateRating={template.templateRating}
-              templateDls={template.templateDls}
-              templateDesc={template.templateDesc}
-            />
-          ))
-        ) : (
+        {currentItems.length > 0 ? currentItems.map((t, i) => (
+          <TemplateCard
+            key={i}
+            templateID={t.templateID}
+            templateName={t.templateName}
+            templateImg={t.templateImg}
+            templateRating={t.templateRating}
+            templateDls={t.templateDls}
+            templateDesc={t.templateDesc}
+          />
+        )) : (
           <p className="no-results">
             {query || Object.values(filters).some(arr => arr.length > 0)
               ? 'No templates found matching your criteria'
@@ -100,14 +80,7 @@ const HomePage = ({
           </p>
         )}
       </div>
-
-      <div className="pagination-container">
-        <Pagination
-          totalPages={totalPages}
-          currentPage={currentPage}
-          onPageChange={handlePageChange}
-        />
-      </div>
+      <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={handlePageChange} />
     </div>
   );
 };
