@@ -3,19 +3,28 @@
   padding: 0;
 }
 
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  overflow-x: hidden;
+}
+
 p{
     color:white;
 }
 .template-detail-container {
   display: grid;
-  grid-template-columns: 20vw 60vw; 
+  grid-template-columns: 20vw 60vw;
   gap: 30px;
   padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 97vw;      /* FULL WIDTH */
+  max-width: none;   /* REMOVE LIMIT */
+  margin: 0;         /* REMOVE CENTERING */
   align-items: start;
   min-height: 80vh;
 }
+
 
 .sidebar {
   display: flex;
