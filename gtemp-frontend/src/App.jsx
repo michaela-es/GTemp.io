@@ -5,18 +5,31 @@ import UserDashboardsPage from "./containers/UserDashboards";
 import { AuthProvider } from "./context/AuthContext";
 import Home from "./pages/Home";
 import TemplateDetail from './pages/TemplateDetail';
+import WishlistPage from './pages/TemplateDetail';
+import { CommentsProvider } from "./context/CommentsContext";
+import { WishlistProvider } from "./context/WishlistContext";
+import { TemplatesProvider } from "./context/TemplatesContext";
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Home/>} />
-          <Route path="/template/:id" element={<TemplateDetail />} />
-          <Route path="/dashboard" element={<UserDashboardsPage />} />
-        </Routes>
-      </Router>
+  <AuthProvider>
+    <TemplatesProvider>
+      <WishlistProvider>
+        <CommentsProvider>
+          <Router>
+            <Routes>
+              <Route path="/" element={<Home/>} />
+              <Route path="/wishlist" element={<WishlistPage />} />
+              <Route path="/template/:id" element={<TemplateDetail />} />
+              <Route path="/dashboard" element={<UserDashboardsPage />} />
+            </Routes>
+          </Router>
+        </CommentsProvider>
+      </WishlistProvider>
+      </TemplatesProvider>
     </AuthProvider>
+
+
   );
 }
 

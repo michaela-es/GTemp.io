@@ -8,6 +8,7 @@ import ActionButton from '../components/ActionButton';
 import { DetailsBox } from '../components/DetailsBox';
 import RatingBox from '../components/RatingBox';
 import FirstContainer from '../components/display/Header';
+import CommentsList from '../components/CommentList';
 const TemplateDetail = () => {
   const { id } = useParams(); 
   const [template, setTemplate] = useState(null);
@@ -98,6 +99,9 @@ const TemplateDetail = () => {
               </section>
 
               <HeadingText text="Comments" />
+                <div style={{ marginTop: '1rem' }}>
+                <CommentsList templateId={template.id} />
+              </div>
             </div>
 
             <div className="details-right">

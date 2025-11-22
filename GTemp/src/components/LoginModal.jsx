@@ -19,8 +19,8 @@ export const LoginModal = ({ isOpen, onClose, onLogin, onSwitchToRegister }) => 
   };
 
   const handleRegisterClick = () => {
-    onClose(); // Close login modal
-    onSwitchToRegister(); // Open register modal
+    onClose();
+    onSwitchToRegister();
   };
 
   if (!isOpen) return null;

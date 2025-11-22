@@ -2,6 +2,7 @@ import { useAuth } from "../contexts/AuthContext";
 import TemplateGrid from "./TemplateGrid";
 import { useWishlist } from "../contexts/WishlistContext";
 import { useTemplates } from "../contexts/TemplatesContext";
+
 const WishListContainer = () => {
   const { currentUser } = useAuth();
   const { templates, loading } = useTemplates();
@@ -11,8 +12,8 @@ const WishListContainer = () => {
   if (!currentUser) return <div>Please log in to view your wishlist.</div>;
   if (loading) return <div>Loading templates...</div>;
 
-  const wishlistedTemplates = templates.filter(template =>
-    wishlist.includes(Number(template.templateID))
+  const wishlistedTemplates = templates.filter(
+    template => template?.id && wishlist.includes(template.id)
   );
 
   return (

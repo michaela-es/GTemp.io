@@ -1,9 +1,28 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import useLoadData from '../hooks/useLoadData';
-const TemplatesContext = createContext();
+import React, { createContext, useContext, useState, useEffect } from "react";
 
-  export const TemplatesProvider = ({ children }) => {
-  const { data: templates, loading } = useLoadData();
+const TemplatesContext = createContext();
+export const useTemplates = () => useContext(TemplatesContext);
+
+export const TemplatesProvider = ({ children }) => {
+  const [templates, setTemplates] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchTemplates();
+  }, []);
+
+  const fetchTemplates = async () => {
+    try {
+      const res = await fetch("http://localhost:8080/api/templates");
+      if (!res.ok) throw new Error("Failed to fetch templates");
+      const data = await res.json();
+      setTemplates(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <TemplatesContext.Provider value={{ templates, loading }}>
@@ -11,7 +30,4 @@ const TemplatesContext = createContext();
     </TemplatesContext.Provider>
   );
 };
-
-export const useTemplates = () => {
-  return useContext(TemplatesContext);
-};
+export default TemplatesContext;
