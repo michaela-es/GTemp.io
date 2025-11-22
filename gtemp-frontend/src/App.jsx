@@ -5,7 +5,7 @@ import UserDashboardsPage from "./containers/UserDashboards";
 import { AuthProvider } from "./context/AuthContext";
 import Home from "./pages/Home";
 import TemplateDetail from './pages/TemplateDetail';
-import WishlistPage from './pages/TemplateDetail';
+import WishlistPage from './pages/WishlistPage';
 import { CommentsProvider } from "./context/CommentsContext";
 import { WishlistProvider } from "./context/WishlistContext";
 import { TemplatesProvider } from "./context/TemplatesContext";

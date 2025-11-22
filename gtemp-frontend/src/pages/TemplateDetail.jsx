@@ -9,11 +9,20 @@ import { DetailsBox } from '../components/DetailsBox';
 import RatingBox from '../components/RatingBox';
 import FirstContainer from '../components/display/Header';
 import CommentsList from '../components/CommentList';
+import { useWishlist } from '../context/WishlistContext';
 const TemplateDetail = () => {
   const { id } = useParams(); 
   const [template, setTemplate] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+    const { toggleWishlist, isInWishlist } = useWishlist();
+
+  const handleWishlistClick = async () => {
+    await toggleWishlist(id);
+  };
+
+  const inWishlist = isInWishlist(id);
 
   useEffect(() => {
     const fetchTemplate = async () => {
@@ -49,13 +58,6 @@ const TemplateDetail = () => {
   if (error) return <div>Error: {error}</div>;
   if (!template) return <div>Template not found</div>;
 
-  const isInWishlist = false;
-  const toggleWishlist = () => console.log('Wishlist toggled');
-
-  const handleWishlistClick = () => {
-    toggleWishlist(template.id);
-  };
-
   return (
     <>
       <FirstContainer />
@@ -64,13 +66,13 @@ const TemplateDetail = () => {
         <div className="sidebar">
           <IconButton
             imgSrc={
-              isInWishlist
-                ? 'https://www.svgrepo.com/show/535436/heart.svg' 
-                : 'https://www.svgrepo.com/show/532473/heart.svg' 
+              inWishlist
+                ? 'https://www.svgrepo.com/show/535436/heart.svg'
+                : 'https://www.svgrepo.com/show/532473/heart.svg'
             }
-            name={isInWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
+            name={inWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
             onClick={handleWishlistClick}
-            className={isInWishlist ? 'wishlisted' : ''}
+            className={inWishlist ? 'wishlisted' : ''}
           />
 
           <IconButton

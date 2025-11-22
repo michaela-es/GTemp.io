@@ -1,30 +1,16 @@
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../context/AuthContext";
+import { useWishlist } from "../context/WishlistContext";
 import TemplateGrid from "./TemplateGrid";
-import { useWishlist } from "../contexts/WishlistContext";
-import { useTemplates } from "../contexts/TemplatesContext";
 
 const WishListContainer = () => {
+  const { wishlistTemplates, loading } = useWishlist();
   const { currentUser } = useAuth();
-  const { templates, loading } = useTemplates();
-  const { wishlist, wishlistCount } = useWishlist();
+  
+  if (!currentUser) return <div>Log in to access wishlist</div>;
+  if (loading) return <div>Loading wishlist...</div>;
+  if (wishlistTemplates.length === 0) return <p>Your wishlist is empty.</p>;
 
-  if (currentUser === undefined) return <div>Loading user info...</div>;
-  if (!currentUser) return <div>Please log in to view your wishlist.</div>;
-  if (loading) return <div>Loading templates...</div>;
-
-  const wishlistedTemplates = templates.filter(
-    template => template?.id && wishlist.includes(template.id)
-  );
-
-  return (
-    <div className="wishlist-container">
-      {wishlistCount === 0 ? (
-        <p className="empty-message">Your wishlist is empty.</p>
-      ) : (
-        <TemplateGrid templates={wishlistedTemplates} />
-      )}
-    </div>
-  );
+  return <TemplateGrid templates={wishlistTemplates} />;
 };
 
 export default WishListContainer;

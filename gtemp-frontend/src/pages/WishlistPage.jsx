@@ -1,8 +1,6 @@
 import React from "react";
 import HeaderBar from "../components/HeaderBar";
-import "../styles/Wishlist.css";
-import WishListContainer from "../../components/WishListContainer";
-
+import WishListContainer from "../components/WishlistContainer";
 const WishlistPage = () => {
   return (
     <>

@@ -1,74 +1,94 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { useAuth } from "./AuthContext";
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
 
 const WishlistContext = createContext();
 
-export const useWishlist = () => useContext(WishlistContext);
-
 export const WishlistProvider = ({ children }) => {
   const { currentUser } = useAuth();
+  const userId = currentUser?.userID;
   const [wishlist, setWishlist] = useState([]);
-  const [wishlistCount, setWishlistCount] = useState(0);
-
-  useEffect(() => {
-    if (!currentUser?.id) {
-      setWishlist([]);
-      setWishlistCount(0);
-      return;
-    }
-    loadWishlist();
-  }, [currentUser]);
+  const [wishlistTemplates, setWishlistTemplates] = useState([]); 
+  const [loading, setLoading] = useState(true);
 
   const loadWishlist = async () => {
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/wishlist/user/${currentUser.id}`
-      );
-      if (!response.ok) throw new Error("Failed to load wishlist");
-      const data = await response.json();
-      // Map wishlist items to template IDs only
-      const templateIds = data.map(item => item.templateId);
-      setWishlist(templateIds);
-      setWishlistCount(templateIds.length);
-    } catch (err) {
-      console.error("Error loading wishlist:", err);
-      setWishlist([]);
-      setWishlistCount(0);
-    }
-  };
+  if (!userId) return;
+
+  setLoading(true);
+
+  try {
+    const resIds = await fetch(`http://localhost:8080/api/wishlist/user/${userId}`);
+    const wishlistItems = await resIds.json();
+
+    const templateIds = wishlistItems.map(item => item.templateId);
+    setWishlist(templateIds);
+
+    const templates = await Promise.all(
+      templateIds.map(async id => {
+        const res = await fetch(`http://localhost:8080/api/templates/${id}`);
+        const template = await res.json();
+
+        const normalizedTemplate = {
+          ...template,
+          coverImagePath: template.coverImagePath
+            ? `http://localhost:8080/${template.coverImagePath.replace(/\\/g, '/')}`
+            : 'http://localhost:8080/default-image.png',
+        };
+
+        return normalizedTemplate;
+      })
+    );
+
+    setWishlistTemplates(templates);
+
+  } catch (err) {
+    console.error("Error loading wishlist:", err);
+    setWishlist([]);
+    setWishlistTemplates([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+
 
   const toggleWishlist = async (templateId) => {
-    if (!currentUser?.id) return;
+    if (!userId) return;
 
-    const isInWishlist = wishlist.includes(templateId);
     try {
-      const url = `http://localhost:8080/api/wishlist/toggle`;
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: currentUser.id, templateId })
+      const res = await fetch(`http://localhost:8080/api/wishlist/toggle`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, templateId })
       });
-
-      if (!response.ok) throw new Error("Failed to toggle wishlist");
-      const isNowInWishlist = await response.json();
-      
-      if (isNowInWishlist) {
-        setWishlist(prev => [...prev, templateId]);
-        setWishlistCount(prev => prev + 1);
-      } else {
-        setWishlist(prev => prev.filter(id => id !== templateId));
-        setWishlistCount(prev => prev - 1);
-      }
+      const isNowInWishlist = await res.json();
+      await loadWishlist(); 
+      return isNowInWishlist;
     } catch (err) {
-      console.error(err);
+      console.error('Error toggling wishlist:', err);
     }
   };
 
+  const isInWishlist = (templateId) => wishlist.includes(Number(templateId));
+
+  useEffect(() => {
+    if (userId) loadWishlist();
+  }, [userId]);
+
   return (
-    <WishlistContext.Provider
-      value={{ wishlist, wishlistCount, toggleWishlist, loadWishlist }}
-    >
+    <WishlistContext.Provider value={{
+      wishlist,
+      wishlistTemplates,
+      wishlistCount: wishlist.length,
+      toggleWishlist,
+      isInWishlist,
+      loading,
+      loadWishlist,
+    }}>
       {children}
     </WishlistContext.Provider>
   );
 };
+
+export const useWishlist = () => useContext(WishlistContext);
