@@ -29,6 +29,16 @@
 .username {
   font-weight: 500;
   color: #111827; /* almost black */
+  display: flex;
+  align-items: center;
+  gap: 6px; /* spacing between username and wallet */
+}
+
+/* Wallet display */
+.wallet {
+  font-weight: 500;
+  color: #4caf50; /* green for money */
+  font-size: 14px;
 }
 
 /* Dropdown arrow */
