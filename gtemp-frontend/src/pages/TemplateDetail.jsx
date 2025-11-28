@@ -54,11 +54,16 @@ const TemplateDetail = () => {
   };
 
   const handleConfirmPayment = async (amount) => {
+    if (!currentUser) {
+      alert("You must be logged in to purchase.");
+      return;
+    }
+
     try {
-      const userId = 1; // Replace with actual logged-in user ID
-      const response = await fetch(`http://localhost:8080/api/templates/${template.id}/purchase?userId=${userId}&donationAmount=${amount}`, {
-        method: 'POST',
-      });
+      const response = await fetch(
+        `http://localhost:8080/api/templates/${template.id}/purchase?userEmail=${encodeURIComponent(currentUser.email)}&donationAmount=${amount}`,
+        { method: 'POST' }
+      );
 
       if (!response.ok) {
         const error = await response.text();
@@ -69,11 +74,13 @@ const TemplateDetail = () => {
       alert('Payment successful!');
       handleFreeDownload(); // Automatically download after payment
       setShowDownloadModal(false);
+
     } catch (err) {
       console.error(err);
       alert('Payment failed. Try again.');
     }
   };
+
 
   const handleFreeDownload = () => {
     const link = document.createElement('a');

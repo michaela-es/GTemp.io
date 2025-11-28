@@ -3,10 +3,12 @@ import { useNavigate } from "react-router-dom";
 import "../static/ProfileDropDown.css";
 import profileIcon from "../assets/profile-icon.svg";
 import dropDownIcon from "../assets/drop-down.svg";
+import { useAuth } from "../context/AuthContext";
 
-export default function ProfileDropDown({ isLoggedIn, username, wallet, onLoginClick, onLogout }) {
+export default function ProfileDropDown({ isLoggedIn, username, onLoginClick, onLogout }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
 
   const goToInnerContainer = (container, innerTab) => {
     navigate("/dashboard", { state: { container, subContainer: innerTab } });
@@ -36,7 +38,10 @@ export default function ProfileDropDown({ isLoggedIn, username, wallet, onLoginC
       <div className="user-section" onClick={() => setMenuOpen(!menuOpen)}>
         <img src={profileIcon} alt="Profile" className="user-icon" />
         <span className="username">
-          {username} <span className="wallet">{"$ " + (wallet?.toFixed(2) || "0.00")}</span>
+          {username}{" "}
+          <span className="wallet">
+            {"$ " + (currentUser?.wallet?.toFixed(2) || "0.00")}
+          </span>
         </span>
         <img src={dropDownIcon} alt="Dropdown" className="dropdown-icon" />
 
