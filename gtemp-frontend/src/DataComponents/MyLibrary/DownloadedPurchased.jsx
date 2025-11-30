@@ -1,5 +1,6 @@
-// PurchasesView.jsx
-import React, { useState } from "react";
+// DownloadedPurchased.jsx
+import React, { useState, useEffect, useContext } from "react";
+import { useAuth } from "../../context/AuthContext"; // import your AuthContext hook
 import filterIcon from "../../assets/filter-icon.svg";
 import ProjectItem from "./ProjectItem";
 import {
@@ -14,6 +15,8 @@ import {
 } from "./styles";
 
 const DownloadedPurchased = () => {
+  const { currentUser } = useAuth();
+  const [items, setItems] = useState([]);
   const [sort, setSort] = useState("Any Paid Amount");
   const [isOpen, setIsOpen] = useState(false);
   const [hoverIndex, setHoverIndex] = useState(null);
@@ -29,6 +32,37 @@ const DownloadedPurchased = () => {
     setIsOpen(false);
   };
 
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const fetchLibrary = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:8080/api/templates/user/${currentUser.email}/library`
+        );
+        if (!res.ok) throw new Error("Failed to fetch library");
+        const data = await res.json();
+
+        // Optional: sort by Paid Amount
+        let sorted = [...data];
+        if (sort === "Most to Least Paid Amount") {
+          sorted.sort((a, b) => (b.template.price || 0) - (a.template.price || 0));
+        } else if (sort === "Least to Most Paid Amount") {
+          sorted.sort((a, b) => (a.template.price || 0) - (b.template.price || 0));
+        }
+        setItems(sorted);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchLibrary();
+  }, [currentUser, sort]);
+
+  // Count downloaded vs purchased
+  const downloadedCount = items.filter(i => i.actionType === "downloaded").length;
+  const purchasedCount = items.filter(i => i.actionType === "purchased").length;
+
   return (
     <>
       <div style={topRowStyle}>
@@ -36,15 +70,8 @@ const DownloadedPurchased = () => {
           <img src={filterIcon} alt="Filter" style={{ width: 30, height: 30 }} />
           <span>Filters</span>
 
-          {/* 🔹 Custom dropdown same as RatedViewed */}
-          <div
-            style={dropdownContainer}
-            onMouseLeave={() => setIsOpen(false)}
-          >
-            <div
-              style={dropdownButton}
-              onClick={() => setIsOpen((prev) => !prev)}
-            >
+          <div style={dropdownContainer} onMouseLeave={() => setIsOpen(false)}>
+            <div style={dropdownButton} onClick={() => setIsOpen((prev) => !prev)}>
               {sort} ▼
             </div>
 
@@ -71,35 +98,28 @@ const DownloadedPurchased = () => {
 
         <div style={{ display: "flex", gap: "20px" }}>
           <div style={boxStyle("white")}>
-            <div style={{ fontSize: "1.5rem" }}>0</div>
+            <div style={{ fontSize: "1.5rem" }}>{downloadedCount}</div>
             <div>Downloaded</div>
           </div>
           <div style={boxStyle("white")}>
-            <div style={{ fontSize: "1.5rem" }}>0</div>
+            <div style={{ fontSize: "1.5rem" }}>{purchasedCount}</div>
             <div>Purchased</div>
           </div>
         </div>
       </div>
 
-      {/* Example Project Item */}
-      <ProjectItem
-        title="Awesome Game"
-        timeAgo="2 hours ago"
-        initialRating={3}
-        comment="Loved the story mode!"
-      />
-
-      {/* Placeholder message */}
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <span>Purchase history will appear here</span>
-      </div>
+      {items.length === 0 ? (
+        <p>No purchases or downloads yet.</p>
+      ) : (
+        items.map((item) => (
+          <ProjectItem
+            key={item.id}
+            title={item.template.templateTitle}
+            timeAgo={new Date(item.actionDate).toLocaleString()}
+            comment={item.actionType}
+          />
+        ))
+      )}
     </>
   );
 };

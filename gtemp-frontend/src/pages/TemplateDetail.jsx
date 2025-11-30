@@ -1,3 +1,4 @@
+//TemplateDetail.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import IconButton from '../components/IconButton';
@@ -83,21 +84,27 @@ const TemplateDetail = () => {
 
 
   const handleFreeDownload = () => {
-    const link = document.createElement('a');
-    link.href = `http://localhost:8080/api/templates/${template.id}/download/free`;
-    link.download = `${template.templateTitle}.zip`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    setShowDownloadModal(false);
-  };
+  if (!currentUser) {
+    alert("You must be logged in to download.");
+    return;
+  }
+
+  const link = document.createElement('a');
+  link.href = `http://localhost:8080/api/templates/${template.id}/download/free?userEmail=${encodeURIComponent(currentUser.email)}`;
+  link.download = `${template.templateTitle}.zip`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  setShowDownloadModal(false);
+};
+
 
   if (loading) return <div>Loading template...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!template) return <div>Template not found</div>;
 
   return (
-    <>
+    <div className="container">
       <FirstContainer />
 
       <div className="template-detail-container">
@@ -175,7 +182,7 @@ const TemplateDetail = () => {
           onFreeDownload={handleFreeDownload}
         />
       )}
-    </>
+    </div>
   );
 };
 

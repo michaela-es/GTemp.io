@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Body from "./components/display/Body";
 import UserDashboardsPage from "./containers/UserDashboards";
 import { AuthProvider } from "./context/AuthContext";
-import Home from "./pages/Home";
+
 import TemplateDetail from './pages/TemplateDetail';
 import WishlistPage from './pages/WishlistPage';
 import { CommentsProvider } from "./context/CommentsContext";
@@ -18,7 +18,7 @@ function App() {
         <CommentsProvider>
           <Router>
             <Routes>
-              <Route path="/" element={<Home/>} />
+              <Route path="/" element={<Body/>} />
               <Route path="/wishlist" element={<WishlistPage />} />
               <Route path="/template/:id" element={<TemplateDetail />} />
               <Route path="/dashboard" element={<UserDashboardsPage />} />
