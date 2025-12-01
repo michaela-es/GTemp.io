@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useSearch } from '../context/SearchContext';
 import { useAuth } from '../context/AuthContext';
 import ActionButton from './ActionButton';
-import SearchBar from './SearchBar';
+import SearchBar from './Search/SearchBar';
 import HeadingText from './HeadingText';
 import { RegisterModal } from './RegisterModal';
 import { LoginModal } from './LoginModal';

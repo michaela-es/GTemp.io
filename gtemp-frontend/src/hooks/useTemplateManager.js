@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { searchTemplates } from '../utils/searchTemplates';
 import { filterTemplates } from '../utils/filterTemplates';
 import { sortTemplates } from '../utils/sortTemplates';
 import { paginate } from '../utils/paginate';
@@ -14,8 +13,7 @@ const useTemplateManager = (data, query, filters, activeSorts, currentPage, item
       };
     }
 
-    const searched = searchTemplates(data, query);    
-    const filtered = filterTemplates(searched, filters); 
+    const filtered = filterTemplates(data, filters);
     const sorted = sortTemplates(filtered, activeSorts); 
     const totalItems = sorted.length;
     const totalPages = Math.ceil(totalItems / itemsPerPage);

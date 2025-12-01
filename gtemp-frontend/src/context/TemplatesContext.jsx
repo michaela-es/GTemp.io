@@ -13,7 +13,8 @@ export const TemplatesProvider = ({ children }) => {
 
   const fetchTemplates = async () => {
     try {
-      const res = await fetch("http://localhost:8080/api/templates");
+      const res = await fetch("/data.json");
+      // const res = await fetch("http://localhost:8080/api/templates");
       if (!res.ok) throw new Error("Failed to fetch templates");
       const data = await res.json();
       setTemplates(data);

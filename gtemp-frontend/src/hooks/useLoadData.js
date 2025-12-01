@@ -10,15 +10,9 @@ const useLoadData = () => {
       setLoading(true);
       
       try {
-        console.log('useLoadData: Making GET request to http://localhost:8080/api/templates');
-        const response = await fetch('http://localhost:8080/api/templates');
+        console.log('useLoadData: Fetching from /data.json');
+        const response = await fetch('/data.json');
         
-        console.log('useLoadData: Received response:', {
-          status: response.status,
-          statusText: response.statusText,
-          ok: response.ok
-        });
-
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -26,38 +20,24 @@ const useLoadData = () => {
         const templates = await response.json();
 
         const fixedTemplates = templates.map(template => ({
-        ...template,
-        coverImagePath: template.coverImagePath ? 
-            `http://localhost:8080/${template.coverImagePath.replace(/\\/g, '/')}` : 
-            null
+          ...template,
+          coverImagePath: template.coverImagePath 
+            ? template.coverImagePath.replace(/\\/g, '/')
+            : null
         }));
 
-        console.log('useLoadData: Successfully parsed JSON response');
-        console.log('useLoadData: Number of templates received:', templates.length);
-        
-        console.log('useLoadData: Fixed templates:', fixedTemplates);
+        console.log('useLoadData: Successfully loaded mock templates', fixedTemplates);
         setData(fixedTemplates);
 
       } catch (error) {
         console.error('useLoadData: Error loading data:', error);
-        console.error('useLoadData: Error details:', {
-          name: error.name,
-          message: error.message,
-          stack: error.stack
-        });
       } finally {
-        console.log('useLoadData: Setting loading to false');
         setLoading(false);
       }
     };
 
     loadData();
   }, []);
-
-  console.log('useLoadData: Return state:', {
-    dataLength: data.length,
-    loading: loading
-  });
 
   return { data, loading };
 };

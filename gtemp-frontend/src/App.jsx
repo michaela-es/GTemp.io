@@ -9,7 +9,7 @@ import WishlistPage from './pages/WishlistPage';
 import { CommentsProvider } from "./context/CommentsContext";
 import { WishlistProvider } from "./context/WishlistContext";
 import { TemplatesProvider } from "./context/TemplatesContext";
-
+import HomePage from "./pages/HomePage";
 function App() {
   return (
   <AuthProvider>
@@ -18,7 +18,7 @@ function App() {
         <CommentsProvider>
           <Router>
             <Routes>
-              <Route path="/" element={<Home/>} />
+              <Route path="/" element={<HomePage/>} />
               <Route path="/wishlist" element={<WishlistPage />} />
               <Route path="/template/:id" element={<TemplateDetail />} />
               <Route path="/dashboard" element={<UserDashboardsPage />} />
