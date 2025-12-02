@@ -1,5 +1,6 @@
-// FilteredRatingsView.jsx
-import React, { useState } from "react";
+// RatedViewed.jsx
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../../context/AuthContext";
 import filterIcon from "../../assets/filter-icon.svg";
 import ProjectItem from "./ProjectItem";
 import {
@@ -14,16 +15,45 @@ import {
 } from "./styles";
 
 const RatedViewed = () => {
-  const [rating, setRating] = useState("Any Rating");
+  const { currentUser } = useAuth();
+  const [ratedItems, setRatedItems] = useState([]);
+  const [ratingFilter, setRatingFilter] = useState("Any Rating");
   const [isOpen, setIsOpen] = useState(false);
   const [hoverIndex, setHoverIndex] = useState(null);
 
   const ratingOptions = ["Any Rating", "5 Star", "4 Star", "3 Star", "2 Star", "1 Star"];
 
   const handleSelect = (value) => {
-    setRating(value);
+    setRatingFilter(value);
     setIsOpen(false);
   };
+
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const fetchRatedTemplates = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:8080/api/templates/user/${currentUser.email}/rated`
+        );
+        if (!res.ok) throw new Error("Failed to fetch rated templates");
+        const data = await res.json();
+
+        // Optional: filter by rating
+        let filtered = data;
+        if (ratingFilter !== "Any Rating") {
+          const star = parseInt(ratingFilter[0]); // "5 Star" -> 5
+          filtered = data.filter((item) => item.ratingValue === star);
+        }
+
+        setRatedItems(filtered);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchRatedTemplates();
+  }, [currentUser, ratingFilter]);
 
   return (
     <>
@@ -32,16 +62,9 @@ const RatedViewed = () => {
           <img src={filterIcon} alt="Filter" style={{ width: 30, height: 30 }} />
           <span>Filters</span>
 
-          {/* Custom dropdown */}
-          <div
-            style={dropdownContainer}
-            onMouseLeave={() => setIsOpen(false)}
-          >
-            <div
-              style={dropdownButton}
-              onClick={() => setIsOpen((prev) => !prev)}
-            >
-              {rating} ▼
+          <div style={dropdownContainer} onMouseLeave={() => setIsOpen(false)}>
+            <div style={dropdownButton} onClick={() => setIsOpen((prev) => !prev)}>
+              {ratingFilter} ▼
             </div>
 
             {isOpen && (
@@ -67,23 +90,26 @@ const RatedViewed = () => {
 
         <div style={{ display: "flex", gap: "20px" }}>
           <div style={boxStyle("white")}>
-            <div style={{ fontSize: "1.5rem" }}>0</div>
+            <div style={{ fontSize: "1.5rem" }}>{ratedItems.length}</div>
             <div>Rated</div>
-          </div>
-          <div style={boxStyle("white")}>
-            <div style={{ fontSize: "1.5rem" }}>0</div>
-            <div>Commented</div>
           </div>
         </div>
       </div>
 
-      {/* Project Item */}
-      <ProjectItem
-        title="Awesome Game"
-        timeAgo="2 hours ago"
-        initialRating={3}
-        comment="Loved the story mode!"
-      />
+      {ratedItems.length === 0 ? (
+        <p>No rated templates yet.</p>
+      ) : (
+        ratedItems.map((item) => (
+          <ProjectItem
+            key={item.id}
+            title={item.template.templateTitle}
+            templateId={item.template.id}
+            userEmail={currentUser.email}
+            timeAgo={new Date(item.ratedAt).toLocaleString()}
+            initialRating={item.ratingValue}
+          />
+        ))
+      )}
     </>
   );
 };

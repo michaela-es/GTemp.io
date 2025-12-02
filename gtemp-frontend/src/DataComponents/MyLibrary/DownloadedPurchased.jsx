@@ -60,8 +60,12 @@ const DownloadedPurchased = () => {
   }, [currentUser, sort]);
 
   // Count downloaded vs purchased
-  const downloadedCount = items.filter(i => i.actionType === "downloaded").length;
-  const purchasedCount = items.filter(i => i.actionType === "purchased").length;
+  const downloadedCount = items.filter(
+    (i) => i.actionType === "FREE_DOWNLOAD" || i.actionType === "DONATED"
+  ).length;
+  const purchasedCount = items.filter(
+    (i) => i.actionType === "PURCHASED"
+  ).length;
 
   return (
     <>
@@ -115,9 +119,13 @@ const DownloadedPurchased = () => {
           <ProjectItem
             key={item.id}
             title={item.template.templateTitle}
+            templateId={item.template.id}   // needed for API
+            userEmail={currentUser.email}   // current logged-in user
             timeAgo={new Date(item.actionDate).toLocaleString()}
             comment={item.actionType}
+            initialRating={item.ratingValue || 0}
           />
+
         ))
       )}
     </>
