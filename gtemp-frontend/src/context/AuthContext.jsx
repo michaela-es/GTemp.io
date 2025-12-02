@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { userService } from '../services/api';
-
+import axios from 'axios';
 const AuthContext = createContext();
 
 export const useAuth = () => {
@@ -105,6 +105,19 @@ export const AuthProvider = ({ children }) => {
     userService.logout().catch(console.error);
   };
 
+  const refreshWallet = async () => {
+    if (!currentUser?.email) return;
+
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/users/${currentUser.email}/wallet`
+      );
+      setCurrentUser(prev => ({ ...prev, wallet: response.data.wallet }));
+    } catch (err) {
+      console.error("Failed to refresh wallet", err);
+    }
+  };
+
   const value = {
     currentUser,
     setCurrentUser,
@@ -114,7 +127,8 @@ export const AuthProvider = ({ children }) => {
     register,
     login,  
     logout,
-    setError
+    setError,
+    refreshWallet,
   };
 
   return (

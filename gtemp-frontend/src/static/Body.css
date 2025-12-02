@@ -257,3 +257,13 @@
 .apply-button:hover {
   background-color: darkgreen;
 }
+
+.box3 {
+  flex: 1;             /* <-- takes the leftover space */
+  overflow-y: auto;    /* <-- scrolls independently */
+}
+
+/* Optional padding */
+.template-grid-container {
+  padding: 20px;
+}

@@ -48,7 +48,10 @@ export default function FirstContainer() {
     <div className="box box1">
       <div className="left-section">
         <img src={logoImage} alt="Logo" className="logo" />
-        <span className="site-name">Gtemp.io</span>
+        <a href="http://localhost:5173" className="site-name-link">
+          <span className="site-name">Gtemp.io</span>
+        </a>
+
       </div>
 
       <div className="middle-section">
@@ -63,6 +66,7 @@ export default function FirstContainer() {
       <ProfileDropDown
         isLoggedIn={isLoggedIn}
         username={username}
+        wallet={currentUser?.wallet} // <-- add this line
         onLoginClick={handleAuthAction}
         onLogout={logout}
         isLoading={loading}
