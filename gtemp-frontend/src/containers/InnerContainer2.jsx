@@ -86,55 +86,48 @@ const InnerContainer2 = ({ activeInnerTab: propActiveInnerTab }) => {
   // === Submit logic (similar to UploadTemplateForm) ===
   const handleSubmit = async () => {
     if (isSubmitting) return;
-    // Basic validation
+
     if (!title.trim()) return setMessage("Error: Title is required");
     if (!engine || !type) return setMessage("Error: Engine and Type are required");
     if (!coverImage) return setMessage("Error: Cover image is required");
 
-    setIsSubmitting(true);
-    setMessage("");
+    if (!coverImage) return setMessage("Error: Cover image is required");
+    if (!screenshots || screenshots.length === 0)
+      return setMessage("Error: At least one screenshot/image is required");
+    if (!files || files.length === 0)
+      return setMessage("Error: At least one additional file is required");
+      setIsSubmitting(true);
+      setMessage("");
 
     try {
       const userId = JSON.parse(localStorage.getItem("currentUser") || "{}")?.userID;
+      if (!userId) throw new Error("User not logged in");
 
       const templateData = {
         templateTitle: title.trim(),
         templateDesc: description.trim(),
-        priceSetting: selectedPricing, // NEW
+        priceSetting: selectedPricing,
         price: selectedPricing === "No Payment" ? 0 : parseFloat(price) || 0,
         visibility: selectedVisibility === "Visible to Public",
-        engine,
-        type,
-        views: 0,
-        downloads: 0,
+        engine: engine,
+        type: type,
         templateOwner: userId,
-        rating: 0,
-        averageRating: 0,
-        wishlistCount: 0,
-        isWishlisted: false,
-        revenue: 0,
+        releaseDate: new Date() 
       };
 
-      const formDataToSend = new FormData();
-      const templateBlob = new Blob([JSON.stringify(templateData)], {
-        type: "application/json",
-      });
-      formDataToSend.append("template", templateBlob);
+    const formDataToSend = new FormData();
+    formDataToSend.append("template", new Blob([JSON.stringify(templateData)], { type: "application/json" }));
 
-      // coverImage might be a File or an object URL from preview. If object URL, it's not upload-able;
-      // Here we expect real File objects passed from RightPanel. If it's just a string preview, user must re-select a File.
-      formDataToSend.append("coverImage", coverImage);
+    formDataToSend.append("coverImage", coverImage);
+    screenshots.forEach((img) => formDataToSend.append("images", img));
+    files.forEach((file) => formDataToSend.append("files", file));
 
-      screenshots.forEach((img) => formDataToSend.append("images", img));
-      files.forEach((file) => formDataToSend.append("files", file));
+    const response = await FileUploadService.uploadTemplate(formDataToSend);
 
-      // Optionally log entries for debugging
-      // for (let [key, value] of formDataToSend.entries()) console.log(key, value);
-
-      const response = await FileUploadService.uploadTemplate(formDataToSend);
 
       setMessage("Template created successfully!");
-      // Reset
+
+      // Reset form
       setTitle("");
       setDescription("");
       setPrice("250.00");
@@ -157,6 +150,7 @@ const InnerContainer2 = ({ activeInnerTab: propActiveInnerTab }) => {
       setIsSubmitting(false);
     }
   };
+
 
   const handleClear = () => {
     setTitle("");

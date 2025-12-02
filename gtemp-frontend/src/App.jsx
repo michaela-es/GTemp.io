@@ -5,7 +5,6 @@ import UserDashboardsPage from "./containers/UserDashboards";
 import { AuthProvider } from "./context/AuthContext";
 
 import TemplateDetail from './pages/TemplateDetail';
-import WishlistPage from './pages/WishlistPage';
 import { CommentsProvider } from "./context/CommentsContext";
 import { WishlistProvider } from "./context/WishlistContext";
 import { TemplatesProvider } from "./context/TemplatesContext";
@@ -19,7 +18,6 @@ function App() {
           <Router>
             <Routes>
               <Route path="/" element={<HomePage/>} />
-              <Route path="/wishlist" element={<WishlistPage />} />
               <Route path="/template/:id" element={<TemplateDetail />} />
               <Route path="/dashboard" element={<UserDashboardsPage />} />
             </Routes>
