@@ -1,6 +1,6 @@
 import React from "react";
 
-export function DetailsBox({ releaseDate, category, templateOwner, genre }) {
+export function DetailsBox({ releaseDate, engine, templateOwner, type }) {
   const styles = {
     container: {
       backgroundColor: "#f7b5b5ff",
@@ -33,16 +33,14 @@ export function DetailsBox({ releaseDate, category, templateOwner, genre }) {
         <span style={styles.value}>{releaseDate}</span>
       </p>
       <p style={styles.row}>
-        <span style={styles.label}>Category</span>
-        <span style={styles.value}>{category}</span>
+        <span style={styles.label}>Engine</span>
+        <span style={styles.value}>{engine}</span>
       </p>
       <p style={styles.row}>
-        <span style={styles.label}>Template Owner</span>
-        <span style={styles.value}>{templateOwner}</span>
       </p>
       <p style={styles.row}>
-        <span style={styles.label}>Genre</span>
-        <span style={styles.value}>{genre}</span>
+        <span style={styles.label}>Type</span>
+        <span style={styles.value}>{type}</span>
       </p>
     </div>
   );

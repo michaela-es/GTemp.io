@@ -7,8 +7,7 @@ import Pagination from '../components/Sort/Pagination';
 import filterConfig from '../filterConfig.json';
 import useLoadData from '../hooks/useLoadData';
 import useTemplateManager from '../hooks/useTemplateManager';
-import FirstContainer from '../components/display/Header';
-
+import Header from '../components/display/Header';
 export const Home = () => {
   const { data, loading } = useLoadData();
 
@@ -37,7 +36,7 @@ export const Home = () => {
 
   return (
     <div className="app-container">
-      {/* <FirstContainer /> */}
+      <Header/>
 
       <div className="filter-row">
         <FilterToggle

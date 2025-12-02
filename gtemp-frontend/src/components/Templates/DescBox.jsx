@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/TemplateDetail.css';
+import '../../styles/TemplateDetail.css';
 
 const DescBox = ({ text, className = '' }) => {
   return (

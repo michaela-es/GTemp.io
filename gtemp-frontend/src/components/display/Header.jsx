@@ -5,7 +5,7 @@ import searchIcon from '../../assets/search-icon.svg';
 import logoImage from '../../assets/logo.png';
 import LoginModal from '../authentication/LoginUser';
 
-export default function FirstContainer() {
+export default function Header() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const { currentUser, logout, loading } = useAuth();

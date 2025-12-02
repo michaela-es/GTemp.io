@@ -6,65 +6,62 @@ const WishlistContext = createContext();
 export const WishlistProvider = ({ children }) => {
   const { currentUser } = useAuth();
   const userId = currentUser?.userID;
+
   const [wishlist, setWishlist] = useState([]);
-  const [wishlistTemplates, setWishlistTemplates] = useState([]); 
+  const [wishlistTemplates, setWishlistTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const loadWishlist = async () => {
-  if (!userId) return;
+    if (!userId) return;
+    setLoading(true);
+    try {
+      const resIds = await fetch(`http://localhost:8080/api/wishlist/user/${userId}`);
+      const wishlistItems = await resIds.json();
 
-  setLoading(true);
+      const templateIds = wishlistItems.map(item => item.templateId);
+      setWishlist(templateIds);
 
-  try {
-    const resIds = await fetch(`http://localhost:8080/api/wishlist/user/${userId}`);
-    const wishlistItems = await resIds.json();
+      const templates = await Promise.all(
+        templateIds.map(async id => {
+          const res = await fetch(`http://localhost:8080/api/templates/${id}`);
+          const template = await res.json();
 
-    const templateIds = wishlistItems.map(item => item.templateId);
-    setWishlist(templateIds);
+          return {
+            ...template,
+            coverImagePath: template.coverImagePath
+              ? `http://localhost:8080/${template.coverImagePath.replace(/\\/g, '/')}`
+              : 'http://localhost:8080/default-image.png',
+          };
+        })
+      );
 
-    const templates = await Promise.all(
-      templateIds.map(async id => {
-        const res = await fetch(`http://localhost:8080/api/templates/${id}`);
-        const template = await res.json();
-
-        const normalizedTemplate = {
-          ...template,
-          coverImagePath: template.coverImagePath
-            ? `http://localhost:8080/${template.coverImagePath.replace(/\\/g, '/')}`
-            : 'http://localhost:8080/default-image.png',
-        };
-
-        return normalizedTemplate;
-      })
-    );
-
-    setWishlistTemplates(templates);
-
-  } catch (err) {
-    console.error("Error loading wishlist:", err);
-    setWishlist([]);
-    setWishlistTemplates([]);
-  } finally {
-    setLoading(false);
-  }
-};
-
-
-
-
+      setWishlistTemplates(templates);
+    } catch (err) {
+      console.error("Error loading wishlist:", err);
+      setWishlist([]);
+      setWishlistTemplates([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const toggleWishlist = async (templateId) => {
     if (!userId) return;
 
     try {
-      const res = await fetch(`http://localhost:8080/api/wishlist/toggle`, {
+      await fetch(`http://localhost:8080/api/wishlist/toggle`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, templateId })
       });
-      const isNowInWishlist = await res.json();
-      await loadWishlist(); 
-      return isNowInWishlist;
+
+      setWishlist(prev => {
+        if (prev.includes(Number(templateId))) {
+          return prev.filter(id => id !== Number(templateId));
+        } else {
+          return [...prev, Number(templateId)];
+        }
+      });
     } catch (err) {
       console.error('Error toggling wishlist:', err);
     }

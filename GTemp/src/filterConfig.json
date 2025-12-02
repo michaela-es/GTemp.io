@@ -1,5 +1,0 @@
-{
-  "engine_type": ["Unity", "Unreal", "Godot", "Unity/Unreal"],
-  "template_type": ["template", "sprite", "asset", "code", "audio"],
-  "price_range": ["Free", "Paid"]
-}
