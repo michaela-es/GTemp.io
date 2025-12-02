@@ -1,6 +1,6 @@
 import React from 'react';
 import TemplateGrid from '../components/Templates/TemplateGrid';
-import useLoadData from '../hooks/useLoadData_back';
+import useLoadData from '../hooks/useLoadData';
 import FirstContainer from '../components/display/Header';
 import { useAuth } from '../context/AuthContext';
 export const Home = () => {
