@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import ProfileDropDown from '../ProfileDropDown';
-import searchIcon from '../../assets/search-icon.svg';
 import logoImage from '../../assets/logo.png';
 import LoginModal from '../authentication/LoginUser';
 import SearchBar from '../Search/SearchBar';
 import RegisterModal from '../RegisterModal';
+import './Header.css';
+
 export default function Header() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
@@ -46,27 +47,30 @@ export default function Header() {
   };
 
   return (
-    <div className="box box1">
-      <div className="left-section">
-        <img src={logoImage} alt="Logo" className="logo" />
-        <a href="http://localhost:5173" className="site-name-link">
-          <span className="site-name">Gtemp.io</span>
-        </a>
+    <header className="header">
+      <div className="header-container">
+        <div className="header-brand">
+          <a href="/" className="brand-link">
+            <img src={logoImage} alt="Gtemp.io Logo" className="header-logo" />
+            <span className="logo-text">Gtemp.io</span>
+          </a>
+        </div>
 
+        <div className="header-search">
+          <SearchBar className="header-search-bar" />
+        </div>
+
+        <div className="header-actions">
+          <ProfileDropDown
+            isLoggedIn={isLoggedIn}
+            username={username}
+            wallet={currentUser?.wallet}
+            onLoginClick={handleAuthAction}
+            onLogout={logout}
+            isLoading={loading}
+          />
+        </div>
       </div>
-
-      <div className="search-container">
-              <SearchBar/>
-      </div>
-
-      <ProfileDropDown
-        isLoggedIn={isLoggedIn}
-        username={username}
-        wallet={currentUser?.wallet} // <-- add this line
-        onLoginClick={handleAuthAction}
-        onLogout={logout}
-        isLoading={loading}
-      />
 
       {isLoginModalOpen && (
         <LoginModal 
@@ -82,6 +86,6 @@ export default function Header() {
           onSwitchToLogin={handleSwitchToLogin}
         />
       )}
-    </div>
+    </header>
   );
 }
