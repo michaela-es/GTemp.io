@@ -41,7 +41,7 @@ export const HomePage = () => {
   };
 
   const { paginatedItems, totalPages } = useTemplateManager(
-    data, query, filters, activeSorts, currentPage, 12
+    data, query, filters, activeSorts, currentPage, 8
   );
 
   const handleSort = useCallback((sortType) => {
@@ -85,155 +85,118 @@ export const HomePage = () => {
   return (
     <div className="app-container">
       <Header/>
-
-      <div className="filter-row">
-        <FilterToggle
-          title="Engine Type"
-          options={filterConfig.engine}
-          selectedValues={engineArray}
-          onSelectionChange={handleEngineChange}
-        />
-
-        <FilterToggle
-          title="Template Type"
-          options={filterConfig.type}
-          selectedValues={typeArray}
-          onSelectionChange={handleTypeChange}
-        />
-
-        <FilterToggle
-          title="Price"
-          options={filterConfig.price_range}
-          selectedValues={priceArray}
-          onSelectionChange={handlePriceChange}
-        />
-      </div>
-
-      {(engineArray.length > 0 || typeArray.length > 0 || priceArray.length > 0) && (
-        <div className="active-filters">
-          {engineArray.length > 0 && (
-            <div className="filter-chip">
-              Engine: {engineArray.join(', ')}
-              <button 
-                onClick={() => handleEngineChange([])}
-                className="remove-filter"
-              >
-                ×
-              </button>
-            </div>
-          )}
-          {typeArray.length > 0 && (
-            <div className="filter-chip">
-              Type: {typeArray.join(', ')}
-              <button 
-                onClick={() => handleTypeChange([])}
-                className="remove-filter"
-              >
-                ×
-              </button>
-            </div>
-          )}
-          {priceArray.length > 0 && (
-            <div className="filter-chip">
-              Price: {priceArray.join(', ')}
-              <button 
-                onClick={() => handlePriceChange([])}
-                className="remove-filter"
-              >
-                ×
-              </button>
-            </div>
-          )}
-        </div>
-      )}
-
-      {(query || engineArray.length > 0 || typeArray.length > 0 || priceArray.length > 0) && (
-        <button 
-          onClick={clearAll}
-          className="clear-filters-btn"
-          style={{
-            margin: '10px',
-            padding: '8px 16px',
-            background: '#f0f0f0',
-            border: '1px solid #ccc',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontSize: '14px',
-            fontWeight: '500'
-          }}
-        >
-          Clear All Filters
-        </button>
-      )}
-
-      <div className="sort-row">
-        <SortButton
-          label="Popular"
-          isActive={activeSorts.includes('popular')}
-          onClick={() => handleSort('popular')}
-        />
-
-        <SortButton
-          label="Rating"
-          isActive={activeSorts.includes('rating')}
-          onClick={() => handleSort('rating')}
-        />
-
-        <SortButton
-          label="Price (Lowest)"
-          isActive={activeSorts.includes('price')}
-          onClick={() => handleSort('price')}
-        />
-      </div>
-
-      {query && (
-        <div className="search-results-info">
-          <h3>Search results for: "{query}"</h3>
-          <p>Found {paginatedItems.length} templates</p>
-        </div>
-      )}
-
-      <div className="templates-grid">
-        {paginatedItems.length > 0 ? (
-          paginatedItems.map((t, index) => (
-            <TemplateCard
-              key={t.id ?? index}
-              id={t.id}
-              templateTitle={t.templateTitle}
-              coverImagePath={t.coverImagePath}
-              rating={t.rating}
-              downloads={t.downloads}
-              templateDesc={t.templateDesc}
+        <div className="home-content">
+          <div className="filter-row">
+            <FilterToggle
+              title="Engine Type"
+              options={filterConfig.engine}
+              selectedValues={engineArray}
+              onSelectionChange={handleEngineChange}
             />
-          ))
-        ) : (
-          <div className="no-results">
-            <p>No templates found matching your filters.</p>
-            {(query || engineArray.length > 0 || typeArray.length > 0 || priceArray.length > 0) && (
-              <button 
-                onClick={clearAll}
-                className="clear-search-btn"
-                style={{
-                  padding: '8px 16px',
-                  background: '#f0f0f0',
-                  border: '1px solid #ccc',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  marginTop: '10px'
-                }}
-              >
-                Clear Search & Filters
-              </button>
+
+            <FilterToggle
+              title="Template Type"
+              options={filterConfig.type}
+              selectedValues={typeArray}
+              onSelectionChange={handleTypeChange}
+            />
+
+            <FilterToggle
+              title="Price"
+              options={filterConfig.price_range}
+              selectedValues={priceArray}
+              onSelectionChange={handlePriceChange}
+            />
+          </div>
+
+          {(query || engineArray.length > 0 || typeArray.length > 0 || priceArray.length > 0) && (
+            <button 
+              onClick={clearAll}
+              className="clear-filters-btn"
+              style={{
+                margin: '10px',
+                padding: '8px 16px',
+                background: '#f0f0f0',
+                border: '1px solid #ccc',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: '500'
+              }}
+            >
+              Clear All Filters
+            </button>
+          )}
+
+          <div className="sort-row">
+            <SortButton
+              label="Popular"
+              isActive={activeSorts.includes('popular')}
+              onClick={() => handleSort('popular')}
+            />
+
+            <SortButton
+              label="Rating"
+              isActive={activeSorts.includes('rating')}
+              onClick={() => handleSort('rating')}
+            />
+
+            <SortButton
+              label="Price (Lowest)"
+              isActive={activeSorts.includes('price')}
+              onClick={() => handleSort('price')}
+            />
+          </div>
+
+          {query && (
+            <div className="search-results-info">
+              <h3>Search results for: "{query}"</h3>
+              <p>Found {paginatedItems.length} templates</p>
+            </div>
+          )}
+
+          <div className="templates-grid">
+            {paginatedItems.length > 0 ? (
+              paginatedItems.map((t, index) => (
+                <TemplateCard
+                  key={t.id ?? index}
+                  id={t.id}
+                  templateTitle={t.templateTitle}
+                  coverImagePath={t.coverImagePath}
+                  rating={t.rating}
+                  downloads={t.downloads}
+                  templateDesc={t.templateDesc}
+                />
+              ))
+            ) : (
+              <div className="no-results">
+                <p>No templates found matching your filters.</p>
+                {(query || engineArray.length > 0 || typeArray.length > 0 || priceArray.length > 0) && (
+                  <button 
+                    onClick={clearAll}
+                    className="clear-search-btn"
+                    style={{
+                      padding: '8px 16px',
+                      background: '#f0f0f0',
+                      border: '1px solid #ccc',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      marginTop: '10px'
+                    }}
+                  >
+                    Clear Search & Filters
+                  </button>
+                )}
+              </div>
             )}
           </div>
-        )}
-      </div>
 
-      <Pagination
-        totalPages={totalPages}
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-      />
+          <Pagination
+            totalPages={totalPages}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+          />
+        </div>
     </div>
   );
 };

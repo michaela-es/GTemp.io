@@ -1,37 +1,28 @@
-import React, { memo, useMemo } from 'react';
+import React from 'react';
 import TemplateCard from './TemplateCard';
+import './TemplateGrid.css';
 
-const TemplateGrid = memo(({ templates = [], query = '', filters = {} }) => {
-  
+const TemplateGrid = ({ templates = [], query = '', filters = {} }) => {
   const hasFilters = Object.values(filters).some(arr => arr.length > 0);
 
-  const renderedTemplates = useMemo(() => {
-    return templates.map((template, index) => (
-      <TemplateCard
-        key={template.id || index}
-        id={template.id}
-        templateTitle={template.templateTitle}
-        coverImagePath={template.coverImagePath}
-        rating={template.rating}
-        downloads={template.downloads}
-        templateDesc={template.templateDesc}
-      />
-    ));
-  }, [templates]);
-
   return (
-    <div style={{
-      display: 'grid',
-      gridTemplateColumns: 'repeat(4, 1fr)',
-      gap: '20px',
-      padding: '20px',
-      maxWidth: '1200px',
-      margin: '0 auto'
-    }}>
+    <div className="template-grid">
       {templates.length > 0 ? (
-        renderedTemplates
+        <div className="card-gallery">
+          {templates.map((template, index) => (
+            <TemplateCard
+              key={template.id || index}
+              id={template.id}
+              templateTitle={template.templateTitle}
+              coverImagePath={template.coverImagePath}
+              rating={template.rating}
+              downloads={template.downloads}
+              templateDesc={template.templateDesc}
+            />
+          ))}
+        </div>
       ) : (
-        <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', fontSize: '18px', color: '#666' }}>
+        <div className="no-results">
           {query || hasFilters
             ? 'No templates found matching your criteria'
             : 'No templates available'}
@@ -39,6 +30,6 @@ const TemplateGrid = memo(({ templates = [], query = '', filters = {} }) => {
       )}
     </div>
   );
-});
+};
 
 export default TemplateGrid;

@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './TemplateGrid.css';
 
 const TemplateCard = memo(({ 
   id,
@@ -9,70 +10,31 @@ const TemplateCard = memo(({
   downloads,
   templateDesc
 }) => {
-
   const navigate = useNavigate();
   const handleClick = () => navigate(`/template/${id}`);
 
   return (
-    <div style={styles.card} onClick={handleClick}>
+    <div className="template-card" onClick={handleClick}>
       <img 
         src={coverImagePath || '/default-cover.jpg'}
         alt={templateTitle}
-        style={styles.image}
+        className="card-image"
       />
+      
+      <div className="card-content">
+        <h3 className="card-title">{templateTitle}</h3>
 
-      <h3 style={styles.title}>{templateTitle}</h3>
+        {templateDesc && (
+          <p className="card-description">{templateDesc}</p>
+        )}
 
-      {templateDesc && (
-        <p style={styles.description}>{templateDesc}</p>
-      )}
-
-      <div style={styles.stats}>
-        <span>⭐ {rating || 0}</span>
-        <span>⬇️ {downloads || 0}</span>
+        <div className="card-stats">
+          <span>⭐ {rating || 0}</span>
+          <span>⬇️ {downloads || 0}</span>
+        </div>
       </div>
     </div>
   );
 });
-
-const styles = {
-  card: {
-    width: '250px',
-    border: '1px solid #ddd',
-    borderRadius: '8px',
-    overflow: 'hidden',
-    padding: '12px',
-    boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-    backgroundColor: '#fff',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-    cursor: 'pointer'
-  },
-  image: {
-    width: '100%',
-    height: '140px',
-    objectFit: 'cover',
-    borderRadius: '6px',
-  },
-  title: {
-    margin: 0,
-    fontSize: '18px',
-    fontWeight: '600',
-  },
-  description: {
-    margin: '4px 0',
-    fontSize: '14px',
-    color: '#555',
-    flexGrow: 1,
-  },
-  stats: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    fontSize: '14px',
-    fontWeight: '500',
-    color: '#333',
-  },
-};
 
 export default TemplateCard;

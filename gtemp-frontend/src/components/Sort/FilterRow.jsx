@@ -3,7 +3,7 @@ import FilterToggle from '../components/FilterToggle';
 
 const FilterRow = ({ filters, setFilters, filterConfig }) => {
   return (
-    <div className="filter-row" style={{ display: 'flex', gap: '.3em', alignItems: 'center', margin: '1em'}}>
+    <div className="filter-row" style={{ display: 'flex', gap: '1em', alignItems: 'center', margin: '1em'}}>
       <FilterToggle
         title="Engine Type"
         options={filterConfig.engine_type}
