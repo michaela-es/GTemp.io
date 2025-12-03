@@ -8,6 +8,7 @@ import useLoadData from '../hooks/useLoadData';
 import useTemplateManager from '../hooks/useTemplateManager';
 import { useSearch } from '../context/SearchContext';
 import Header from '../components/display/Header';
+import GooeySpinner from '../components/GooeySpinner';
 
 export const HomePage = () => {
   const { data, loading } = useLoadData();
@@ -80,7 +81,7 @@ export const HomePage = () => {
     setCurrentPage(1);
   }, [query, engine, type, price]);
 
-  if (loading) return <h2>Loading templates...</h2>;
+  if (loading) return <GooeySpinner />;
 
   return (
     <div className="app-container">
