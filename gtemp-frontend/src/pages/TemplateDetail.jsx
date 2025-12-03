@@ -11,7 +11,7 @@ import CommentsList from '../components/CommentList';
 import DownloadModal from '../components/DownloadModal';
 import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from "../context/AuthContext";
-
+import '../styles/TemplateDetail.css';
 const TemplateDetail = () => {
   const { id } = useParams();
   const templateId = Number(id);
@@ -32,6 +32,8 @@ const TemplateDetail = () => {
         const res = await fetch(`http://localhost:8080/api/templates/${templateId}`);
         if (!res.ok) throw new Error(`Failed to fetch template: ${res.status}`);
         const data = await res.json();
+              console.log('Images array:', data.images);
+
         setTemplate(data);
       } catch (err) {
         setError(err.message);
