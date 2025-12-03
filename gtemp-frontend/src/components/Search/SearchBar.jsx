@@ -1,32 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { useSearch } from '../../context/SearchContext';
+import { useNavigate } from 'react-router-dom';
 import './SearchBar.css';
 
 const SearchBar = ({ className = '', placeholder = 'Search templates...' }) => {
-  const { query, setQuery, clearSearch } = useSearch();
+  const { query, setQuery, clearAll } = useSearch();
   const [localQuery, setLocalQuery] = useState(query);
-
+  const navigate = useNavigate(); 
   useEffect(() => {
     setLocalQuery(query);
   }, [query]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setQuery(localQuery.trim());
+    const trimmedQuery = localQuery.trim();
+    setQuery(trimmedQuery);        
+    navigate('/', { replace: false });
   };
 
   const handleClear = () => {
     setLocalQuery('');
-    clearSearch();
+    clearAll();
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      handleSubmit(e);
-    }
-    if (e.key === 'Escape') {
-      handleClear();
-    }
+    if (e.key === 'Enter') handleSubmit(e);
+    if (e.key === 'Escape') handleClear();
   };
 
   return (
@@ -45,7 +44,6 @@ const SearchBar = ({ className = '', placeholder = 'Search templates...' }) => {
           className="search-input"
           aria-label="Search templates"
         />
-        
         <div className="search-controls">
           {localQuery && (
             <button
@@ -60,7 +58,6 @@ const SearchBar = ({ className = '', placeholder = 'Search templates...' }) => {
               </svg>
             </button>
           )}
-          
           <button
             type="submit"
             className="search-submit-btn"

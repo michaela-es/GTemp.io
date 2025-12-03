@@ -1,37 +1,36 @@
 import React, { createContext, useState, useContext, useCallback, useEffect } from 'react';
-import { useSearchParams, useLocation } from 'react-router-dom';
+import { useSearchParams, useLocation, useNavigate } from 'react-router-dom';
 
 const SearchContext = createContext();
 
 export const SearchProvider = ({ children }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
-  
+  const navigate = useNavigate();
+
   const parseArrayFromURL = (paramName) => {
     const param = searchParams.get(paramName);
     return param ? param.split(',').filter(item => item.trim() !== '') : [];
   };
-  
-  const arrayToString = (array) => {
-    return array.length > 0 ? array.join(',') : '';
-  };
-  
+
+  const arrayToString = (array) => (array.length > 0 ? array.join(',') : '');
+
   const initialQuery = searchParams.get('q') || '';
   const initialEngine = parseArrayFromURL('engine');
   const initialType = parseArrayFromURL('type');
   const initialPrice = parseArrayFromURL('price');
-  
+
   const [query, setQuery] = useState(initialQuery);
-  const [engine, setEngine] = useState(initialEngine); 
-  const [type, setType] = useState(initialType);     
-  const [price, setPrice] = useState(initialPrice);   
+  const [engine, setEngine] = useState(initialEngine);
+  const [type, setType] = useState(initialType);
+  const [price, setPrice] = useState(initialPrice);
 
   useEffect(() => {
     const currentQuery = searchParams.get('q') || '';
     const currentEngine = parseArrayFromURL('engine');
     const currentType = parseArrayFromURL('type');
     const currentPrice = parseArrayFromURL('price');
-    
+
     if (currentQuery !== query) setQuery(currentQuery);
     if (JSON.stringify(currentEngine) !== JSON.stringify(engine)) setEngine(currentEngine);
     if (JSON.stringify(currentType) !== JSON.stringify(type)) setType(currentType);
@@ -40,7 +39,7 @@ export const SearchProvider = ({ children }) => {
 
   const updateSearchParams = useCallback((updates) => {
     const newParams = new URLSearchParams(searchParams);
-    
+
     Object.entries(updates).forEach(([key, value]) => {
       if (value && value !== '') {
         newParams.set(key, value);
@@ -48,8 +47,8 @@ export const SearchProvider = ({ children }) => {
         newParams.delete(key);
       }
     });
-    
-    setSearchParams(newParams, { replace: true });
+
+    setSearchParams(newParams);
   }, [searchParams, setSearchParams]);
 
   const setQueryAndUpdateURL = useCallback((newQuery) => {
@@ -71,14 +70,6 @@ export const SearchProvider = ({ children }) => {
     setPrice(newPrice);
     updateSearchParams({ price: arrayToString(newPrice) });
   }, [updateSearchParams]);
-
-  const clearAll = useCallback(() => {
-    setQuery('');
-    setEngine([]);
-    setType([]);
-    setPrice([]);
-    setSearchParams({}, { replace: true });
-  }, [setSearchParams]);
 
   const toggleEngine = useCallback((engineValue) => {
     setEngine(prev => {
@@ -110,6 +101,16 @@ export const SearchProvider = ({ children }) => {
     });
   }, [updateSearchParams]);
 
+  const clearAll = useCallback(() => {
+    setQuery('');
+    setEngine([]);
+    setType([]);
+    setPrice([]);
+
+    setSearchParams({});
+  }, [setSearchParams]);
+
+
   const getFilters = useCallback(() => ({
     engine_type: engine,
     template_type: type,
@@ -123,18 +124,18 @@ export const SearchProvider = ({ children }) => {
   const value = {
     query,
     engine,
-    type,  
-    price,  
-    
+    type,
+    price,
+
     setQuery: setQueryAndUpdateURL,
     setEngine: setEngineAndUpdateURL,
     setType: setTypeAndUpdateURL,
     setPrice: setPriceAndUpdateURL,
-    
+
     toggleEngine,
     toggleType,
     togglePrice,
-    
+
     setFilters: (filters) => {
       const updates = {};
       if (filters.query !== undefined) {
@@ -155,11 +156,11 @@ export const SearchProvider = ({ children }) => {
       }
       updateSearchParams(updates);
     },
-    
+
     clearAll,
     getFilters,
     isSearchActive,
-    
+
     searchParams: Object.fromEntries(searchParams.entries()),
     currentPath: location.pathname,
   };
