@@ -58,3 +58,5 @@ export const RegisterModal = ({ isOpen, onClose, onRegister }) => {
     </div>
   );
 };
+
+export default RegisterModal;

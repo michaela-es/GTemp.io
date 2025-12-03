@@ -1,24 +1,44 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import TemplateCard from '../components/Templates/TemplateCard';
-import SearchBar from '../components/Search/SearchBar';
 import FilterToggle from '../components/Sort/FilterToggle';
 import SortButton from '../components/Sort/SortButton';
 import Pagination from '../components/Sort/Pagination';
 import filterConfig from '../filterConfig.json';
 import useLoadData from '../hooks/useLoadData';
 import useTemplateManager from '../hooks/useTemplateManager';
+import { useSearch } from '../context/SearchContext';
 import Header from '../components/display/Header';
-export const Home = () => {
-  const { data, loading } = useLoadData();
 
-  const [query, setQuery] = useState('');
-  const [filters, setFilters] = useState({
-    engine_type: [],
-    template_type: [],
-    price_range: []
-  });
+export const HomePage = () => {
+  const { data, loading } = useLoadData();
+  
+  const { 
+    query, 
+    setQuery, 
+    engine, 
+    setEngine, 
+    type, 
+    setType, 
+    price, 
+    setPrice,
+    toggleEngine,
+    toggleType,
+    togglePrice,
+    clearAll 
+  } = useSearch();
+
   const [activeSorts, setActiveSorts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+
+  const engineArray = Array.isArray(engine) ? engine : (engine ? [engine] : []);
+  const typeArray = Array.isArray(type) ? type : (type ? [type] : []);
+  const priceArray = Array.isArray(price) ? price : (price ? [price] : []);
+
+  const filters = {
+    engine_type: engineArray,
+    template_type: typeArray,
+    price_range: priceArray
+  };
 
   const { paginatedItems, totalPages } = useTemplateManager(
     data, query, filters, activeSorts, currentPage, 12
@@ -32,6 +52,34 @@ export const Home = () => {
     );
   }, []);
 
+  const handleEngineChange = (newSelection) => {
+    if (toggleEngine) {
+      setEngine(newSelection);
+    } else {
+      setEngine(newSelection.length > 0 ? newSelection.join(',') : '');
+    }
+  };
+
+  const handleTypeChange = (newSelection) => {
+    if (toggleType) {
+      setType(newSelection);
+    } else {
+      setType(newSelection.length > 0 ? newSelection.join(',') : '');
+    }
+  };
+
+  const handlePriceChange = (newSelection) => {
+    if (togglePrice) {
+      setPrice(newSelection);
+    } else {
+      setPrice(newSelection.length > 0 ? newSelection.join(',') : '');
+    }
+  };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [query, engine, type, price]);
+
   if (loading) return <h2>Loading templates...</h2>;
 
   return (
@@ -42,30 +90,81 @@ export const Home = () => {
         <FilterToggle
           title="Engine Type"
           options={filterConfig.engine}
-          selectedValues={filters.engine_type}
-          onSelectionChange={(newSelection) =>
-            setFilters(prev => ({ ...prev, engine_type: newSelection }))
-          }
+          selectedValues={engineArray}
+          onSelectionChange={handleEngineChange}
         />
 
         <FilterToggle
           title="Template Type"
           options={filterConfig.type}
-          selectedValues={filters.template_type}
-          onSelectionChange={(newSelection) =>
-            setFilters(prev => ({ ...prev, template_type: newSelection }))
-          }
+          selectedValues={typeArray}
+          onSelectionChange={handleTypeChange}
         />
 
         <FilterToggle
           title="Price"
           options={filterConfig.price_range}
-          selectedValues={filters.price_range}
-          onSelectionChange={(newSelection) =>
-            setFilters(prev => ({ ...prev, price_range: newSelection }))
-          }
+          selectedValues={priceArray}
+          onSelectionChange={handlePriceChange}
         />
       </div>
+
+      {(engineArray.length > 0 || typeArray.length > 0 || priceArray.length > 0) && (
+        <div className="active-filters">
+          {engineArray.length > 0 && (
+            <div className="filter-chip">
+              Engine: {engineArray.join(', ')}
+              <button 
+                onClick={() => handleEngineChange([])}
+                className="remove-filter"
+              >
+                ×
+              </button>
+            </div>
+          )}
+          {typeArray.length > 0 && (
+            <div className="filter-chip">
+              Type: {typeArray.join(', ')}
+              <button 
+                onClick={() => handleTypeChange([])}
+                className="remove-filter"
+              >
+                ×
+              </button>
+            </div>
+          )}
+          {priceArray.length > 0 && (
+            <div className="filter-chip">
+              Price: {priceArray.join(', ')}
+              <button 
+                onClick={() => handlePriceChange([])}
+                className="remove-filter"
+              >
+                ×
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {(query || engineArray.length > 0 || typeArray.length > 0 || priceArray.length > 0) && (
+        <button 
+          onClick={clearAll}
+          className="clear-filters-btn"
+          style={{
+            margin: '10px',
+            padding: '8px 16px',
+            background: '#f0f0f0',
+            border: '1px solid #ccc',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: '500'
+          }}
+        >
+          Clear All Filters
+        </button>
+      )}
 
       <div className="sort-row">
         <SortButton
@@ -81,11 +180,18 @@ export const Home = () => {
         />
 
         <SortButton
-          label="Price"
+          label="Price (Lowest)"
           isActive={activeSorts.includes('price')}
           onClick={() => handleSort('price')}
         />
       </div>
+
+      {query && (
+        <div className="search-results-info">
+          <h3>Search results for: "{query}"</h3>
+          <p>Found {paginatedItems.length} templates</p>
+        </div>
+      )}
 
       <div className="templates-grid">
         {paginatedItems.length > 0 ? (
@@ -101,10 +207,27 @@ export const Home = () => {
             />
           ))
         ) : (
-          <p>No templates found matching your filters.</p>
+          <div className="no-results">
+            <p>No templates found matching your filters.</p>
+            {(query || engineArray.length > 0 || typeArray.length > 0 || priceArray.length > 0) && (
+              <button 
+                onClick={clearAll}
+                className="clear-search-btn"
+                style={{
+                  padding: '8px 16px',
+                  background: '#f0f0f0',
+                  border: '1px solid #ccc',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  marginTop: '10px'
+                }}
+              >
+                Clear Search & Filters
+              </button>
+            )}
+          </div>
         )}
       </div>
-
 
       <Pagination
         totalPages={totalPages}
@@ -115,4 +238,4 @@ export const Home = () => {
   );
 };
 
-export default Home;
+export default HomePage;
