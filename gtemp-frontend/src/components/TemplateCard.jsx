@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 
 const TemplateCard = ({ 
   id,                   
@@ -15,6 +15,20 @@ const TemplateCard = ({
     navigate(`/template/${id}`);  
   };
 
+  // Function to render stars based on rating
+  const renderStars = (ratingValue) => {
+    if (!ratingValue) return 'No rating';
+    const fullStars = Math.floor(ratingValue);
+    const halfStar = ratingValue - fullStars >= 0.5 ? 1 : 0;
+    const emptyStars = 5 - fullStars - halfStar;
+
+    return (
+      '★'.repeat(fullStars) +
+      (halfStar ? '⯨' : '') +  // Half star
+      '☆'.repeat(emptyStars)
+    );
+  };
+
   return (
     <div style={styles.card} onClick={handleClick}>
       <img 
@@ -25,7 +39,7 @@ const TemplateCard = ({
       <h3 style={styles.title}>{template_title}</h3>  
       {templateDesc && <p style={styles.description}>{templateDesc}</p>}
       <div style={styles.stats}>
-        <span>⭐ {rating || 0}</span>      
+        <span>{renderStars(rating)}</span>      
         <span>⬇️ {downloads || 0}</span>   
       </div>
     </div>

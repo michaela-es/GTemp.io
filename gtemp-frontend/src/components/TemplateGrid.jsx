@@ -29,12 +29,13 @@ const TemplateGrid = ({ templates = [], query = '', filters = {} }) => {
           <TemplateCard
             key={template.id || index}
             id={template.id}            
-            templateTitle={template.templateTitle}  
+            template_title={template.templateTitle}  
             coverImagePath={template.coverImagePath} 
-            rating={template.rating}   
+            rating={template.averageRating}   // <-- use averageRating
             downloads={template.downloads} 
             templateDesc={template.templateDesc}
           />
+
         ))
       ) : (
         <div style={gridStyles.noResults}>
