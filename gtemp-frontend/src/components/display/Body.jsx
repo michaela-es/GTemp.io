@@ -14,7 +14,11 @@ import logoImage from '../../assets/logo.png';
 import filterIcon from '../../assets/filter-icon.svg';
 import dropDownIcon from '../../assets/drop-down.svg';
 
+
+import useLoadData from '../../hooks/useLoadData';
+
 export default function Body() {
+  const { data: templates} = useLoadData();
   const [selectedPrice, setSelectedPrice] = useState('any');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
@@ -222,25 +226,12 @@ export default function Body() {
           </div>
         </div>
       </div>
-
-      {/* THIRD CONTAINER */}
-      <div className="box box3"></div>
-      {activeModal === 'login' && (
-        <LoginUser
-          onClose={() => setActiveModal(null)}
-          onSwitchToCreateAccount={() => setActiveModal('create')}
-          onLoginSuccess={handleLoginSuccess} 
-        />
-      )}
-
-      {/* CREATE ACCOUNT MODAL */}
-      {activeModal === 'create' && (
-        <RegisterUser
-          onClose={() => setActiveModal(null)}  
-          onSwitchToLogin={() => setActiveModal('login')}
-        />
-      )}
-  
+      
+      <div className="box3 template-grid-container">
+        <TemplateGrid templates={templates} />
+        {/* THIRD CONTAINER */}
+        <div className="box box3"></div>
+      </div>
     </div>
   );
 }

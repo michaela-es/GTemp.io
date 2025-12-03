@@ -164,7 +164,7 @@ export const styles = {
     borderRadius: "0px 0px 3px 3px",
     backgroundColor: "#fff",
     cursor: "pointer",
-    width: "169px",
+    width: "149px",
   },
   dropUpMenu: {
     position: "absolute",

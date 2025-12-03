@@ -1,5 +1,14 @@
+
 {
-  "engine_type": ["Unity", "Unreal", "Godot", "Unity/Unreal"],
-  "template_type": ["template", "sprite", "asset", "code", "audio"],
+  "engine": ["Roblox Studio", "Unity 3D", "Unreal Engine", "Godot"],
+  "type": [
+    "Action",
+    "Adventure",
+    "RPG",
+    "RTS/Diplomacy",
+    "Street Fight & Platformer",
+    "Board Games",
+    "Systems"
+  ],
   "price_range": ["Free", "Paid"]
 }
