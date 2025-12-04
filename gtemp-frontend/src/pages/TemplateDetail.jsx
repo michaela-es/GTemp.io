@@ -5,13 +5,13 @@ import HeadingText from '../components/HeadingText';
 import DescBox from '../components/Templates/DescBox';
 import ActionButton from '../components/ActionButton';
 import { DetailsBox } from '../components/Templates/DetailsBox';
-import RatingBox from '../components/RatingBox';
 import FirstContainer from '../components/display/Header';
 import CommentsList from '../components/CommentList';
 import DownloadModal from '../components/DownloadModal';
 import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from "../context/AuthContext";
 import '../styles/TemplateDetail.css';
+
 const TemplateDetail = () => {
   const { id } = useParams();
   const templateId = Number(id);
@@ -19,12 +19,14 @@ const TemplateDetail = () => {
   const [template, setTemplate] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [ratedUsers, setRatedUsers] = useState([]);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
 
-  const { currentUser, refreshWallet } = useAuth();
-  const { toggleWishlist, isInWishlist } = useWishlist();
+  const { currentUser, refreshWallet, initializing } = useAuth();
+  const { toggleWishlist, isInWishlist, wishlistIds } = useWishlist();
 
-  const inWishlist = isInWishlist(templateId);
+  const inWishlist = wishlistIds.includes(templateId);
+
 
   useEffect(() => {
     const fetchTemplate = async () => {
@@ -32,10 +34,9 @@ const TemplateDetail = () => {
         const res = await fetch(`http://localhost:8080/api/templates/${templateId}`);
         if (!res.ok) throw new Error(`Failed to fetch template: ${res.status}`);
         const data = await res.json();
-              console.log('Images array:', data.images);
-
         setTemplate(data);
       } catch (err) {
+        console.error(err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -44,38 +45,73 @@ const TemplateDetail = () => {
     fetchTemplate();
   }, [templateId]);
 
+
+  useEffect(() => {
+    const fetchRatedUsers = async () => {
+      try {
+        const res = await fetch(`http://localhost:8080/api/templates/${templateId}/rated-users`);
+        if (!res.ok) throw new Error("Failed to fetch rated users");
+        const data = await res.json();
+        setRatedUsers(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchRatedUsers();
+  }, [templateId]);
+
+
   const getImageUrl = (path) => {
     if (!path) return '/default-cover.jpg';
     return `http://localhost:8080/${path.replace(/\\/g, '/')}`;
   };
 
+
+  const handleWishlistClick = async () => {
+    if (!currentUser) {
+      alert("You must be logged in to add to wishlist.");
+      return;
+    }
+    await toggleWishlist(templateId);
+  };
+
+  const handleFreeDownload = () => {
+    if (!currentUser) {
+      alert("You must be logged in to download.");
+      return;
+    }
+    const link = document.createElement('a');
+    link.href = `http://localhost:8080/api/templates/${templateId}/download/free?userEmail=${encodeURIComponent(currentUser.email)}`;
+    link.download = `${template.templateTitle}.zip`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setShowDownloadModal(false);
+  };
+
   const handleConfirmPayment = async (amount) => {
-    if (!currentUser) return alert("You must be logged in to purchase.");
+    if (!currentUser) {
+      alert("You must be logged in to purchase.");
+      return;
+    }
     try {
       const res = await fetch(
-        `http://localhost:8080/api/templates/${template.id}/purchase?userEmail=${encodeURIComponent(currentUser.email)}&donationAmount=${amount}`,
+        `http://localhost:8080/api/templates/${templateId}/purchase?userEmail=${encodeURIComponent(currentUser.email)}&donationAmount=${amount}`,
         { method: 'POST' }
       );
-      if (!res.ok) return alert('Payment failed');
+      if (!res.ok) {
+        const error = await res.text();
+        alert(`Payment failed: ${error}`);
+        return;
+      }
       alert('Payment successful!');
       handleFreeDownload();
       await refreshWallet();
       setShowDownloadModal(false);
     } catch (err) {
       console.error(err);
-      alert('Payment failed');
+      alert('Payment failed. Try again.');
     }
-  };
-
-  const handleFreeDownload = () => {
-    if (!currentUser) return alert("You must be logged in to download.");
-    const link = document.createElement('a');
-    link.href = `http://localhost:8080/api/templates/${template.id}/download/free?userEmail=${encodeURIComponent(currentUser.email)}`;
-    link.download = `${template.templateTitle}.zip`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    setShowDownloadModal(false);
   };
 
   if (loading) return <div>Loading template...</div>;
@@ -93,8 +129,9 @@ const TemplateDetail = () => {
               ? 'https://www.svgrepo.com/show/535436/heart.svg'
               : 'https://www.svgrepo.com/show/532473/heart.svg'}
             name={inWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
-            onClick={() => toggleWishlist(templateId)}
+            onClick={handleWishlistClick}
             className={inWishlist ? 'wishlisted' : ''}
+            disabled={!currentUser || initializing}
           />
           <IconButton
             imgSrc="https://www.svgrepo.com/show/532718/star-sharp.svg"
@@ -107,7 +144,6 @@ const TemplateDetail = () => {
             <div className="details-left">
               <HeadingText text={template.templateTitle} />
               <DescBox text={template.templateDesc} />
-
               <DetailsBox
                 releaseDate={template.releaseDate ? new Date(template.releaseDate).toLocaleDateString() : 'Not specified'}
                 engine={template.engine}
@@ -128,14 +164,47 @@ const TemplateDetail = () => {
               </section>
 
               <HeadingText text="Comments" />
-              <CommentsList templateId={template.id} />
+              <CommentsList templateId={templateId} />
             </div>
 
             <div className="details-right">
-              <img src={getImageUrl(template.coverImagePath)} alt={template.templateTitle} className="template-image" />
+              <img
+                src={getImageUrl(template.coverImagePath)}
+                alt={template.templateTitle}
+                className="template-image"
+              />
+
               <div className="rating-div">
                 <HeadingText text="Rating" />
-                <RatingBox templateRating={template.rating} />
+                <p style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
+                  {template.averageRating
+                    ? (() => {
+                        const fullStars = Math.floor(template.averageRating);
+                        const halfStar = template.averageRating - fullStars >= 0.5 ? 1 : 0;
+                        const emptyStars = 5 - fullStars - halfStar;
+                        return (
+                          '★'.repeat(fullStars) +
+                          (halfStar ? '⯨' : '') +
+                          '☆'.repeat(emptyStars)
+                        );
+                      })()
+                    : 'No rating yet'}
+                </p>
+
+                <div>
+                  <h3>Users who rated this template:</h3>
+                  {ratedUsers.length === 0 ? (
+                    <p>No ratings yet.</p>
+                  ) : (
+                    <ul>
+                      {ratedUsers.map(user => (
+                        <li key={user.userEmail}>
+                          {user.userName} ({user.userEmail}): {user.ratingValue}★
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </div>
             </div>
           </div>
