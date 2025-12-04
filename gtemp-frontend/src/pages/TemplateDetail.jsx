@@ -11,7 +11,7 @@ import DownloadModal from '../components/DownloadModal';
 import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from "../context/AuthContext";
 import '../styles/TemplateDetail.css';
-
+import BackgroundWrapper from '../components/Templates/BackgroundWrapper';
 const TemplateDetail = () => {
   const { id } = useParams();
   const templateId = Number(id);
@@ -119,6 +119,7 @@ const TemplateDetail = () => {
   if (!template) return <div>Template not found</div>;
 
   return (
+    <BackgroundWrapper imageUrl={getImageUrl(template.coverImagePath)}>
     <div className="container">
       <FirstContainer />
 
@@ -219,7 +220,8 @@ const TemplateDetail = () => {
           onFreeDownload={handleFreeDownload}
         />
       )}
-    </div>
+     </div>
+    </BackgroundWrapper>
   );
 };
 
