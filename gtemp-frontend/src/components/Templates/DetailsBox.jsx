@@ -1,9 +1,9 @@
 import React from "react";
 
-export function DetailsBox({ releaseDate, engine, templateOwner, type }) {
+export function DetailsBox({ releaseDate, engine, templateOwnerUsername, type }) {
   const styles = {
     container: {
-      backgroundColor: "#f7b5b5ff",
+      backgroundColor: "#000000ff", 
       padding: "16px",
       borderRadius: "8px",
       width: "max-content",
@@ -14,15 +14,17 @@ export function DetailsBox({ releaseDate, engine, templateOwner, type }) {
       display: "flex",
       margin: "8px 0",
       justifyContent: "flex-start",
-      color: "black",
+      color: "#fff",
     },
     label: {
       fontWeight: "bold",
       minWidth: "120px",
       marginRight: "10px",
+      color: "#fff", 
     },
     value: {
       fontWeight: "normal",
+      color: "#fff",
     },
   };
 
@@ -37,6 +39,8 @@ export function DetailsBox({ releaseDate, engine, templateOwner, type }) {
         <span style={styles.value}>{engine}</span>
       </p>
       <p style={styles.row}>
+        <span style={styles.label}>Owner</span>
+        <span style={styles.value}>{templateOwnerUsername || "Unknown"}</span>
       </p>
       <p style={styles.row}>
         <span style={styles.label}>Type</span>
