@@ -15,7 +15,6 @@ import filterIcon from '../../assets/filter-icon.svg';
 import dropDownIcon from '../../assets/drop-down.svg';
 
 
-import TemplateGrid from '../TemplateGrid';
 import useLoadData from '../../hooks/useLoadData';
 
 export default function Body() {

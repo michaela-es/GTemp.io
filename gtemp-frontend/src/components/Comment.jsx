@@ -7,7 +7,6 @@ const Comment = ({ comment }) => {
   const [replying, setReplying] = useState(false);
   const [showReplies, setShowReplies] = useState(false);
   
-  // Use getCommentsForTemplate instead of comments
   const allComments = getCommentsForTemplate(comment.templateID) || [];
   const children = allComments.filter(c => c.parentId === comment.id);
 

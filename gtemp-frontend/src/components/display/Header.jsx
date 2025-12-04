@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import ProfileDropDown from '../ProfileDropDown';
-import searchIcon from '../../assets/search-icon.svg';
 import logoImage from '../../assets/logo.png';
 import LoginModal from '../authentication/LoginUser';
+import SearchBar from '../Search/SearchBar';
+import RegisterModal from '../RegisterModal';
+import './Header.css';
 
-export default function FirstContainer() {
+export default function Header() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const { currentUser, logout, loading } = useAuth();
@@ -45,32 +47,30 @@ export default function FirstContainer() {
   };
 
   return (
-    <div className="box box1">
-      <div className="left-section">
-        <img src={logoImage} alt="Logo" className="logo" />
-        <a href="http://localhost:5173" className="site-name-link">
-          <span className="site-name">Gtemp.io</span>
-        </a>
+    <header className="header">
+      <div className="header-container">
+        <div className="header-brand">
+          <a href="/" className="brand-link">
+            <img src={logoImage} alt="Gtemp.io Logo" className="header-logo" />
+            <span className="logo-text">Gtemp.io</span>
+          </a>
+        </div>
 
-      </div>
+        <div className="header-search">
+          <SearchBar className="header-search-bar" />
+        </div>
 
-      <div className="middle-section">
-        <div className="search-box">
-          <input type="text" placeholder="search here." />
-          <button className="search-button">
-            <img src={searchIcon} alt="Search" className="search-icon" />
-          </button>
+        <div className="header-actions">
+          <ProfileDropDown
+            isLoggedIn={isLoggedIn}
+            username={username}
+            wallet={currentUser?.wallet}
+            onLoginClick={handleAuthAction}
+            onLogout={logout}
+            isLoading={loading}
+          />
         </div>
       </div>
-
-      <ProfileDropDown
-        isLoggedIn={isLoggedIn}
-        username={username}
-        wallet={currentUser?.wallet} // <-- add this line
-        onLoginClick={handleAuthAction}
-        onLogout={logout}
-        isLoading={loading}
-      />
 
       {isLoginModalOpen && (
         <LoginModal 
@@ -86,6 +86,6 @@ export default function FirstContainer() {
           onSwitchToLogin={handleSwitchToLogin}
         />
       )}
-    </div>
+    </header>
   );
 }

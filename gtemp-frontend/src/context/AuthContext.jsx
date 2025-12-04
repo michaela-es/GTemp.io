@@ -6,9 +6,7 @@ const AuthContext = createContext();
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 };
 
@@ -18,52 +16,31 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [initializing, setInitializing] = useState(true);
 
-  // ✅ MODIFIED: Load user data on initial mount AND refresh wallet from backend
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
-        console.log("AuthProvider: Checking auth status on mount...");
         const savedUser = localStorage.getItem('currentUser');
-        console.log("AuthProvider: Saved user from localStorage:", savedUser);
-
         if (savedUser) {
           const parsedUser = JSON.parse(savedUser);
           setCurrentUser(parsedUser);
-
-          // ✅ NEW: Immediately refresh wallet from DB (prevents stale data)
-          if (parsedUser?.email) {
-            setTimeout(() => {
-              refreshWallet(parsedUser.email);
-            }, 0);
-          }
-
-        } else {
-          console.log("AuthProvider: No saved user found");
+          if (parsedUser?.id) refreshWallet(parsedUser.id);
         }
       } catch (err) {
-        console.error('Auth check error:', err);
+        console.error(err);
       } finally {
-        console.log("AuthProvider: Initialization complete");
         setInitializing(false);
       }
     };
-
     checkAuthStatus();
   }, []);
 
-  // Listen for storage changes from other tabs
   useEffect(() => {
     const handleStorageChange = (e) => {
       if (e.key === 'currentUser') {
-        console.log("AuthProvider: Storage changed, updating state");
-        if (e.newValue) {
-          setCurrentUser(JSON.parse(e.newValue));
-        } else {
-          setCurrentUser(null);
-        }
+        if (e.newValue) setCurrentUser(JSON.parse(e.newValue));
+        else setCurrentUser(null);
       }
     };
-
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
@@ -73,15 +50,13 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     try {
       const result = await userService.register(userData);
-
       setCurrentUser(result);
       localStorage.setItem('currentUser', JSON.stringify(result));
-
       return result;
     } catch (err) {
-      const errorMessage = err.response?.data?.message || err.message || 'Registration failed';
-      setError(errorMessage);
-      throw new Error(errorMessage);
+      const msg = err.response?.data?.message || err.message || 'Registration failed';
+      setError(msg);
+      throw new Error(msg);
     } finally {
       setLoading(false);
     }
@@ -91,26 +66,15 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      console.log("AuthProvider: Attempting login...");
       const result = await userService.login(loginData);
-      console.log("AuthProvider: Login result:", result);
-
       setCurrentUser(result);
       localStorage.setItem('currentUser', JSON.stringify(result));
-
-      // ✅ NEW: Immediately refresh wallet from database after login
-      if (result?.email) {
-        setTimeout(() => {
-          refreshWallet(result.email);
-        }, 0);
-      }
-
-      console.log("AuthProvider: User saved to localStorage and state");
+      if (result?.id) refreshWallet(result.id);
       return result;
     } catch (err) {
-      const errorMessage = err.response?.data?.message || err.message || 'Login failed';
-      setError(errorMessage);
-      throw new Error(errorMessage);
+      const msg = err.response?.data?.message || err.message || 'Login failed';
+      setError(msg);
+      throw new Error(msg);
     } finally {
       setLoading(false);
     }
@@ -123,48 +87,31 @@ export const AuthProvider = ({ children }) => {
     userService.logout().catch(console.error);
   };
 
-  // ✅ MODIFIED: Now also updates localStorage to prevent Ctrl+R reverting bug
-  const refreshWallet = async (emailOverride = null) => {
-    const emailToUse = emailOverride || currentUser?.email;
-    if (!emailToUse) return;
-
+  const refreshWallet = async (userId) => {
+    if (!userId) return;
     try {
-      const response = await axios.get(
-        `http://localhost:8080/api/users/${emailToUse}/wallet`
-      );
-
-      const updatedUser = {
-        ...(currentUser || { email: emailToUse }),
-        wallet: response.data.wallet
-      };
-
+      const response = await axios.get(`http://localhost:8080/api/users/${userId}/wallet`);
+      const updatedUser = { ...(currentUser || { id: userId }), wallet: response.data.wallet };
       setCurrentUser(updatedUser);
-
-      // ✅ NEW: Update localStorage so hard refresh keeps correct value
       localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-
-      console.log("Wallet refreshed and saved:", updatedUser.wallet);
-
     } catch (err) {
-      console.error("Failed to refresh wallet", err);
+      console.error(err);
     }
   };
 
-  const value = {
-    currentUser,
-    setCurrentUser,
-    loading,
-    error,
-    initializing,
-    register,
-    login,
-    logout,
-    setError,
-    refreshWallet, // ✅ MODIFIED FUNCTION
-  };
-
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{
+      currentUser,
+      setCurrentUser,
+      loading,
+      error,
+      initializing,
+      register,
+      login,
+      logout,
+      setError,
+      refreshWallet
+    }}>
       {children}
     </AuthContext.Provider>
   );

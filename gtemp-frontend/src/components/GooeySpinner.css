@@ -1,0 +1,34 @@
+.gooey-container {
+  background: white;
+  display: grid;
+  place-items: center;
+  height: 100vh;
+  width: 100%;
+}
+
+.gooey-container svg {
+  width: 200px;
+  height: 200px;
+}
+
+.gooey-container .dot {
+  fill: red;
+  transform-origin: 100px 100px; /* center of SVG */
+  animation: moveDot 1s ease-in-out infinite alternate;
+}
+
+/* Delay each dot to sequence the movement */
+.gooey-container .dot:nth-child(1) { animation-delay: 0s; }   /* top */
+.gooey-container .dot:nth-child(2) { animation-delay: 0.1s; } /* right */
+.gooey-container .dot:nth-child(3) { animation-delay: 0.2s; } /* bottom */
+.gooey-container .dot:nth-child(4) { animation-delay: 0.3s; } /* left */
+.gooey-container .dot:nth-child(5) { animation-delay: 0.4s; } /* top-left diag */
+.gooey-container .dot:nth-child(6) { animation-delay: 0.5s; } /* top-right diag */
+.gooey-container .dot:nth-child(7) { animation-delay: 0.6s; } /* bottom-left diag */
+.gooey-container .dot:nth-child(8) { animation-delay: 0.7s; } /* bottom-right diag */
+
+@keyframes moveDot {
+  0%   { transform: translate(0,0) scale(1); }
+  50%  { transform: translate(var(--tx), var(--ty)) scale(1.2); }
+  100% { transform: translate(0,0) scale(1); }
+}
