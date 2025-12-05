@@ -13,6 +13,7 @@ import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from "../context/AuthContext";
 import BackgroundWrapper from '../components/Templates/BackgroundWrapper';
 import '../styles/TemplateDetail.css';
+import ImageCarousel from '../components/Templates/ImageCarousel';
 
 const TemplateDetail2 = () => {
   const { id } = useParams();
@@ -25,9 +26,9 @@ const TemplateDetail2 = () => {
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [wishlistLoading, setWishlistLoading] = useState(false);
   const [downloading, setDownloading] = useState(false);
-
   const { currentUser, refreshWallet } = useAuth();
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const [images, setImages] = useState([]);
 
   useEffect(() => {
     const fetchTemplate = async () => {
@@ -44,6 +45,27 @@ const TemplateDetail2 = () => {
       }
     };
     fetchTemplate();
+  }, [templateId]);
+
+  
+  useEffect(() => {
+      const fetchImages = async () => {
+        try {
+          const response = await fetch(`http://localhost:8080/api/templates/${templateId}/images`);
+          if (response.ok) {
+            const data = await response.json();
+            setImages(data); 
+          } else {
+            console.error("Error fetching images");
+          }
+        } catch (error) {
+          console.error("Error fetching images:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchImages();
   }, [templateId]);
 
   useEffect(() => {
@@ -358,14 +380,7 @@ const handleFreeDownload = async () => {
             </div>
 
             <div className="details-right">
-              <img
-                src={getImageUrl(template.coverImagePath)}
-                alt={template.templateTitle}
-                className="template-image"
-                onError={(e) => {
-                  e.target.src = '/default-cover.jpg';
-                }}
-              />
+               <ImageCarousel images={images} />
               
               <div className="rating-div">
                 <HeadingText text="Rating" />
