@@ -19,28 +19,29 @@ export const AuthProvider = ({ children }) => {
 
   // Load user data on initial mount
   useEffect(() => {
-    const checkAuthStatus = async () => {
-      try {
-        console.log("AuthProvider: Checking auth status on mount...");
-        const savedUser = localStorage.getItem('currentUser');
-        console.log("AuthProvider: Saved user from localStorage:", savedUser);
-        
-        if (savedUser) {
-          const parsedUser = JSON.parse(savedUser);
-          setCurrentUser(parsedUser);
-        } else {
-          console.log("AuthProvider: No saved user found");
-        }
-      } catch (err) {
-        console.error('Auth check error:', err);
-      } finally {
-        console.log("AuthProvider: Initialization complete");
-        setInitializing(false);
-      }
-    };
+  const checkAuthStatus = async () => {
+    try {
+      const savedUser = localStorage.getItem('currentUser');
 
-    checkAuthStatus();
-  }, []);
+      if (savedUser) {
+        const parsedUser = JSON.parse(savedUser);
+        setCurrentUser(parsedUser);
+
+        // ✅ Immediately sync wallet with DB
+        setTimeout(() => {
+          refreshWallet();
+        }, 0);
+      }
+    } catch (err) {
+      console.error('Auth check error:', err);
+    } finally {
+      setInitializing(false);
+    }
+  };
+
+  checkAuthStatus();
+}, []);
+
 
   // Listen for storage changes from other tabs
   useEffect(() => {
@@ -112,11 +113,16 @@ export const AuthProvider = ({ children }) => {
       const response = await axios.get(
         `http://localhost:8080/api/users/${currentUser.email}/wallet`
       );
-      setCurrentUser(prev => ({ ...prev, wallet: response.data.wallet }));
+
+      const updatedUser = { ...currentUser, wallet: response.data.wallet };
+
+      setCurrentUser(updatedUser);
+      localStorage.setItem('currentUser', JSON.stringify(updatedUser)); // ✅ FIX
     } catch (err) {
       console.error("Failed to refresh wallet", err);
     }
   };
+
 
   const value = {
     currentUser,

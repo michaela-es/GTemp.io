@@ -26,6 +26,13 @@ const TemplateDetail = () => {
   const { toggleWishlist, isInWishlist } = useWishlist();
   const inWishlist = isInWishlist(id);
 
+  useEffect(() => {
+    if (currentUser) {
+      refreshWallet();
+    }
+  }, [currentUser, refreshWallet]);
+
+
   // -------------------------
   // Handlers
   // -------------------------
