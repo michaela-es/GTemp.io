@@ -38,7 +38,7 @@ const DownloadedPurchased = () => {
     const fetchLibrary = async () => {
       try {
         const res = await fetch(
-          `http://localhost:8080/api/templates/user/${currentUser.email}/library`
+          `http://localhost:8080/api/templates/user/${currentUser.userID}/library`
         );
         if (!res.ok) throw new Error("Failed to fetch library");
         const data = await res.json();
@@ -119,8 +119,8 @@ const DownloadedPurchased = () => {
           <ProjectItem
             key={item.id}
             title={item.template.templateTitle}
-            templateId={item.template.id}   // needed for API
-            userEmail={currentUser.email}   // current logged-in user
+            templateId={item.template.id}
+            userID={currentUser.userID}   // updated prop
             timeAgo={new Date(item.actionDate).toLocaleString()}
             comment={item.actionType}
             initialRating={item.ratingValue || 0}

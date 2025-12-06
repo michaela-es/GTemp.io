@@ -1,4 +1,3 @@
-// RatedViewed.jsx
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import filterIcon from "../../assets/filter-icon.svg";
@@ -34,7 +33,7 @@ const RatedViewed = () => {
     const fetchRatedTemplates = async () => {
       try {
         const res = await fetch(
-          `http://localhost:8080/api/templates/user/${currentUser.email}/rated`
+          `http://localhost:8080/api/templates/user/${currentUser.userID}/rated`
         );
         if (!res.ok) throw new Error("Failed to fetch rated templates");
         const data = await res.json();
@@ -104,7 +103,7 @@ const RatedViewed = () => {
             key={item.id}
             title={item.template.templateTitle}
             templateId={item.template.id}
-            userEmail={currentUser.email}
+            userID={currentUser.userID}   // updated prop
             timeAgo={new Date(item.ratedAt).toLocaleString()}
             initialRating={item.ratingValue}
           />
