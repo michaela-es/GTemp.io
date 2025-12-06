@@ -228,7 +228,7 @@ const handleConfirmPayment = async (amount) => {
       throw new Error(result.message || result.error || `Payment failed with status ${response.status}`);
     }
     
-    await handleDownload();
+    await downloadFile(false, amount);
     
     await refreshWallet();
     
@@ -394,7 +394,7 @@ const handleFreeDownload = async () => {
                 
                 <div className="downloads-count">
                   <HeadingText text="Downloads" />
-                  <p>{template.downloads || 0} downloads</p>
+                  <p>{template.downloadCount || 0} downloads</p>
                 </div>
                 
                 {ratedUsers.length > 0 && (

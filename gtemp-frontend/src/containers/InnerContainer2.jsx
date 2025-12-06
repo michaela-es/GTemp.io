@@ -5,13 +5,31 @@ import RightPanel from "../DataComponents/Dashboards/Edit Project/RightPanel";
 import LeftPanel from "../DataComponents/Dashboards/Edit Project/LeftPanel";
 import FileUploadService from "../services/FileUploadService"; // same service used in UploadTemplateForm
 import { styles } from "../DataComponents/Dashboards/styles"; // optional: for root styling
+import TemplateService from "../services/TemplateService"; // your Axios service
 
 const InnerContainer2 = ({ activeInnerTab: propActiveInnerTab }) => {
   const [activeInnerTab, setActiveInnerTab] = useState(propActiveInnerTab || 1);
+  const [userTemplates, setUserTemplates] = useState([]);
 
   useEffect(() => {
     if (propActiveInnerTab) setActiveInnerTab(propActiveInnerTab);
   }, [propActiveInnerTab]);
+
+  useEffect(() => {
+    const fetchUserTemplates = async () => {
+      try {
+        const userId = JSON.parse(localStorage.getItem("currentUser") || "{}")?.userID;
+        if (!userId) return;
+
+        const response = await TemplateService.getUserTemplates(userId);
+        setUserTemplates(response.data);
+      } catch (err) {
+        console.error("Failed to fetch templates:", err);
+      }
+    };
+
+    fetchUserTemplates();
+  }, []);
 
   // --- Form state (lifted) ---
   const [title, setTitle] = useState("");
@@ -225,16 +243,30 @@ const InnerContainer2 = ({ activeInnerTab: propActiveInnerTab }) => {
       {/* Content */}
       <div style={innerContentStyle}>
         {activeInnerTab === 1 && (
-          <ItemWithStats
-            itemProps={{
-              image: "https://i.ytimg.com/vi/rvZ1NWNkYcY/maxresdefault.jpg",
-              title: "Sample Item",
-              price: "Free",
-              releaseDate: "01/01/2025",
-              updateDate: "10/09/2025",
-            }}
-            onEdit={() => setActiveInnerTab(2)}
-          />
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            {userTemplates.length === 0 && <p>No templates created yet.</p>}
+            {userTemplates.map((template) => (
+              <ItemWithStats
+                key={template.id}
+                itemProps={{
+                  image: template.coverImagePath || "default-image.jpg",
+                  title: template.templateTitle,
+                  price: template.priceSetting === "No Payment" ? "Free" : `$${template.price}`,
+                  releaseDate: new Date(template.releaseDate).toLocaleDateString(),
+                  updateDate: template.updateDate ? new Date(template.updateDate).toLocaleDateString() : "-",
+                  rating: template.averageRating || 0,
+                }}
+                stats={{
+                  downloads: template.downloadCount || 0,
+                  revenue: template.revenue || 0,
+                  rating: template.averageRating || 0,
+                  wishlist: template.wishlistCount || 0,
+                }}
+                onEdit={() => setActiveInnerTab(2)}
+              />
+            ))}
+
+          </div>
         )}
 
         {activeInnerTab === 2 && (

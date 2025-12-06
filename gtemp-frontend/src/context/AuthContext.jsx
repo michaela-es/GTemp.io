@@ -28,6 +28,10 @@ export const AuthProvider = ({ children }) => {
         if (savedUser) {
           const parsedUser = JSON.parse(savedUser);
           setCurrentUser(parsedUser);
+
+          const response = await axios.get(
+            `http://localhost:8080/api/users/${parsedUser.email}/wallet`
+          );
         } else {
           console.log("AuthProvider: No saved user found");
         }
@@ -112,11 +116,22 @@ export const AuthProvider = ({ children }) => {
       const response = await axios.get(
         `http://localhost:8080/api/users/${currentUser.email}/wallet`
       );
-      setCurrentUser(prev => ({ ...prev, wallet: response.data.wallet }));
+
+      const updatedUser = {
+        ...currentUser,
+        wallet: response.data.wallet,
+      };
+
+      setCurrentUser(updatedUser);
+
+      // ✅ THIS WAS MISSING
+      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+
     } catch (err) {
       console.error("Failed to refresh wallet", err);
     }
   };
+
 
   const value = {
     currentUser,
