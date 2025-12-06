@@ -9,6 +9,7 @@ import useTemplateManager from '../hooks/useTemplateManager';
 import { useSearch } from '../context/SearchContext';
 import Header from '../components/display/Header';
 import GooeySpinner from '../components/GooeySpinner';
+import '../components/Templates/TemplateGrid.css';
 
 export const HomePage = () => {
   const { data, loading } = useLoadData();
@@ -156,17 +157,17 @@ export const HomePage = () => {
             </div>
           )}
 
-          <div className="templates-grid">
-            {paginatedItems.length > 0 ? (
+      <div className="templates-grid">            
+          {paginatedItems.length > 0 ? (
               paginatedItems.map((t, index) => (
                 <TemplateCard
                   key={t.id ?? index}
                   id={t.id}
                   templateTitle={t.templateTitle}
                   coverImagePath={t.coverImagePath}
-                  rating={t.rating}
-                  downloads={t.downloads}
                   templateDesc={t.templateDesc}
+                  rating={t.averageRating}
+                  downloads={t.downloadCount}
                 />
               ))
             ) : (

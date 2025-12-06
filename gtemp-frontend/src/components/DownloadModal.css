@@ -1,571 +1,270 @@
-/* Modal Overlay */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.75);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10000;
-  backdrop-filter: blur(8px);
-  animation: fadeIn 0.2s ease-out;
-}
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;600&display=swap");
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* Modal Container */
-.download-modal {
-  background: white;
-  border-radius: 20px;
-  width: 90%;
-  max-width: 500px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(40px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* Header */
-.modal-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 24px 32px;
-  border-radius: 20px 20px 0 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  color: white;
-  position: relative;
-}
-
-.header-content {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.modal-icon {
-  font-size: 36px;
-  background: rgba(255, 255, 255, 0.2);
-  width: 60px;
-  height: 60px;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(10px);
-}
-
-.modal-title {
+/*========== Base ==========*/
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
   margin: 0;
-  font-size: 24px;
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.template-title {
-  margin: 4px 0 0;
-  font-size: 14px;
-  opacity: 0.9;
-  max-width: 300px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.close-btn {
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  color: white;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  backdrop-filter: blur(10px);
   padding: 0;
 }
 
-.close-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.3);
-  transform: rotate(90deg);
+body {
+  font-family: "Inter", sans-serif;
+  background-color: #ddc0a1;
 }
 
-.close-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Body */
-.modal-body {
-  padding: 32px;
-}
-
-/* Price Type Badge */
-.price-type-badge {
-  display: inline-block;
-  padding: 8px 20px;
-  border-radius: 100px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  margin-bottom: 24px;
-}
-
-.price-type-badge.free {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-  color: #006644;
-}
-
-.price-type-badge.donation {
-  background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
-  color: #8a2a00;
-}
-
-.price-type-badge.paid {
-  background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
-  color: #4a148c;
-}
-
-/* Price Display */
-.price-display {
-  text-align: center;
-  margin-bottom: 32px;
-}
-
-.price-amount {
-  display: block;
-  font-size: 48px;
-  font-weight: 800;
-  line-height: 1;
-  margin-bottom: 8px;
-  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.price-label {
-  display: block;
-  font-size: 14px;
-  color: #718096;
-  font-weight: 500;
-}
-
-.suggested-price {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 16px 24px;
-  background: #f8f9fa;
-  border-radius: 16px;
-  border: 2px dashed #e2e8f0;
-}
-
-.suggested-label {
-  font-size: 12px;
-  color: #718096;
-  margin-bottom: 4px;
-}
-
-.suggested-amount {
-  font-size: 24px;
-  font-weight: 700;
-  color: #2d3748;
-}
-
-.price-description {
-  font-size: 14px;
-  color: #718096;
-  text-align: center;
-  margin-top: 12px;
-  line-height: 1.5;
-}
-
-/* Donation Input */
-.donation-input-section {
-  margin: 32px 0;
-}
-
-.input-label {
-  display: block;
-  font-size: 14px;
-  font-weight: 600;
-  color: #4a5568;
-  margin-bottom: 12px;
-}
-
-.donation-input-wrapper {
-  display: flex;
-  align-items: center;
-  border: 2px solid #e2e8f0;
-  border-radius: 16px;
-  overflow: hidden;
-  transition: all 0.3s ease;
-  background: white;
-}
-
-.donation-input-wrapper:focus-within {
-  border-color: #667eea;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-  transform: translateY(-2px);
-}
-
-.donation-input-wrapper.locked {
-  border-color: #a18cd1;
-  background: #f9f7ff;
-}
-
-.currency-symbol {
-  padding: 0 20px;
-  background: #f7fafc;
-  color: #4a5568;
-  font-weight: 700;
-  font-size: 20px;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  border-right: 1px solid #e2e8f0;
-}
-
-.donation-input-wrapper.locked .currency-symbol {
-  background: #f0ebff;
-}
-
-.donation-input {
-  flex: 1;
-  border: none;
-  padding: 0 20px;
-  font-size: 24px;
-  font-weight: 700;
-  color: #2d3748;
-  height: 64px;
-  min-width: 0;
-  background: transparent;
-}
-
-.donation-input:focus {
-  outline: none;
-}
-
-.donation-input:disabled,
-.donation-input.locked {
-  color: #4a5568;
-  background: transparent;
-}
-
-.donation-input.locked {
-  cursor: not-allowed;
-}
-
-.locked-badge {
-  padding: 0 20px;
-  background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
-  color: white;
-  font-size: 12px;
-  font-weight: 700;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.locked-price-section {
-  margin: 24px 0 32px;
-}
-
-.locked-price-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: #718096;
-  margin-bottom: 12px;
-}
-
-.lock-icon {
-  font-size: 16px;
-}
-
-/* Quick Amounts */
-.quick-amounts {
-  display: flex;
-  gap: 12px;
-  margin-top: 20px;
-  flex-wrap: wrap;
-}
-
-.quick-amount {
-  flex: 1;
-  min-width: 120px;
-  padding: 12px 16px;
-  background: white;
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #4a5568;
+button {
   cursor: pointer;
-  transition: all 0.2s ease;
+  border: none;
+  outline: none; /* Remove default outline */
+  background: transparent;
+  font-family: inherit;
 }
 
-.quick-amount:hover:not(:disabled) {
-  background: #f7fafc;
-  border-color: #cbd5e0;
-  transform: translateY(-2px);
+button:focus {
+  outline: none; /* Ensure no outline on focus */
 }
 
-.quick-amount:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+/* Optional: Custom focus style for accessibility */
+button:focus-visible {
+  outline: 2px solid #667eea; /* subtle outline or border */
 }
 
-/* Benefits List */
-.benefits-list {
-  background: #f8f9fa;
-  border-radius: 16px;
-  padding: 24px;
-  margin: 24px 0 32px;
-}
-
-.benefit-item {
+/*========== Modal Overlay ==========*/
+/* Fix the modal structure */
+.share__modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 12px 0;
-  color: #4a5568;
-  font-weight: 500;
+  justify-content: center;
 }
 
-.benefit-item:not(:last-child) {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+.share__modal.show-modal {
+  opacity: 1;
+  visibility: visible;
 }
 
-.benefit-icon {
-  font-size: 20px;
-  width: 32px;
-  height: 32px;
-  background: white;
+.share__modal__content {
+  background-color: #fff;
+  width: 90%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  transform: translateY(30px);
+  transition: transform 0.3s ease;
+}
+
+.share__modal.show-modal .share__modal__content {
+  transform: translateY(0);
+  background-color: white;
+}
+
+
+/*========== Header ==========*/
+.share__modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #667eea;
+  color: white;
+  padding: 20px 24px;
+  border-radius: 16px 16px 0 0;
+}
+
+.modal-body{
+  padding: 1em 2em;
+}
+.share__modal__header span {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.close_modal_btn {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.benefit-icon.premium {
-  background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
-  color: white;
+.close_modal_btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
 }
 
-/* Actions */
-.modal-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin: 32px 0 24px;
-}
-
-.modal-actions.dual-buttons {
-  flex-direction: row;
-  gap: 16px;
-}
-
-.primary-action,
-.secondary-action {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-/* Buttons */
-.btn {
-  padding: 20px 24px;
-  border-radius: 16px;
-  font-size: 16px;
-  font-weight: 700;
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  width: 100%;
-}
-
-.btn:hover:not(:disabled) {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-}
-
-.btn:active:not(:disabled) {
-  transform: translateY(-2px);
-}
-
-.btn:disabled {
-  opacity: 0.6;
+.close_modal_btn:disabled {
+  opacity: 0.5;
   cursor: not-allowed;
-  transform: none !important;
-  box-shadow: none !important;
 }
 
-.btn-download {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-  color: #006644;
+/*========== Modal Body ==========*/
+.share__modal_content {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  color: #333;
+  font-size: 0.95rem;
 }
 
-.btn-download:hover:not(:disabled) {
-  box-shadow: 0 20px 40px rgba(67, 233, 123, 0.3);
-}
-
-.btn-pay {
-  background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
-  color: #8a2a00;
-}
-
-.btn-pay:hover:not(:disabled) {
-  box-shadow: 0 20px 40px rgba(255, 154, 158, 0.3);
-}
-
-.btn-purchase {
-  background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
-  color: #4a148c;
-}
-
-.btn-purchase:hover:not(:disabled) {
-  box-shadow: 0 20px 40px rgba(161, 140, 209, 0.3);
-}
-
-.btn-free {
-  background: white;
-  color: #667eea;
-  border: 2px solid #cbd5e0;
-}
-
-.btn-free:hover:not(:disabled) {
-  border-color: #667eea;
-  background: #f7fafc;
-  box-shadow: 0 20px 40px rgba(102, 126, 234, 0.1);
-}
-
-.btn-cancel {
-  background: #f1f5f9;
-  color: #475569;
-}
-
-.btn-cancel:hover:not(:disabled) {
-  background: #e2e8f0;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-}
-
-.btn-icon {
-  font-size: 20px;
-}
-
-.btn-text {
-  flex: 1;
+/* Wallet Display */
+.wallet-display {
   text-align: center;
 }
 
-.action-note {
-  font-size: 12px;
-  color: #718096;
-  text-align: center;
-  margin: 8px 0 0;
-  line-height: 1.4;
+.wallet-amount {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.wallet-email {
+  font-size: 0.85rem;
+  color: #666;
 }
 
 /* Error Message */
 .error-message {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ffa8a8 100%);
-  color: white;
-  padding: 16px 20px;
+  background: #ff6b6b;
+  color: #fff;
+  padding: 12px 16px;
   border-radius: 12px;
-  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.error-message button {
+  background: none;
+  color: white;
+  font-size: 1rem;
+}
+
+/* Input & Donation */
+.share__modal_input {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-with-prefix {
   display: flex;
   align-items: center;
-  gap: 12px;
-  animation: shake 0.5s ease;
+  border: 1px solid #ccc; /* Make sure no border is present */
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-  20%, 40%, 60%, 80% { transform: translateX(5px); }
+.prefix {
+  padding: 0 12px;
+  background: #f1f1f1;
+  font-weight: 600;
 }
 
-.error-icon {
-  font-size: 20px;
-  flex-shrink: 0;
+.input-with-prefix input {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  outline: none; /* Remove input outline */
+  font-size: 1rem;
 }
 
-/* Footer */
-.modal-footer {
-  padding-top: 24px;
-  border-top: 1px solid #eaeaea;
-  margin-top: 24px;
+.input-with-prefix input:focus {
+  border: none; /* Ensure no border on focus */
+  box-shadow: none; /* Remove any box-shadow */
 }
 
-.security-note {
+/* Quick buttons */
+.quick-buttons {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  gap: 8px;
+}
+
+.quick-btn {
+  flex: 1;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+  font-weight: 500;
+  background: #f7f7f7;
+}
+
+.quick-btn:hover:not(:disabled) {
+  background: #e2e2e2;
+}
+
+.quick-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
   gap: 12px;
-  font-size: 14px;
-  color: #718096;
+  margin-top: 16px;
 }
 
-.security-icon {
-  font-size: 16px;
+.action-buttons button {
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.2s;
 }
 
-/* Responsive */
-@media (max-width: 640px) {
-  .download-modal {
+.btn-pay {
+  background: #ff9a9e;
+  color: #8a2a00;
+}
+
+.btn-free {
+  background: #f1f1f1;
+  color: #667eea;
+}
+
+.btn-purchase {
+  background: #a18cd1;
+  color: #fff;
+}
+
+.btn-cancel {
+  background: #f1f1f1;
+  color: #555;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/*========== Responsive ==========*/
+@media (max-width: 480px) {
+  .share__modal {
     width: 95%;
-    margin: 10px;
   }
-  
-  .modal-header,
-  .modal-body {
-    padding: 20px;
+
+  .share__modal__header span {
+    font-size: 1.1rem;
   }
-  
-  .modal-actions.dual-buttons {
-    flex-direction: column;
-  }
-  
-  .price-amount {
-    font-size: 36px;
-  }
-  
-  .quick-amounts {
-    flex-direction: column;
-  }
-  
-  .quick-amount {
-    min-width: 100%;
+
+  .wallet-amount {
+    font-size: 1.25rem;
   }
 }

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../../context/AuthContext";
+import { useWishlist } from "../../../context/WishlistContext"; 
 import { styles } from "../styles";
 import axios from "axios";
 
 const ProfileInstance = ({ setMode }) => {
   const { currentUser, setCurrentUser } = useAuth();
+  const { wishlistCount } = useWishlist();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [error, setLocalError] = useState("");
@@ -36,7 +38,6 @@ const ProfileInstance = ({ setMode }) => {
 
     try {
       const updatedUser = {};
-
       if (username !== currentUser.username) updatedUser.username = username;
       if (email !== currentUser.email) updatedUser.email = email;
 
@@ -48,7 +49,7 @@ const ProfileInstance = ({ setMode }) => {
       const response = await axios.put(
         `http://localhost:8080/api/users`, 
         { 
-          userID: currentUser.userID,  // easy fetching of user
+          userID: currentUser.userID,
           username: updatedUser.username,
           email: updatedUser.email,
         }
@@ -109,7 +110,7 @@ const ProfileInstance = ({ setMode }) => {
       <div style={styles.statsContainer}>
         {[
           ["Account Created", "October 12, 2025"],
-          ["Wishlisted Items", "0"],
+          ["Wishlisted Items", wishlistCount],
           ["Reviewed Items", "0"],
           ["Published Content", "0"],
         ].map(([title, value], idx) => (

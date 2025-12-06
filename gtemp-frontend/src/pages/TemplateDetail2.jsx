@@ -322,29 +322,19 @@ const handleFreeDownload = async () => {
       
       <div className="template-detail-container">
         <div className="sidebar">
-          <IconButton
-            imgSrc={
-              wishlisted
-                ? 'https://www.svgrepo.com/show/535436/heart.svg'
-                : 'https://www.svgrepo.com/show/532473/heart.svg'
-            }
-            name={wishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}
-            onClick={handleWishlistClick}
-            className={`wishlist-btn ${wishlisted ? 'wishlisted' : ''} ${wishlistLoading ? 'loading' : ''}`}
-            disabled={!currentUser || wishlistLoading}
-          />
-          
-          <IconButton
-            imgSrc="https://www.svgrepo.com/show/532718/star-sharp.svg"
-            name="Rate"
-            onClick={() => {
-              if (!currentUser) {
-                alert("You must be logged in to rate.");
-                return;
+          {currentUser?.userID !== template.templateOwner && (
+            <IconButton
+              imgSrc={
+                wishlisted
+                  ? 'https://www.svgrepo.com/show/535436/heart.svg'
+                  : 'https://www.svgrepo.com/show/532473/heart.svg'
               }
-              alert("Rating feature coming soon!");
-            }}
-          />
+              name={wishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}
+              onClick={handleWishlistClick}
+              className={`wishlist-btn ${wishlisted ? 'wishlisted' : ''} ${wishlistLoading ? 'loading' : ''}`}
+              disabled={!currentUser || wishlistLoading}
+            />
+          )}
         </div>
 
         <div className="details">

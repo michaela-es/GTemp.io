@@ -6,10 +6,10 @@ export const sortTemplates = (templates, activeSorts) => {
       let result = 0;
       switch (sort) {
         case 'popular':
-          result = b.templateDls - a.templateDls;
+          result = b.downloadCount - a.downloadCount;
           break;
         case 'rating':
-          result = b.templateRating - a.templateRating;
+          result = b.averageRating - a.averageRating;
           break;
         case 'price':
           result = a.price - b.price;

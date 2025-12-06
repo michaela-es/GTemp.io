@@ -4,36 +4,50 @@ import './TemplateGrid.css';
 
 const TemplateCard = memo(({ 
   id,
-  templateTitle,
+  templateTitle = 'Untitled Template',
   coverImagePath,
-  rating,
-  downloads,
-  templateDesc
+  rating = 0,
+  downloads = 0,
+  templateDesc = ''
 }) => {
   const navigate = useNavigate();
-  const handleClick = () => navigate(`/template/${id}`);
+  
+  const handleClick = () => id && navigate(`/template/${id}`);
 
   return (
-    <div className="template-card" onClick={handleClick}>
+    <article className="template-card" onClick={handleClick}>
       <img 
         src={coverImagePath || '/default-cover.jpg'}
         alt={templateTitle}
-        className="card-image"
+        className="card-img"
+        onError={(e) => {
+          e.target.src = '/default-cover.jpg';
+          e.target.onerror = null;
+        }}
+        loading="lazy"
       />
       
       <div className="card-content">
         <h3 className="card-title">{templateTitle}</h3>
-
-        {templateDesc && (
-          <p className="card-description">{templateDesc}</p>
+        
+        {templateDesc.trim() && (
+          <p className="card-desc">
+            {templateDesc.length > 100 
+              ? `${templateDesc.substring(0, 100)}...` 
+              : templateDesc}
+          </p>
         )}
-
-        <div className="card-stats">
-          <span>⭐ {rating || 0}</span>
-          <span>⬇️ {downloads || 0}</span>
-        </div>
+        
+        <footer className="card-footer">
+          <span className="card-rating">
+            ⭐ {rating > 0 ? rating.toFixed(1) : 'No ratings'}
+          </span>
+          <span className="card-downloads">
+            ⬇️ {downloads.toLocaleString()}
+          </span>
+        </footer>
       </div>
-    </div>
+    </article>
   );
 });
 
