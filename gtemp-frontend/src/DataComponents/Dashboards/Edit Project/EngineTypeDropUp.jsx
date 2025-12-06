@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { styles } from "../styles";
 
-const EngineTypeDropUp = ({ onSelect }) => {
+const EngineTypeDropUp = ({ onSelect, selectedEngine: propEngine, selectedType: propType }) => {
   const [engineOpen, setEngineOpen] = useState(false);
   const [typeOpen, setTypeOpen] = useState(false);
-  const [selectedEngine, setSelectedEngine] = useState("");
-  const [selectedType, setSelectedType] = useState("");
+  const [selectedEngine, setSelectedEngine] = useState(propEngine || "");
+  const [selectedType, setSelectedType] = useState(propType || "");
   const [hoveredEngine, setHoveredEngine] = useState(null);
   const [hoveredType, setHoveredType] = useState(null);
 
@@ -20,21 +20,29 @@ const EngineTypeDropUp = ({ onSelect }) => {
     "Systems",
   ];
 
-  const handleEngineSelect = (engine) => {
-    setSelectedEngine(engine);
-    setEngineOpen(false);
-    if (onSelect) {
-      onSelect(engine, selectedType);
-    }
-  };
+  useEffect(() => {
+    setSelectedEngine(propEngine || "");
+  }, [propEngine]);
 
-  const handleTypeSelect = (type) => {
-    setSelectedType(type);
-    setTypeOpen(false);
-    if (onSelect) {
-      onSelect(selectedEngine, type);
-    }
-  };
+  useEffect(() => {
+    setSelectedType(propType || "");
+  }, [propType]);
+
+    const handleEngineSelect = (engine) => {
+      setSelectedEngine(engine);
+      setEngineOpen(false);
+      if (onSelect) {
+        onSelect(engine, selectedType); 
+      }
+    };
+
+    const handleTypeSelect = (type) => {
+      setSelectedType(type);
+      setTypeOpen(false);
+      if (onSelect) {
+        onSelect(selectedEngine, type); 
+      }
+    };
 
   return (
     <div style={styles.dropUpContainer}>
