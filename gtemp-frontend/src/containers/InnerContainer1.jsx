@@ -8,7 +8,7 @@ import LeftPanel from "../DataComponents/Dashboards/Edit Project/LeftPanel"; // 
 
 const InnerContainer1 = () => {
   const [activeInnerTab, setActiveInnerTab] = useState(1);
-  const innerInnerTabs = ["Rated & Viewed", "Downloaded & Purchased", "Wishlisted"];
+  const innerInnerTabs = ["Rated", "Downloaded & Purchased", "Wishlisted"];
 
   const tabsStyle = { display: "flex", width: "100%" };
 

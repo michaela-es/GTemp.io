@@ -8,7 +8,7 @@ export const StatBox = ({ label, value, bgColor }) => (
   </div>
 );
 
-export const ItemCard = ({ image, title, price, releaseDate, updateDate, rating, onEdit }) => {
+export const ItemCard = ({ image, title, price, releaseDate, updateDate, rating, onEdit, visibility }) => {
   const fullStars = Math.floor(rating);
   const halfStar = rating - fullStars >= 0.5;
   const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
@@ -44,7 +44,7 @@ export const ItemCard = ({ image, title, price, releaseDate, updateDate, rating,
           <button onClick={onEdit} style={styles.editButton}>
             Edit
           </button>
-          <div style={styles.publishedTag}>Published</div>
+          <div style={styles.publishedTag}>{visibility}</div> {/* <-- use visibility prop */}
         </div>
       </div>
     </div>

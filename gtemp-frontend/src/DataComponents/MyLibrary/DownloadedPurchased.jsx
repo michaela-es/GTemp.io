@@ -1,5 +1,4 @@
-// DownloadedPurchased.jsx
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext"; // import your AuthContext hook
 import filterIcon from "../../assets/filter-icon.svg";
 import ProjectItem from "./ProjectItem";
@@ -31,6 +30,13 @@ const DownloadedPurchased = () => {
     setSort(value);
     setIsOpen(false);
   };
+
+  // Clear items when user logs out
+  useEffect(() => {
+    if (!currentUser) {
+      setItems([]);
+    }
+  }, [currentUser]);
 
   useEffect(() => {
     if (!currentUser) return;
@@ -66,6 +72,10 @@ const DownloadedPurchased = () => {
   const purchasedCount = items.filter(
     (i) => i.actionType === "PURCHASED"
   ).length;
+
+  if (!currentUser) {
+    return <p className="text-center mt-4">Please log in to view your downloaded/purchased templates.</p>;
+  }
 
   return (
     <>
@@ -118,14 +128,13 @@ const DownloadedPurchased = () => {
         items.map((item) => (
           <ProjectItem
             key={item.id}
-            title={item.template.templateTitle}
-            templateId={item.template.id}
+            title={item.template?.templateTitle || "Unknown"}
+            templateId={item.template?.id || 0}
             userID={currentUser.userID}   // updated prop
-            timeAgo={new Date(item.actionDate).toLocaleString()}
+            timeAgo={item.actionDate ? new Date(item.actionDate).toLocaleString() : ""}
             comment={item.actionType}
             initialRating={item.ratingValue || 0}
           />
-
         ))
       )}
     </>
