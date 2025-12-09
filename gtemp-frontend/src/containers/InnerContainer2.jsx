@@ -25,7 +25,7 @@ const InnerContainer2Content = ({
       }}
     >
       <div style={tabsStyle}>
-        {["Creation Statistics", "Create New Project"].map((label, index) => (
+        {["Creation Statistics", "Create / Edit Project"].map((label, index) => (
           <div
             key={index}
             style={tabStyle(index + 1, activeInnerTab)}

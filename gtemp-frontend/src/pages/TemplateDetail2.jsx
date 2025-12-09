@@ -32,57 +32,49 @@ const TemplateDetail2 = () => {
   const [images, setImages] = useState([]);
 
   useEffect(() => {
-    const fetchTemplate = async () => {
-      try {
-        const res = await fetch(`http://localhost:8080/api/templates/${templateId}`);
-        if (!res.ok) throw new Error(`Failed to fetch template: ${res.status}`);
+  const fetchTemplate = async () => {
+    try {
+      const res = await fetch(`http://localhost:8080/api/templates/${templateId}`);
+      if (!res.ok) throw new Error(`Failed to fetch template: ${res.status}`);
+      const data = await res.json();
+      setTemplate(data);
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+    }
+  };
+
+  const fetchImages = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/templates/${templateId}/images`);
+      if (response.ok) {
+        const data = await response.json();
+        setImages(data);
+      } else {
+        console.error("Error fetching images");
+      }
+    } catch (error) {
+      console.error("Error fetching images:", error);
+    }
+  };
+
+  const fetchRatedUsers = async () => {
+    try {
+      const res = await fetch(`http://localhost:8080/api/templates/${templateId}/rated-users`);
+      if (res.ok) {
         const data = await res.json();
-        setTemplate(data);
-      } catch (err) {
-        console.error(err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
+        setRatedUsers(data);
       }
-    };
-    fetchTemplate();
-  }, [templateId]);
+    } catch (err) {
+      console.error("Failed to fetch rated users:", err);
+    }
+  };
+
+  Promise.all([fetchTemplate(), fetchImages(), fetchRatedUsers()])
+    .then(() => setLoading(false));  
+}, [templateId]);
 
   
-  useEffect(() => {
-      const fetchImages = async () => {
-        try {
-          const response = await fetch(`http://localhost:8080/api/templates/${templateId}/images`);
-          if (response.ok) {
-            const data = await response.json();
-            setImages(data); 
-          } else {
-            console.error("Error fetching images");
-          }
-        } catch (error) {
-          console.error("Error fetching images:", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-  
-      fetchImages();
-  }, [templateId]);
-
-  useEffect(() => {
-    const fetchRatedUsers = async () => {
-      try {
-        const res = await fetch(`http://localhost:8080/api/templates/${templateId}/rated-users`);
-        if (res.ok) {
-          const data = await res.json();
-          setRatedUsers(data);
-        }
-      } catch (err) {
-        console.error("Failed to fetch rated users:", err);
-      }
-    };
-    if (templateId) fetchRatedUsers();
-  }, [templateId]);
 
   const wishlisted = templateId ? isInWishlist(templateId) : false;
 

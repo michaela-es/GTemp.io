@@ -27,7 +27,7 @@ p {
 }
 
 .details {
-  grid-area: 1 / 2 / 6 / 5;
+  grid-area: 1 / 2 / 3 / 5;
   background: linear-gradient(to top, #b5c6d6 0%, #ffffff 100%);
   padding: 20px;
   border-radius: 8px;
@@ -44,7 +44,7 @@ p {
 
 .details-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 2fr 2fr;
   gap: 20px;
 }
 

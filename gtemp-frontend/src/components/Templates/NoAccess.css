@@ -1,13 +1,30 @@
-html { background-color: #36383f; font-size: 20px; }
+.no-access-wrapper {
+  background-color: #36383f;
+  font-size: 20px;
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Montserrat", sans-serif;
+}
 
-:root { --hole-distance: 25px; }
+.no-access-container {
+  background-color: #f4f4f4;
+  position: relative;
+  width: 80%;
+  min-width: 340px;
+  max-width: 800px;
+  margin: 2% auto;
+  padding: 50px;
+  border: 1px solid #e9ecf0;
+  border-radius: 45px;
+  box-shadow: 5px 5px 10px #000;
+  font-size: 1rem;
+}
 
-#hole1 { top: var(--hole-distance); left: var(--hole-distance);}
-#hole2 { top: var(--hole-distance); right: var(--hole-distance);}
-#hole3 { bottom: var(--hole-distance); left: var(--hole-distance);}
-#hole4 { bottom: var(--hole-distance); right: var(--hole-distance);}
-
-.hole {
+.no-access-hole {
   width: 20px;
   height: 20px;
   position: absolute;
@@ -16,30 +33,20 @@ html { background-color: #36383f; font-size: 20px; }
   transform: rotate(45deg);
 }
 
-#sign-wrapper {
-  background-color: #f4f4f4;
-  position: relative;
-  width: 80%;
-  min-width: 340px;
-  max-width: 800px;
-  height: 90%;
-  margin: 2% auto;
-  padding: 50px;
-  border: 1px solid #e9ecf0;
-  border-radius: 45px;
-  box-shadow: 5px 5px 10px #000;
-  font-family: "Montserrat", sans-serif;
-  font-size: 1rem;
-}
+.no-access-hole-1 { top: 25px; left: 25px; }
+.no-access-hole-2 { top: 25px; right: 25px; }
+.no-access-hole-3 { bottom: 25px; left: 25px; }
+.no-access-hole-4 { bottom: 25px; right: 25px; }
 
-#header {
+.no-access-header {
   background-color: #ef5350;
   padding: 20px;
   border-radius: 30px 30px 0 0;
   text-align: center;
+  position: relative;
 }
 
-h1 {
+.no-access-title {
   text-transform: uppercase;
   color: #f4f4f4;
   font-size: 5.5em;
@@ -49,74 +56,109 @@ h1 {
   font-weight: 900;
 }
 
-.strike {
+.no-access-strike {
   position: absolute;
   width: 25%;
   height: 10px;
   background-color: #fff;
 }
-#strike1 { top: 115px; left: 80px; }
-#strike2 { top: 115px; right: 80px; }
 
-#sign-body {
+.no-access-strike-1 { 
+  top: 115px; 
+  left: 80px; 
+}
+
+.no-access-strike-2 { 
+  top: 115px; 
+  right: 80px; 
+}
+
+.no-access-body {
   display: flex;
   flex-wrap: nowrap;
 }
-#copy-container   { flex-basis: 60%; }
-#circle-container { flex-basis: 40%; }
 
-h2, p {
+.no-access-copy { 
+  flex-basis: 60%; 
+}
+
+.no-access-circle { 
+  flex-basis: 40%; 
+}
+
+.no-access-subtitle, 
+.no-access-message {
   text-align: center;
   color: #1d1e22;
 }
 
-h2 {
+.no-access-subtitle {
   font-size: 3em;
   text-transform: uppercase;
   margin: 40px 0;
   line-height: .9em;
 }
-p { 
+
+.no-access-message { 
   font-size: 20px; 
 }
 
 @media screen and (max-width: 930px) {
-  #sign-wrapper { 
-    font-size: .75rem; }
+  .no-access-container { 
+    font-size: .75rem; 
+  }
 }
+
 @media screen and (max-width: 750px) {
-  #sign-wrapper { 
-    font-size: .6rem; }
-  h2 { 
-    margin: 25px 0; }
-  .strike { 
-    visibility: hidden; }
+  .no-access-container { 
+    font-size: .6rem; 
+  }
+  
+  .no-access-subtitle { 
+    margin: 25px 0; 
+  }
+  
+  .no-access-strike { 
+    visibility: hidden; 
+  }
 }
+
 @media screen and (max-width: 600px) {
-  #sign-wrapper { 
+  .no-access-container { 
     font-size: .4rem; 
     padding: 15px;
     border-radius: 25px;
   }
-  #header {
+  
+  .no-access-header {
     border-radius: 20px 20px 0 0;
   }
-  #circle-container {
+  
+  .no-access-circle {
     width: 50%;
   }
-  .hole {
+  
+  .no-access-hole {
     width: 10px;
     height: 10px;
   }
-  :root {
-    --hole-distance: 8px;
-  }
+  
+  .no-access-hole-1 { top: 8px; left: 8px; }
+  .no-access-hole-2 { top: 8px; right: 8px; }
+  .no-access-hole-3 { bottom: 8px; left: 8px; }
+  .no-access-hole-4 { bottom: 8px; right: 8px; }
 }
+
 @media screen and (max-width: 450px) {
-  #sign-wrapper { 
-    font-size: .34rem; }
-  h2 { 
-    margin: 10px; }
-  p { 
-    font-size: 14px; }
+  .no-access-container { 
+    font-size: .34rem; 
+  }
+  
+  .no-access-subtitle { 
+    margin: 10px; 
+  }
+  
+  .no-access-message { 
+    font-size: 14px; 
+  }
 }
