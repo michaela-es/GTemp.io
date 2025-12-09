@@ -99,7 +99,7 @@ const TemplateDetail = () => {
     }
     
     const link = document.createElement('a');
-    link.href = `http://localhost:8080/api/templates/${templateId}/download/free?userEmail=${encodeURIComponent(currentUser.email)}`;
+    link.href = `http://localhost:8080/api/templates/${templateId}/download/free?userID=${encodeURIComponent(currentUser.userID)}`;
     link.download = `${template.templateTitle}.zip`;
     link.style.display = 'none';
     document.body.appendChild(link);

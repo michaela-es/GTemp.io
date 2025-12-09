@@ -260,7 +260,7 @@ const LeftPanel = ({
       {/* Actions */}
       <div style={styles.actionButtons}>
         <button style={styles.saveButton} onClick={onSave} disabled={isSubmitting} type="button">
-          {isSubmitting ? "Creating..." : "Save"}
+          {isSubmitting ? "Submitting..." : "Save"}
         </button>
         <button style={styles.deleteButton} onClick={onClear} type="button">
           Clear Form

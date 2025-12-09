@@ -29,6 +29,8 @@ export const TemplateFormProvider = ({ children }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editingTemplateId, setEditingTemplateId] = useState(null);
 
+  const [filenamesToDelete, setFilenamesToDelete] = useState([]);
+
   const resetForm = () => {
     setTitle("");
     setDescription("");
@@ -127,6 +129,9 @@ export const TemplateFormProvider = ({ children }) => {
     setIsEditing,
     setEditingTemplateId,
     
+    filenamesToDelete,
+    setFilenamesToDelete,
+
     resetForm,
     populateEditForm
   };

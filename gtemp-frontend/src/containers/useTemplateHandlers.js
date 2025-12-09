@@ -58,8 +58,14 @@ export const useTemplateHandlers = () => {
     form.setNewScreenshotFiles(combined);
   };
 
-  const removeScreenshotUrl = (index) => {
-    form.setScreenshotUrls(prev => prev.filter((_, i) => i !== index));
+  const removeScreenshotUrl = (url) => { 
+    const filename = url.split('/').pop();
+    
+    if (form.setFilenamesToDelete) {
+      form.setFilenamesToDelete(prev => [...prev, filename]);
+    }
+    
+    form.setScreenshotUrls(prev => prev.filter(u => u !== url));
   };
 
   const removeScreenshotFile = (index) => {
