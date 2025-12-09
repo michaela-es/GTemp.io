@@ -14,6 +14,7 @@ import { useAuth } from "../context/AuthContext";
 import BackgroundWrapper from '../components/Templates/BackgroundWrapper';
 import '../styles/TemplateDetail.css';
 import ImageCarousel from '../components/Templates/ImageCarousel';
+import NoAccess from '../components/Templates/NoAcess';
 
 const TemplateDetail2 = () => {
   const { id } = useParams();
@@ -289,6 +290,14 @@ const handleFreeDownload = async () => {
   );
   
   if (!template) return <div className="not-found">Template not found</div>;
+  
+  if (template.visibility === false) {
+      const isOwner = currentUser?.userID === template.templateOwner;
+      if (!isOwner) {
+        return <NoAccess />;
+      }
+  }
+
 
   const formatDate = (dateString) => {
     if (!dateString) return 'Not specified';
