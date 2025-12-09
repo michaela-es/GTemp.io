@@ -10,8 +10,8 @@ const useLoadData = () => {
       setLoading(true);
       
       try {
-        console.log('useLoadData: Making GET request to http://localhost:8080/api/templates');
-        const response = await fetch('http://localhost:8080/api/templates');
+        console.log('useLoadData: Making GET request to http://localhost:8080/api/templates/homepage');
+        const response = await fetch('http://localhost:8080/api/templates/homepage');
         
         console.log('useLoadData: Received response:', {
           status: response.status,

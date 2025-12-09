@@ -10,6 +10,14 @@ class FileUploadService {
       },
     });
   }
+
+  updateTemplate(templateId, formData) {
+    return axios.put(`${API_BASE_URL}/templates/${templateId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+  }
 }
 
 export default new FileUploadService();

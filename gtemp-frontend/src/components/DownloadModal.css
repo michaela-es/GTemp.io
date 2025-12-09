@@ -1,0 +1,270 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;600&display=swap");
+
+/*========== Base ==========*/
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background-color: #ddc0a1;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  outline: none; /* Remove default outline */
+  background: transparent;
+  font-family: inherit;
+}
+
+button:focus {
+  outline: none; /* Ensure no outline on focus */
+}
+
+/* Optional: Custom focus style for accessibility */
+button:focus-visible {
+  outline: 2px solid #667eea; /* subtle outline or border */
+}
+
+/*========== Modal Overlay ==========*/
+/* Fix the modal structure */
+.share__modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.share__modal.show-modal {
+  opacity: 1;
+  visibility: visible;
+}
+
+.share__modal__content {
+  background-color: #fff;
+  width: 90%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  transform: translateY(30px);
+  transition: transform 0.3s ease;
+}
+
+.share__modal.show-modal .share__modal__content {
+  transform: translateY(0);
+  background-color: white;
+}
+
+
+/*========== Header ==========*/
+.share__modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #667eea;
+  color: white;
+  padding: 20px 24px;
+  border-radius: 16px 16px 0 0;
+}
+
+.modal-body{
+  padding: 1em 2em;
+}
+.share__modal__header span {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.close_modal_btn {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close_modal_btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.close_modal_btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/*========== Modal Body ==========*/
+.share__modal_content {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+/* Wallet Display */
+.wallet-display {
+  text-align: center;
+}
+
+.wallet-amount {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.wallet-email {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* Error Message */
+.error-message {
+  background: #ff6b6b;
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.error-message button {
+  background: none;
+  color: white;
+  font-size: 1rem;
+}
+
+/* Input & Donation */
+.share__modal_input {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-with-prefix {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc; /* Make sure no border is present */
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.prefix {
+  padding: 0 12px;
+  background: #f1f1f1;
+  font-weight: 600;
+}
+
+.input-with-prefix input {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  outline: none; /* Remove input outline */
+  font-size: 1rem;
+}
+
+.input-with-prefix input:focus {
+  border: none; /* Ensure no border on focus */
+  box-shadow: none; /* Remove any box-shadow */
+}
+
+/* Quick buttons */
+.quick-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.quick-btn {
+  flex: 1;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+  font-weight: 500;
+  background: #f7f7f7;
+}
+
+.quick-btn:hover:not(:disabled) {
+  background: #e2e2e2;
+}
+
+.quick-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.action-buttons button {
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.btn-pay {
+  background: #ff9a9e;
+  color: #8a2a00;
+}
+
+.btn-free {
+  background: #f1f1f1;
+  color: #667eea;
+}
+
+.btn-purchase {
+  background: #a18cd1;
+  color: #fff;
+}
+
+.btn-cancel {
+  background: #f1f1f1;
+  color: #555;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/*========== Responsive ==========*/
+@media (max-width: 480px) {
+  .share__modal {
+    width: 95%;
+  }
+
+  .share__modal__header span {
+    font-size: 1.1rem;
+  }
+
+  .wallet-amount {
+    font-size: 1.25rem;
+  }
+}

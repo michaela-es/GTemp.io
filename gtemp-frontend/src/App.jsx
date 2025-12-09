@@ -4,7 +4,7 @@ import Body from "./components/display/Body";
 import UserDashboardsPage from "./containers/UserDashboards";
 import { AuthProvider } from "./context/AuthContext";
 import { SearchProvider } from "./context/SearchContext";
-import TemplateDetail from './pages/TemplateDetail';
+import TemplateDetail2 from './pages/TemplateDetail2';
 import { CommentsProvider } from "./context/CommentsContext";
 import { WishlistProvider } from "./context/WishlistContext";
 import { TemplatesProvider } from "./context/TemplatesContext";
@@ -19,7 +19,7 @@ function App() {
                   <SearchProvider>
                 <Routes>
                   <Route path="/" element={<HomePage/>} />
-                  <Route path="/template/:id" element={<TemplateDetail />} />
+                  <Route path="/template/:id" element={<TemplateDetail2 />} />
                   <Route path="/dashboard" element={<UserDashboardsPage />} />
                 </Routes>
                   </SearchProvider>
