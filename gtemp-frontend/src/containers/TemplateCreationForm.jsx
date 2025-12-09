@@ -9,11 +9,8 @@ import { useTemplateHandlers } from './useTemplateHandlers';
 const TemplateCreationForm = ({ onRefresh }) => {
   const form = useTemplateForm();
   const handlers = useTemplateHandlers();
-
-  console.log("🔍 existingFiles:", form.existingFiles);
-console.log("First file object:", form.existingFiles[0]);
-console.log("Keys of first file:", form.existingFiles[0] && Object.keys(form.existingFiles[0]));
-
+  console.log("TemplateCreationForm - existingFiles:", form.existingFiles);
+console.log("TemplateCreationForm - files:", form.files)
 
 const handleSubmit = async () => {
   if (form.isSubmitting) return;
@@ -74,7 +71,8 @@ const handleSubmit = async () => {
       type: form.type,
       templateOwner: userId,
       releaseDate: new Date(), 
-      filenamesToDelete: form.filenamesToDelete || []
+      filenamesToDelete: form.filenamesToDelete || [],
+      fileIdsToDelete: form.fileIdsToDelete || []
     };
 
     const formDataToSend = new FormData();

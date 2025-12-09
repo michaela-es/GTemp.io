@@ -33,15 +33,12 @@ export const useTemplateHandlers = () => {
     form.setFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const removeExistingFile = async (fileId) => {
-    if (!form.editingTemplateId) return;
-    
-    try {
-      form.setExistingFiles(prev => prev.filter(file => file.id !== fileId));
-    } catch (error) {
-      console.error("Error removing file:", error);
-      form.setMessage("Error removing file");
-    }
+  const removeExistingFile = (fileId) => {
+  console.log("Removing file ID:", fileId);
+    if (form.setFileIdsToDelete) {
+    form.setFileIdsToDelete(prev => [...prev, fileId]);
+  }
+    form.setExistingFiles(prev => prev.filter(file => file.id !== fileId));
   };
 
   const handleEngineTypeSelect = (selectedEngine, selectedType) => {
