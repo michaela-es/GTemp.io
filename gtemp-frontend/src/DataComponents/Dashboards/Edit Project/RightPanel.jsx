@@ -120,8 +120,9 @@ const RightPanel = ({
                 
                 <button
                   onClick={() => {
+                    console.log("Remove clicked! Item data:", item.data, "Type:", isUrl ? "URL" : "File");
                     if (isUrl) {
-                      removeScreenshotUrl(originalIndex);
+                      removeScreenshotUrl(item.data);
                     } else {
                       removeScreenshotFile(originalIndex);
                     }

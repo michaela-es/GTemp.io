@@ -28,10 +28,13 @@ export const TemplateFormProvider = ({ children }) => {
   const [message, setMessage] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [editingTemplateId, setEditingTemplateId] = useState(null);
+  const [fileIdsToDelete, setFileIdsToDelete] =  useState([]);
+  const [filenamesToDelete, setFilenamesToDelete] = useState([]); // for images
 
   const resetForm = () => {
     setTitle("");
     setDescription("");
+    setFileIdsToDelete([]);
     setPrice("250.00");
     setSelectedPricing("Paid");
     setSelectedVisibility("Visible to Public");
@@ -51,7 +54,7 @@ export const TemplateFormProvider = ({ children }) => {
   const populateEditForm = async (template) => {
     setIsEditing(true);
     setEditingTemplateId(template.id);
-    
+    setFileIdsToDelete([]);
     setTitle(template.templateTitle || "");
     setDescription(template.templateDesc || "");
     setPrice(template.price?.toString() || "0.00");
@@ -77,12 +80,17 @@ export const TemplateFormProvider = ({ children }) => {
     }
     
     try {
-      const filesResponse = await TemplateService.getTemplateFiles(template.id);
-      setExistingFiles(filesResponse.data || []);
-    } catch (error) {
-      console.error("Error fetching template files:", error);
+    const response = await fetch(`http://localhost:8080/api/templates/${template.id}/files`);
+    if (response.ok) {
+      const filesData = await response.json();
+      setExistingFiles(filesData);
+    } else {
       setExistingFiles([]);
     }
+  } catch (error) {
+    console.error("Error fetching template files:", error);
+    setExistingFiles([]);
+  }
     
     setNewScreenshotFiles([]);
     setFiles([]);
@@ -127,6 +135,12 @@ export const TemplateFormProvider = ({ children }) => {
     setIsEditing,
     setEditingTemplateId,
     
+    filenamesToDelete,
+    setFilenamesToDelete,
+
+    fileIdsToDelete,
+    setFileIdsToDelete,
+
     resetForm,
     populateEditForm
   };

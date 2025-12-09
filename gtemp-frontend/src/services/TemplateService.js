@@ -8,7 +8,7 @@ class TemplateService {
   }
 
   getTemplateFiles(templateId) {
-    return axios.get(`/api/templates/${templateId}/files`);
+    return axios.get(`templates/${templateId}/files`);
   }
 }
 

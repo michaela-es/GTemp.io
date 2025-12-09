@@ -25,33 +25,91 @@ const LeftPanel = ({
   onClear,
   isSubmitting,
   message,
+  existingFiles = [],
+  removeExistingFile
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [hoveredItem, setHoveredItem] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const maxFiles = 5;
+  
+  // SAFE conversion - handle all cases
+  const safeExistingFiles = React.useMemo(() => {
+    if (!existingFiles) return [];
+    
+    if (Array.isArray(existingFiles)) {
+      return existingFiles.map(file => ({
+        // Normalize property names
+        id: file.id,
+        name: file.fileName || file.filename || file.name || `File ${file.id}`,
+        // Keep all original properties
+        ...file
+      }));
+    }
+    
+    if (typeof existingFiles === 'object' && existingFiles !== null) {
+      const filesArray = Object.values(existingFiles);
+      return filesArray.map(file => ({
+        id: file.id,
+        name: file.fileName || file.filename || file.name || `File ${file.id}`,
+        ...file
+      }));
+    }
+    
+    return [];
+  }, [existingFiles]);
+  
+  const totalFiles = files.length + safeExistingFiles.length;
 
-  // file input handler (converts FileList to Array)
+  // File input handler with max limit check
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files || []);
-    addFiles(selectedFiles);
+    const availableSlots = maxFiles - totalFiles;
+    
+    if (availableSlots <= 0) {
+      alert(`Maximum of ${maxFiles} files reached. Remove some files first.`);
+      return;
+    }
+
+    const filesToAdd = selectedFiles.slice(0, availableSlots);
+    
+    if (filesToAdd.length > 0) {
+      addFiles(filesToAdd);
+    }
+
+    // Clear the file input for re-selection
+    e.target.value = '';
   };
 
-  // drag & drop handlers for files (optional)
-  const [isDragging, setIsDragging] = useState(false);
+  // Drag & drop handlers
   const handleDragOver = (e) => {
     e.preventDefault();
     setIsDragging(true);
   };
+
   const handleDragLeave = (e) => {
     e.preventDefault();
     setIsDragging(false);
   };
+
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragging(false);
+    
+    const availableSlots = maxFiles - totalFiles;
+    if (availableSlots <= 0) {
+      alert(`Maximum of ${maxFiles} files reached. Remove some files first.`);
+      return;
+    }
+
     const droppedFiles = Array.from(e.dataTransfer.files || []);
-    addFiles(droppedFiles);
+    const filesToAdd = droppedFiles.slice(0, availableSlots);
+    
+    if (filesToAdd.length > 0) {
+      addFiles(filesToAdd);
+    }
+    
     e.dataTransfer.clearData();
   };
 
@@ -80,6 +138,7 @@ const LeftPanel = ({
         </>
       );
     }
+    return null;
   };
 
   const renderPriceInput = (disabled) => (
@@ -100,6 +159,55 @@ const LeftPanel = ({
       />
     </div>
   );
+
+  const renderFiles = () => {
+    if (totalFiles === 0) {
+      return "Drag & drop files here or click 'Choose Files'";
+    }
+
+    return (
+      <>
+        {/* Existing files from database */}
+        {safeExistingFiles.map((file, index) => (
+          <div key={`existing-${file.id || index}`} style={styles.fileRow}>
+            <span style={styles.fileName}>
+              {file.name}
+              <span style={styles.existingFileBadge}> (existing)</span>
+            </span>
+            <button
+              onClick={() => {
+                console.log("Removing existing file:", file.id, file.name);
+                removeExistingFile(file.id);
+              }}
+              style={styles.removeFileButton}
+              type="button"
+              title="Remove file"
+            >
+              ×
+            </button>
+          </div>
+        ))}
+        
+        {/* Newly uploaded files */}
+        {files.map((file, index) => (
+          <div key={`new-${index}`} style={styles.fileRow}>
+            <span style={styles.fileName}>{file.name}</span>
+            <button
+              onClick={() => {
+                console.log("Removing new file:", index, file.name);
+                removeFile(index);
+              }}
+              style={styles.removeFileButton}
+              type="button"
+              title="Remove file"
+            >
+              ×
+            </button>
+          </div>
+        ))}
+      </>
+    );
+  };
 
   return (
     <div style={styles.leftPanelContainer}>
@@ -151,7 +259,7 @@ const LeftPanel = ({
         </div>
       </div>
 
-      {/* Price / Donation + Upload Section */}
+      {/* Price/Visibility + Upload Section */}
       <div style={styles.flexRow}>
         <div style={styles.sectionColumn}>
           {renderPricingField()}
@@ -190,21 +298,37 @@ const LeftPanel = ({
 
         {/* Upload Section */}
         <div style={styles.sectionColumn}>
-          <label style={styles.label}>Upload Files (max {maxFiles})</label>
+          <div style={styles.uploadHeader}>
+            <label style={styles.label}>Upload Files (max {maxFiles})</label>
+            {totalFiles > 0 && (
+              <span style={styles.fileCount}>
+                {totalFiles} file{totalFiles !== 1 ? 's' : ''}
+              </span>
+            )}
+          </div>
+          
           <input
             type="file"
             id="fileInput"
             style={styles.hiddenInput}
             onChange={handleFileChange}
             multiple
+            disabled={totalFiles >= maxFiles}
           />
+          
           <button
             onClick={() => document.getElementById("fileInput").click()}
-            style={styles.uploadButton}
+            style={{
+              ...styles.uploadButton,
+              ...(totalFiles >= maxFiles ? styles.disabledButton : {}),
+            }}
             type="button"
+            disabled={totalFiles >= maxFiles}
+            title={totalFiles >= maxFiles ? "Maximum files reached" : "Add files"}
           >
             Choose Files
           </button>
+          
           <div
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -212,27 +336,20 @@ const LeftPanel = ({
             style={{
               ...styles.dropZone,
               border: `2px dashed ${isDragging ? "#4CAF50" : "#ccc"}`,
-              minHeight: `${Math.min(files.length)}px`,
+              backgroundColor: isDragging ? "#f0f9f0" : "#fafafa",
+              minHeight: totalFiles > 0 ? "auto" : "60px",
               minWidth: "139px",
+              padding: totalFiles > 0 ? "8px" : "20px",
             }}
           >
-            {files.length === 0 ? (
-              "Drag & drop files here or click 'Choose Files'"
-            ) : (
-              files.map((file, index) => (
-                <div key={index} style={styles.fileRow}>
-                  <span>{file.name}</span>
-                  <button
-                    onClick={() => removeFile(index)}
-                    style={styles.removeFileButton}
-                    type="button"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))
-            )}
+            {renderFiles()}
           </div>
+          
+          {totalFiles >= maxFiles && (
+            <div style={styles.maxFilesWarning}>
+              Maximum of {maxFiles} files reached
+            </div>
+          )}
         </div>
       </div>
 
@@ -249,9 +366,13 @@ const LeftPanel = ({
 
       {/* Engine & Type */}
       <div style={styles.sectionColumn}>
-        <EngineTypeDropUp onSelect={onEngineTypeSelect} selectedEngine={engine} selectedType={type} />
+        <EngineTypeDropUp 
+          onSelect={onEngineTypeSelect} 
+          selectedEngine={engine} 
+          selectedType={type} 
+        />
         {engine && type && (
-          <div style={{ marginTop: "8px", fontSize: "14px", color: "#666" }}>
+          <div style={styles.selectedEngineType}>
             Selected: {engine} - {type}
           </div>
         )}
@@ -259,10 +380,19 @@ const LeftPanel = ({
 
       {/* Actions */}
       <div style={styles.actionButtons}>
-        <button style={styles.saveButton} onClick={onSave} disabled={isSubmitting} type="button">
-          {isSubmitting ? "Creating..." : "Save"}
+        <button 
+          style={styles.saveButton} 
+          onClick={onSave} 
+          disabled={isSubmitting} 
+          type="button"
+        >
+          {isSubmitting ? "Submitting..." : "Save"}
         </button>
-        <button style={styles.deleteButton} onClick={onClear} type="button">
+        <button 
+          style={styles.deleteButton} 
+          onClick={onClear} 
+          type="button"
+        >
           Clear Form
         </button>
       </div>

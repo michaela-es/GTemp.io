@@ -9,10 +9,21 @@ import { useTemplateHandlers } from './useTemplateHandlers';
 const TemplateCreationForm = ({ onRefresh }) => {
   const form = useTemplateForm();
   const handlers = useTemplateHandlers();
+  console.log("TemplateCreationForm - existingFiles:", form.existingFiles);
+console.log("TemplateCreationForm - files:", form.files)
 
 const handleSubmit = async () => {
   if (form.isSubmitting) return;
 
+  console.log("=== FRONTEND DEBUG ===");
+  console.log("form.filenamesToDelete:", form.filenamesToDelete);
+  console.log("Type:", typeof form.filenamesToDelete);
+  console.log("Length:", form.filenamesToDelete?.length);
+  
+  if (form.filenamesToDelete && form.filenamesToDelete.length > 0) {
+    console.log("First item:", form.filenamesToDelete[0]);
+    console.log("Type of first item:", typeof form.filenamesToDelete[0]);
+  }
   if (!form.title.trim()) {
     form.setMessage("Error: Title is required");
     return;
@@ -38,7 +49,7 @@ const handleSubmit = async () => {
     return;
   }
   
-  if (form.files.length === 0) {
+  if (form.files.length + (form.existingFiles?.length || 0) === 0) {
     form.setMessage("Error: At least one additional file is required");
     return;
   }
@@ -59,7 +70,9 @@ const handleSubmit = async () => {
       engine: form.engine,
       type: form.type,
       templateOwner: userId,
-      releaseDate: new Date()
+      releaseDate: new Date(), 
+      filenamesToDelete: form.filenamesToDelete || [],
+      fileIdsToDelete: form.fileIdsToDelete || []
     };
 
     const formDataToSend = new FormData();
