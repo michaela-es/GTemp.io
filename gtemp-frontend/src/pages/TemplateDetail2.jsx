@@ -8,13 +8,11 @@ import { DetailsBox } from '../components/Templates/DetailsBox';
 import Header from '../components/display/Header';
 import CommentsList from '../components/CommentList';
 import DownloadModal from '../components/DownloadModal';
-import RatingBox from '../components/RatingBox';
+import BackgroundWrapper from '../components/Templates/BackgroundWrapper';
+import ImageCarousel from '../components/Templates/ImageCarousel';
 import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from "../context/AuthContext";
-import BackgroundWrapper from '../components/Templates/BackgroundWrapper';
 import '../styles/TemplateDetail.css';
-import ImageCarousel from '../components/Templates/ImageCarousel';
-import NoAccess from '../components/Templates/NoAcess';
 
 const TemplateDetail2 = () => {
   const { id } = useParams();
@@ -27,10 +25,12 @@ const TemplateDetail2 = () => {
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [wishlistLoading, setWishlistLoading] = useState(false);
   const [downloading, setDownloading] = useState(false);
-  const { currentUser, refreshWallet } = useAuth();
-  const { toggleWishlist, isInWishlist } = useWishlist();
   const [images, setImages] = useState([]);
 
+  const { currentUser, refreshWallet } = useAuth();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+
+  // Fetch template details
   useEffect(() => {
   const fetchTemplate = async () => {
     try {
@@ -85,186 +85,114 @@ const TemplateDetail2 = () => {
   };
 
   const handleWishlistClick = async () => {
-    if (!currentUser) {
-      alert("You must be logged in to add to wishlist.");
-      return;
-    }
-    
+    if (!currentUser) return alert("You must be logged in to add to wishlist.");
     setWishlistLoading(true);
     try {
       await toggleWishlist(templateId);
     } catch (err) {
-      console.error("Wishlist toggle error:", err);
+      console.error(err);
       alert("Failed to update wishlist");
     } finally {
       setWishlistLoading(false);
     }
   };
 
+  // Download function for free templates or after purchase/donation
   const downloadFile = async (isFree = false, amount = 0) => {
     if (!currentUser || !template) return;
-    
     setDownloading(true);
-    
     try {
-      if (!isFree && template.priceSetting === "Paid") {
+      // Handle payments if required
+      if (!isFree && (template.priceSetting === "Paid" || (template.priceSetting === "₱0 or donation" && amount > 0))) {
         await handlePurchasePayment(amount);
       }
-      
-      if (!isFree && template.priceSetting === "₱0 or donation" && amount > 0) {
-        await handlePurchasePayment(amount);
-      }
-      
-      const downloadUrl = `http://localhost:8080/api/templates/${templateId}/download/free?userEmail=${encodeURIComponent(currentUser.email)}`;
-      
-      const response = await fetch(downloadUrl);
-      
-      if (!response.ok) {
-        if (response.status === 403) {
-          throw new Error('Payment required to download this template');
-        }
-        if (response.status === 404) {
-          throw new Error('Template file not found');
-        }
-        throw new Error(`Download failed with status: ${response.status}`);
-      }
-      
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+
+      const downloadUrl = `http://localhost:8080/api/templates/${templateId}/download/free?userID=${currentUser.userID}`;
+      const res = await fetch(downloadUrl);
+      if (!res.ok) throw new Error(`Download failed: ${res.status}`);
+      const blob = await res.blob();
       const link = document.createElement('a');
-      link.href = url;
+      link.href = window.URL.createObjectURL(blob);
       link.download = `${template.templateTitle.replace(/[^a-z0-9]/gi, '_')}.zip`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-      
+      window.URL.revokeObjectURL(link.href);
+
       setTemplate(prev => ({
         ...prev,
         downloads: (prev.downloads || 0) + 1
       }));
-      
+
       setShowDownloadModal(false);
-      
-      if (isFree) {
-        alert('Template downloaded successfully!');
-      } else if (amount > 0) {
-        alert(`Thank you for your ₱${amount} donation! Template downloaded.`);
-      }
-      
+      if (isFree) alert('Template downloaded successfully!');
+      else if (amount > 0) alert(`Thank you for your ₱${amount} donation! Template downloaded.`);
+
       await refreshWallet();
-      
-    } catch (error) {
-      console.error('Download error:', error);
-      alert(`Download failed: ${error.message}`);
+    } catch (err) {
+      console.error(err);
+      alert(`Download failed: ${err.message}`);
     } finally {
       setDownloading(false);
     }
   };
 
+  // Purchase payment
   const handlePurchasePayment = async (amount) => {
-    try {
-      const url = `http://localhost:8080/api/templates/${templateId}/purchase?userEmail=${encodeURIComponent(currentUser.email)}${amount > 0 ? `&donationAmount=${amount}` : ''}`;
-      
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      
-      const result = await response.json();
-      
-      if (!response.ok) {
-        if (response.status === 400 && result.includes('Insufficient wallet balance')) {
-          throw new Error('Insufficient wallet balance. Please add funds to your wallet.');
-        }
-        throw new Error(result.message || result.error || 'Payment failed');
-      }
-      
-      if (result.alreadyOwned) {
-        console.log('Already owns this template');
-      }
-      
-      return result;
-    } catch (error) {
-      console.error('Payment error:', error);
-      throw error;
-    }
-  };
-
-const handleConfirmPayment = async (amount) => {
-  if (!currentUser) {
-    alert('Please login first');
-    return;
-  }
-  
-  try {
     const params = new URLSearchParams({
-      userEmail: currentUser.email,
+      userID: currentUser.userID,
       ...(amount > 0 ? { donationAmount: amount } : {})
     });
-    
-    const response = await fetch(
-      `http://localhost:8080/api/templates/${template.id}/purchase?${params}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-    
-    const result = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(result.message || result.error || `Payment failed with status ${response.status}`);
-    }
-    
-    await downloadFile(false, amount);
-    
-    await refreshWallet();
-    
+    const res = await fetch(`http://localhost:8080/api/templates/${templateId}/purchase?${params}`, { method: 'POST' });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.message || 'Payment failed');
     return result;
-    
-  } catch (error) {
-    throw error;
-  }
-};
+  };
 
-const handleFreeDownload = async () => {
-  if (!currentUser) {
-    alert('Please login first');
-    return;
-  }
-  
-  try {
-    const link = document.createElement('a');
-    link.href = `http://localhost:8080/api/templates/${templateId}/download/free?userEmail=${encodeURIComponent(currentUser.email)}`;
-    link.download = `${template.templateTitle}.zip`;
-    link.style.display = 'none';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    return true; 
-    
-  } catch (error) {
-    throw error;
-  }
-};
+  const handleFreeDownload = async () => {
+    if (!currentUser) return alert('Please login first');
+    await downloadFile(true);
+  };
 
-  const handleDownloadClick = () => {
-    if (!currentUser) {
-      alert("You must be logged in to download.");
+  // Confirm payment callback from modal
+  const handleConfirmPayment = async (amount) => {
+    await downloadFile(false, amount);
+  };
+
+  // Main download click handler
+  const handleDownloadClick = async () => {
+    if (!currentUser) return alert("You must be logged in to download.");
+
+    if (template.priceSetting === "No Payment") {
+      await handleFreeDownload();
       return;
     }
 
-    if (template.priceSetting === "No Payment") {
-      handleFreeDownload();
-    } else {
-      setShowDownloadModal(true);
+    if (template.priceSetting === "Paid") {
+      try {
+        // Check if already purchased
+        const res = await fetch(
+          `http://localhost:8080/api/templates/user/${currentUser.userID}/library`
+        );
+        const libraryItems = await res.json();
+        const alreadyPurchased = libraryItems.some(
+          item => item.template.id === templateId && item.actionType === "PURCHASED"
+        );
+
+        if (alreadyPurchased) {
+          // Direct download if purchased
+          await downloadFile();
+          return;
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Failed to check purchase status.");
+        return;
+      }
     }
+
+    // Show modal for payment or donation
+    setShowDownloadModal(true);
   };
 
   if (loading) return (
@@ -273,14 +201,14 @@ const handleFreeDownload = async () => {
       <p>Loading template...</p>
     </div>
   );
-  
+
   if (error) return (
     <div className="error-container">
       <h2>Error loading template</h2>
       <p>{error}</p>
     </div>
   );
-  
+
   if (!template) return <div className="not-found">Template not found</div>;
   
   if (template.visibility === false) {
@@ -291,22 +219,13 @@ const handleFreeDownload = async () => {
   }
 
 
-  const formatDate = (dateString) => {
-    if (!dateString) return 'Not specified';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
+  const formatDate = (dateString) => dateString ? new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Not specified';
 
   const renderStars = (rating) => {
     if (!rating) return 'No rating yet';
-    
     const fullStars = Math.floor(rating);
     const halfStar = rating - fullStars >= 0.5 ? 1 : 0;
     const emptyStars = 5 - fullStars - halfStar;
-    
     return (
       <span className="star-rating">
         {'★'.repeat(fullStars)}
@@ -320,15 +239,13 @@ const handleFreeDownload = async () => {
   return (
     <BackgroundWrapper imageUrl={getImageUrl(template.coverImagePath)}>
       <Header />
-      
       <div className="template-detail-container">
         <div className="sidebar">
           {currentUser?.userID !== template.templateOwner && (
             <IconButton
-              imgSrc={
-                wishlisted
-                  ? 'https://www.svgrepo.com/show/535436/heart.svg'
-                  : 'https://www.svgrepo.com/show/532473/heart.svg'
+              imgSrc={wishlisted
+                ? 'https://www.svgrepo.com/show/535436/heart.svg'
+                : 'https://www.svgrepo.com/show/532473/heart.svg'
               }
               name={wishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}
               onClick={handleWishlistClick}
@@ -342,16 +259,14 @@ const handleFreeDownload = async () => {
           <div className="details-grid">
             <div className="details-left">
               <HeadingText text={template.templateTitle} />
-              
               <DescBox text={template.templateDesc} />
-              
               <DetailsBox
                 releaseDate={formatDate(template.releaseDate)}
                 engine={template.engine}
                 templateOwnerUsername={template.templateOwnerUsername || template.templateOwner}
                 type={template.type}
               />
-              
+
               <HeadingText text="Download" />
               <section className="download-section">
                 <ActionButton
@@ -365,29 +280,26 @@ const handleFreeDownload = async () => {
                   {template.priceSetting === "Paid" && <span>₱{template.price?.toFixed(2) || '0.00'}</span>}
                 </div>
               </section>
-              
+
               <HeadingText text="Comments" />
               <CommentsList templateId={templateId} />
             </div>
 
             <div className="details-right">
-               <ImageCarousel images={images} />
-              
+              <ImageCarousel images={images} />
               <div className="rating-div">
                 <HeadingText text="Rating" />
-                
                 <div className="rating-display">
                   {renderStars(template.averageRating)}
                   <p className="rating-count">
                     {ratedUsers.length} {ratedUsers.length === 1 ? 'rating' : 'ratings'}
                   </p>
                 </div>
-                
                 <div className="downloads-count">
                   <HeadingText text="Downloads" />
                   <p>{template.downloadCount || 0} downloads</p>
                 </div>
-                
+
                 {ratedUsers.length > 0 && (
                   <div className="rated-users">
                     <h3>Recent Ratings:</h3>
@@ -399,9 +311,7 @@ const handleFreeDownload = async () => {
                         </li>
                       ))}
                     </ul>
-                    {ratedUsers.length > 5 && (
-                      <p className="more-ratings">+ {ratedUsers.length - 5} more ratings</p>
-                    )}
+                    {ratedUsers.length > 5 && <p className="more-ratings">+ {ratedUsers.length - 5} more ratings</p>}
                   </div>
                 )}
               </div>

@@ -1,4 +1,3 @@
-// RatedViewed.jsx
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import filterIcon from "../../assets/filter-icon.svg";
@@ -28,21 +27,28 @@ const RatedViewed = () => {
     setIsOpen(false);
   };
 
+  // Clear items if user logs out
+  useEffect(() => {
+    if (!currentUser) {
+      setRatedItems([]);
+    }
+  }, [currentUser]);
+
   useEffect(() => {
     if (!currentUser) return;
 
     const fetchRatedTemplates = async () => {
       try {
         const res = await fetch(
-          `http://localhost:8080/api/templates/user/${currentUser.email}/rated`
+          `http://localhost:8080/api/templates/user/${currentUser.userID}/rated`
         );
         if (!res.ok) throw new Error("Failed to fetch rated templates");
         const data = await res.json();
 
-        // Optional: filter by rating
+        // Filter by rating if needed
         let filtered = data;
         if (ratingFilter !== "Any Rating") {
-          const star = parseInt(ratingFilter[0]); // "5 Star" -> 5
+          const star = parseInt(ratingFilter[0]);
           filtered = data.filter((item) => item.ratingValue === star);
         }
 
@@ -54,6 +60,9 @@ const RatedViewed = () => {
 
     fetchRatedTemplates();
   }, [currentUser, ratingFilter]);
+
+  // Show message if not logged in
+  if (!currentUser) return <p className="text-center mt-4">Please log in to view rated templates.</p>;
 
   return (
     <>
@@ -102,11 +111,11 @@ const RatedViewed = () => {
         ratedItems.map((item) => (
           <ProjectItem
             key={item.id}
-            title={item.template.templateTitle}
-            templateId={item.template.id}
-            userEmail={currentUser.email}
-            timeAgo={new Date(item.ratedAt).toLocaleString()}
-            initialRating={item.ratingValue}
+            title={item.template?.templateTitle || "Unknown"}
+            templateId={item.template?.id || 0}
+            userID={currentUser.userID}
+            timeAgo={item.ratedAt ? new Date(item.ratedAt).toLocaleString() : ""}
+            initialRating={item.ratingValue || 0}
           />
         ))
       )}

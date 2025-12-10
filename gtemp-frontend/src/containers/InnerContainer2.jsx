@@ -45,6 +45,32 @@ const InnerContainer2Content = ({
               populateEditForm(template);
             }} 
           />
+//           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+//             {userTemplates.length === 0 && <p>No templates created yet.</p>}
+//             {userTemplates.map((template) => (
+//               <ItemWithStats
+//                 key={template.id}
+//                 itemProps={{
+//                  image: template.coverImagePath
+//                   ? `http://localhost:8080/${template.coverImagePath}`
+//                   : "/images/default-image.jpg",
+//                   title: template.templateTitle,
+//                   price: template.priceSetting === "No Payment" ? "Free" : `$${template.price}`,
+//                   releaseDate: new Date(template.releaseDate).toLocaleDateString(),
+//                   updateDate: template.updateDate ? new Date(template.updateDate).toLocaleDateString() : "-",
+//                   rating: template.averageRating || 0,
+//                   visibility: template.visibility ? "Published" : "Owner Only", // <-- new
+//                 }}
+//                 stats={{
+//                   downloads: template.downloadCount || 0,
+//                   revenue: template.revenue || 0,
+//                   rating: template.averageRating || 0,
+//                   wishlist: template.wishlistCount || 0,
+//                 }}
+//                 onEdit={() => setActiveInnerTab(2)}
+//               />
+//             ))}
+//           </div>
         )}
 
         {activeInnerTab === 2 && (

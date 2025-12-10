@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import gameCover from "../../assets/logo.png";
 import axios from "axios";
 
-const ProjectItem = ({ image, title, templateId, timeAgo, initialRating = 0, comment = "My comment", userEmail }) => {
+const ProjectItem = ({ image, title, templateId, timeAgo, initialRating = 0, comment = "My comment", userID }) => {
   const [userRating, setUserRating] = useState(initialRating);
 
   //Display how much user rated this template
@@ -10,7 +10,7 @@ const ProjectItem = ({ image, title, templateId, timeAgo, initialRating = 0, com
     const fetchRating = async () => {
       try {
         const response = await axios.get(`http://localhost:8080/api/templates/${templateId}/rating`, {
-          params: { userEmail }
+          params: { userID }
         });
         setUserRating(response.data.ratingValue); // set the star value from database
       } catch (error) {
@@ -18,12 +18,13 @@ const ProjectItem = ({ image, title, templateId, timeAgo, initialRating = 0, com
       }
     };
     fetchRating();
-  }, [templateId, userEmail]);
+  }, [templateId, userID]);
+
   // Save rating to backend
   const saveRating = async (rating) => {
     try {
       const response = await axios.post(`http://localhost:8080/api/templates/${templateId}/rate`, null, {
-        params: { userEmail, ratingValue: rating },
+        params: { userID, ratingValue: rating },
       });
       console.log(response.data.message);
     } catch (error) {

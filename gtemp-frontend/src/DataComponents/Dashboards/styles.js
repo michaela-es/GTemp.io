@@ -252,7 +252,7 @@ export const styles = {
 
   /* === ItemWithStats styles === */
   statBox: {
-    width: "60px",
+    width: "95px",
     height: "50px",
     color: "black",
     borderRadius: "3.5px",
@@ -274,7 +274,7 @@ export const styles = {
     border: "1px solid #d9d9d9",
     marginLeft: "25px",
     padding: "10px",
-    width: "380px",
+    width: "480px",
     gap: "10px",
   },
   itemImage: {
