@@ -32,47 +32,49 @@ const TemplateDetail2 = () => {
 
   // Fetch template details
   useEffect(() => {
-    const fetchTemplate = async () => {
-      try {
-        const res = await fetch(`http://localhost:8080/api/templates/${templateId}`);
-        if (!res.ok) throw new Error(`Failed to fetch template: ${res.status}`);
+  const fetchTemplate = async () => {
+    try {
+      const res = await fetch(`http://localhost:8080/api/templates/${templateId}`);
+      if (!res.ok) throw new Error(`Failed to fetch template: ${res.status}`);
+      const data = await res.json();
+      setTemplate(data);
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+    }
+  };
+
+  const fetchImages = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/templates/${templateId}/images`);
+      if (response.ok) {
+        const data = await response.json();
+        setImages(data);
+      } else {
+        console.error("Error fetching images");
+      }
+    } catch (error) {
+      console.error("Error fetching images:", error);
+    }
+  };
+
+  const fetchRatedUsers = async () => {
+    try {
+      const res = await fetch(`http://localhost:8080/api/templates/${templateId}/rated-users`);
+      if (res.ok) {
         const data = await res.json();
-        setTemplate(data);
-      } catch (err) {
-        console.error(err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
+        setRatedUsers(data);
       }
-    };
-    fetchTemplate();
-  }, [templateId]);
+    } catch (err) {
+      console.error("Failed to fetch rated users:", err);
+    }
+  };
 
-  // Fetch images
-  useEffect(() => {
-    const fetchImages = async () => {
-      try {
-        const res = await fetch(`http://localhost:8080/api/templates/${templateId}/images`);
-        if (res.ok) setImages(await res.json());
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchImages();
-  }, [templateId]);
+  Promise.all([fetchTemplate(), fetchImages(), fetchRatedUsers()])
+    .then(() => setLoading(false));  
+}, [templateId]);
 
-  // Fetch users who rated this template
-  useEffect(() => {
-    const fetchRatedUsers = async () => {
-      try {
-        const res = await fetch(`http://localhost:8080/api/templates/${templateId}/rated-users`);
-        if (res.ok) setRatedUsers(await res.json());
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchRatedUsers();
-  }, [templateId]);
+  
 
   const wishlisted = templateId ? isInWishlist(templateId) : false;
 
@@ -208,6 +210,14 @@ const TemplateDetail2 = () => {
   );
 
   if (!template) return <div className="not-found">Template not found</div>;
+  
+  if (template.visibility === false) {
+      const isOwner = currentUser?.userID === template.templateOwner;
+      if (!isOwner) {
+        return <NoAccess />;
+      }
+  }
+
 
   const formatDate = (dateString) => dateString ? new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Not specified';
 
