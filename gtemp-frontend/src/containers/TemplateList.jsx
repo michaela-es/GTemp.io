@@ -22,12 +22,15 @@ const TemplateList = ({ templates }) => {
         <ItemWithStats
           key={template.id}
           itemProps={{
-            image: template.coverImagePath || "default-image.jpg",
+            image: template.coverImagePath
+            ? `http://localhost:8080/${template.coverImagePath}`
+            : "/images/default-image.jpg",
             title: template.templateTitle,
             price: template.priceSetting === "No Payment" ? "Free" : `$${template.price}`,
             releaseDate: new Date(template.releaseDate).toLocaleDateString(),
             updateDate: template.updateDate ? new Date(template.updateDate).toLocaleDateString() : "-",
             rating: template.averageRating || 0,
+            visibility: template.visibility ? "Published" : "Owner Only",
           }}
           stats={{
             downloads: template.downloadCount || 0,
