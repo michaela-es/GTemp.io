@@ -10,6 +10,7 @@ import CommentsList from '../components/CommentList';
 import DownloadModal from '../components/DownloadModal';
 import BackgroundWrapper from '../components/Templates/BackgroundWrapper';
 import ImageCarousel from '../components/Templates/ImageCarousel';
+import NoAccess from '../components/Templates/NoAcess';
 import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from "../context/AuthContext";
 import '../styles/TemplateDetail.css';

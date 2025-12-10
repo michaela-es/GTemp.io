@@ -7,6 +7,8 @@ import ProfileSection from "../DataComponents/Credentials/Profile Settings/Profi
 import SecuritySection from "../DataComponents/Credentials/Profile Settings/SecurityInstance";
 import DeleteSection from "../DataComponents/Credentials/Profile Settings/DeleteAccountInstance";
 import CreditAccountItem from "../DataComponents/Credentials/Bank Accounts/CreditAccountItem";
+import { useAuth } from '../context/AuthContext';
+import axios from 'axios';
 
 const InnerContainer3 = () => {
   const [activeInnerTab, setActiveInnerTab] = useState(1);
@@ -14,9 +16,29 @@ const InnerContainer3 = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
 
+  const { currentUser, refreshWallet } = useAuth();
+
   const innerInnerTabs = ["Profile Settings", "Bank Accounts"];
 
   const tabsStyle = { display: "flex", width: "100%" };
+
+  const addLoadToWallet = async (amount) => {
+    if (!currentUser) return;
+    
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/api/users/${currentUser.email}/wallet/add`,
+        { amount }
+      );
+      console.log('Wallet updated:', response.data.wallet);
+      
+      // Update AuthContext
+      refreshWallet(); // will fetch updated wallet and update state + localStorage
+    } catch (err) {
+      console.error('Failed to add load:', err);
+      alert('Failed to add load');
+    }
+  };
 
   const tabStyle = (tabNumber) => ({
     flex: 1, // each tab takes equal width
@@ -97,6 +119,36 @@ const InnerContainer3 = () => {
             >
               Add new bank
             </button>
+
+            <h2 style={styles.creditHeader}>Buy Load</h2>
+
+            {/* Load Buttons Grid */}
+<div
+  style={{
+    display: "grid",
+    gridTemplateColumns: "repeat(3, 1fr)", // 3 columns
+    gap: "10px",
+    marginTop: "10px",
+  }}
+>
+{[50, 100, 150, 200, 300, 500, 750, 850, 1000].map((amount, index) => (
+  <button
+    key={index}
+    style={{
+      padding: "10px",
+      backgroundColor: "#f0f0f0",
+      border: "1px solid #ccc",
+      borderRadius: "5px",
+      cursor: "pointer",
+      fontWeight: "bold",
+    }}
+    onClick={() => addLoadToWallet(amount)}
+  >
+    {amount} load
+  </button>
+))}
+</div>
+
 
             {/* Add Modal */}
             {showAddModal && (
