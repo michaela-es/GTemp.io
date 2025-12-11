@@ -18,11 +18,17 @@ export const templateAPI = {
   },
 
   purchaseTemplate: async (templateId, amount = 0) => {
+  try {
     const response = await api.post(`/templates/${templateId}/purchase`, null, {
       params: { donationAmount: amount }
     });
     return response.data;
-  },
+  } catch (error) {
+    console.error("Failed to purchase template:", error);
+    throw error;
+  }
+},
+
 
   checkPurchase: async () => {
     const response = await api.get('/templates/user/library');

@@ -2,17 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import './DownloadModal.css';
 
-const DownloadModal = ({ template, onClose, onConfirm, onFreeDownload }) => {
-  const [donation, setDonation] = useState('');
+const DownloadModal = ({ template, onClose, onConfirm }) => {
+  const [donation, setDonation] = useState(''); 
   const [isProcessing, setIsProcessing] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState(''); 
 
   const { currentUser, refreshWallet } = useAuth();
   const userEmail = currentUser?.email;
   const userBalance = currentUser?.wallet || 0;
 
   useEffect(() => {
-    if (template.priceSetting === "Paid") {
+    if (template.priceSetting === "Paid" || template.priceSetting === "$0 or donation") {
       setDonation(template.price.toString());
     }
   }, [template]);
@@ -53,39 +53,26 @@ const DownloadModal = ({ template, onClose, onConfirm, onFreeDownload }) => {
     }
   };
 
-  const handleFreeDownloadClick = async () => {
-    if (isProcessing) return;
-
-    if (!currentUser) {
-      setError('Please log in to download');
-      return;
-    }
-
-    setIsProcessing(true);
-    setError('');
-
-    try {
-      await onFreeDownload();
-      onClose();
-    } catch (err) {
-      setError(err.message || 'Download failed. Please try again.');
-      setIsProcessing(false);
-    }
+  // Donation section handler
+  const handleDonationChange = (e) => {
+    setDonation(e.target.value);
   };
 
+  const isPaidTemplate = template.priceSetting === "Paid" || template.priceSetting === "$0 or donation";
+
   return (
-      <div className={`share__modal ${currentUser ? 'show-modal' : ''}`}>
-        <div className="share__modal__content">
-          <div className="share__modal__header">
-            <span>Download '{template.templateTitle}'</span>
-            <button 
-              className="close_modal_btn" 
-              onClick={() => !isProcessing && onClose()} 
-              disabled={isProcessing}
-            >
-              ×
-            </button>
-          </div>
+    <div className={`share__modal ${currentUser ? 'show-modal' : ''}`}>
+      <div className="share__modal__content">
+        <div className="share__modal__header">
+          <span>Download '{template.templateTitle}'</span>
+          <button 
+            className="close_modal_btn" 
+            onClick={() => !isProcessing && onClose()} 
+            disabled={isProcessing}
+          >
+            ×
+          </button>
+        </div>
 
         <div className="modal-body">
           {/* Wallet Display */}
@@ -105,7 +92,7 @@ const DownloadModal = ({ template, onClose, onConfirm, onFreeDownload }) => {
             </div>
           )}
 
-          {/* Donation / Paid / Free Sections */}
+          {/* Donation / Paid Sections */}
           {template.priceSetting === "$0 or donation" && (
             <div className="donation-section">
               <div className="share__modal_input">
@@ -117,7 +104,7 @@ const DownloadModal = ({ template, onClose, onConfirm, onFreeDownload }) => {
                     min="0"
                     step="0.01"
                     value={donation}
-                    onChange={(e) => setDonation(e.target.value)}
+                    onChange={handleDonationChange}
                     disabled={isProcessing}
                   />
                 </div>
@@ -135,13 +122,6 @@ const DownloadModal = ({ template, onClose, onConfirm, onFreeDownload }) => {
                   disabled={isProcessing || (parseFloat(donation) > userBalance)}
                 >
                   {isProcessing ? 'Processing...' : `Pay $${parseFloat(donation) || 0}`}
-                </button>
-                <button 
-                  onClick={handleFreeDownloadClick} 
-                  className="btn-free"
-                  disabled={isProcessing}
-                >
-                  {isProcessing ? 'Processing...' : 'Download for Free'}
                 </button>
               </div>
             </div>
@@ -165,30 +145,8 @@ const DownloadModal = ({ template, onClose, onConfirm, onFreeDownload }) => {
                 >
                   {isProcessing ? 'Processing...' : `Purchase for $${template.price}`}
                 </button>
-                {/* {userBalance < template.price && (
-                  <button 
-                    onClick={() => { onClose(); window.location.href = '/wallet'; }}
-                    className="btn-cancel"
-                  >
-                    Add Money to Wallet
-                  </button>
-                )} */}
                 <button onClick={onClose} className="btn-cancel" disabled={isProcessing}>Cancel</button>
               </div>
-            </div>
-          )}
-
-          {template.priceSetting === "No Payment" && (
-            <div className="free-section">
-              <div className="free-badge">FREE</div>
-              <p className="free-text">This template is completely free!</p>
-              <button 
-                onClick={handleFreeDownloadClick} 
-                className="btn-free"
-                disabled={isProcessing}
-              >
-                {isProcessing ? 'Downloading...' : 'Download Now'}
-              </button>
             </div>
           )}
         </div>

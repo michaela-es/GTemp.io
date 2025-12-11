@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-
+import api from '../services/api';
 const AuthContext = createContext();
 
 export const useAuth = () => {
@@ -12,6 +12,22 @@ export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const refreshWallet = async () => {
+    if (!currentUser || !token) {
+      console.error('Cannot refresh wallet: No current user or token found.');
+      return;
+    }
+
+    try {
+      const response = await api.get('/users/me');
+      const updatedUser = response.data;
+      setCurrentUser(updatedUser);
+      console.log('Wallet refreshed:', updatedUser.wallet);
+    } catch (error) {
+      console.error('Error refreshing wallet:', error);
+    }
+  };
 
   useEffect(() => {
     const savedToken = localStorage.getItem('token');
@@ -95,6 +111,7 @@ export const AuthProvider = ({ children }) => {
         logout,
         updateUser, 
         isAuthenticated: !!token,
+        refreshWallet,
       }}
     >
       {children}

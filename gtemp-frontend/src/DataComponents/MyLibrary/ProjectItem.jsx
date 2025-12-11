@@ -2,14 +2,13 @@ import React, { useState, useEffect } from "react";
 import gameCover from "../../assets/logo.png";
 import api from "../../services/api";
 
-const ProjectItem = ({ image, title, templateId, timeAgo, initialRating = 0, comment = "My comment", userID }) => {
+const ProjectItem = ({ image, title, templateId, timeAgo, initialRating = 0}) => {
   const [userRating, setUserRating] = useState(initialRating);
 
   useEffect(() => {
     const fetchRating = async () => {
       try {
         const response = await api.get(`/templates/${templateId}/rating`, {
-          params: { userID }
         });
         setUserRating(response.data.ratingValue); 
       } catch (error) {
@@ -17,7 +16,7 @@ const ProjectItem = ({ image, title, templateId, timeAgo, initialRating = 0, com
       }
     };
     fetchRating();
-  }, [templateId, userID]);
+  }, [templateId]);
 
   const saveRating = async (rating) => {
     try {
@@ -57,8 +56,6 @@ const ProjectItem = ({ image, title, templateId, timeAgo, initialRating = 0, com
           ))}
           <div style={{ marginLeft: "8px" }}>({userRating})</div>
         </div>
-
-        <div style={{ fontSize: "1rem" }}>{comment}</div>
       </div>
     </div>
   );

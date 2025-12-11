@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import filterIcon from "../../assets/filter-icon.svg";
 import ProjectItem from "./ProjectItem";
+import api from "../../services/api"; 
 import {
   topRowStyle,
   filterStyle,
@@ -16,18 +17,17 @@ import {
 const RatedViewed = () => {
   const { currentUser } = useAuth();
   const [ratedItems, setRatedItems] = useState([]);
-  const [ratingFilter, setRatingFilter] = useState("Any Rating");
+  const [ratingFilter, setRatingFilter] = useState(null); 
   const [isOpen, setIsOpen] = useState(false);
   const [hoverIndex, setHoverIndex] = useState(null);
 
   const ratingOptions = ["Any Rating", "5 Star", "4 Star", "3 Star", "2 Star", "1 Star"];
 
   const handleSelect = (value) => {
-    setRatingFilter(value);
+    setRatingFilter(value === "Any Rating" ? null : parseInt(value[0]));  
     setIsOpen(false);
   };
 
-  // Clear items if user logs out
   useEffect(() => {
     if (!currentUser) {
       setRatedItems([]);
@@ -39,29 +39,24 @@ const RatedViewed = () => {
 
     const fetchRatedTemplates = async () => {
       try {
-        const res = await fetch(
-          `http://localhost:8080/api/templates/user/${currentUser.userID}/rated`
-        );
-        if (!res.ok) throw new Error("Failed to fetch rated templates");
-        const data = await res.json();
+        const res = await api.get(`/templates/user/rated`);  
+        const data = res.data; 
 
-        // Filter by rating if needed
         let filtered = data;
-        if (ratingFilter !== "Any Rating") {
-          const star = parseInt(ratingFilter[0]);
-          filtered = data.filter((item) => item.ratingValue === star);
+        if (ratingFilter !== null) {
+          filtered = data.filter((item) => item.ratingValue === ratingFilter);
         }
 
         setRatedItems(filtered);
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching rated templates:", err);
+        alert("Failed to load rated templates.");
       }
     };
 
     fetchRatedTemplates();
   }, [currentUser, ratingFilter]);
 
-  // Show message if not logged in
   if (!currentUser) return <p className="text-center mt-4">Please log in to view rated templates.</p>;
 
   return (
@@ -73,7 +68,7 @@ const RatedViewed = () => {
 
           <div style={dropdownContainer} onMouseLeave={() => setIsOpen(false)}>
             <div style={dropdownButton} onClick={() => setIsOpen((prev) => !prev)}>
-              {ratingFilter} ▼
+              {ratingFilter ? `${ratingFilter} Star` : "Any Rating"} ▼
             </div>
 
             {isOpen && (

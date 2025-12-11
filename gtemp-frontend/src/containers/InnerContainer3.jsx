@@ -7,7 +7,7 @@ import ProfileSection from "../DataComponents/Credentials/Profile Settings/Profi
 import SecuritySection from "../DataComponents/Credentials/Profile Settings/SecurityInstance";
 import CreditAccountItem from "../DataComponents/Credentials/Bank Accounts/CreditAccountItem";
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
+import api from "../services/api";
 
 const InnerContainer3 = () => {
   const [activeInnerTab, setActiveInnerTab] = useState(1);
@@ -25,8 +25,8 @@ const InnerContainer3 = () => {
     if (!currentUser) return;
     
     try {
-      const response = await axios.post(
-        `http://localhost:8080/api/users/${currentUser.email}/wallet/add`,
+      const response = await api.post(
+        `http://localhost:8080/api/users/wallet/add`,
         { amount }
       );
       console.log('Wallet updated:', response.data.wallet);
