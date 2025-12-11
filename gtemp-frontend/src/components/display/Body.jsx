@@ -4,8 +4,8 @@ import '../../static/Body.css';
 import FirstContainer from './Header';
 
 // Modals
-import LoginUser from '../authentication/LoginUser';
-import RegisterUser from '../authentication/RegisterUser';
+import LoginModal from '../authentication/LoginModal';
+import RegisterModal from '../authentication/RegisterModal';
 import ProfileDropDown from '../ProfileDropDown'; // ✅ Import
 
 // Assets

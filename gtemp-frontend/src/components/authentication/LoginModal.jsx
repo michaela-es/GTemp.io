@@ -1,58 +1,141 @@
-// LoginModal.jsx
 import { useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { authAPI } from '../../services/authAPI'; 
 import '../../static/LoginModal.css';
+import RegisterModal from './RegisterModal';
 
-export default function LoginModal({ onClose, onSwitchToCreateAccount, onLoginSuccess }) {
-  const [usernameOrEmail, setUsernameOrEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const handleLogin = () => {
-    if (usernameOrEmail === 'debug' && password === '123') {
-      onLoginSuccess('debug');
-    } else {
-      setError('Invalid username or password');
+export default function LoginModal({ onClose, onLoginSuccess }) {
+  const [formData, setFormData] = useState({
+    username: '', 
+    password: ''
+  });
+  
+  const { login: updateAuthContext, loading, error, setError, setLoading } = useAuth();
+  const [localError, setLocalError] = useState('');
+  const [showRegister, setShowRegister] = useState(false);
+  
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    if (localError) setLocalError('');
+    if (error) setError(null);
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLocalError('');
+    setError(null);
+    setLoading(true);
+
+    if (!formData.username || !formData.password) {
+      setLocalError('Please fill in all fields');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const loginData = {
+        username: formData.username,
+        password: formData.password
+      };
+
+      const user = await authAPI.login(loginData);
+      
+      updateAuthContext(user);
+      
+      onLoginSuccess(user); 
+      onClose();
+    } catch (err) {
+      console.error('Login error:', err);
+      setError(err.message || 'Login failed');
+    } finally {
+      setLoading(false);
     }
   };
+
+  const handleSwitchToRegister = () => {
+    setShowRegister(true);
+  };
+
+  const handleSwitchToLogin = () => {
+    setShowRegister(false);
+  };
+
+  const handleCloseAll = () => {
+    setShowRegister(false);
+    onClose();
+  };
+
+  const displayError = localError || error;
+
+  if (showRegister) {
+    return (
+      <RegisterModal 
+        onClose={handleCloseAll}
+        onSwitchToLogin={handleSwitchToLogin}
+      />
+    );
+  }
+
   return (
-    <div className="modal-overlay">
-      <div className="modal-window">
-        <h2 className="modal-title">Log in</h2>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-window" onClick={(e) => e.stopPropagation()}>
+        <form onSubmit={handleLogin}>
+          <h2 className="modal-title">Log in</h2>
 
-        <div className="modal-field">
-          <label>Username or Email</label>
-          <input
-            type="text"
-            placeholder="Enter username or email"
-            value={usernameOrEmail}
-            onChange={(e) => setUsernameOrEmail(e.target.value)}
-          />
-        </div>
+          {displayError && <p className="error-message">{displayError}</p>}
 
-        <div className="modal-field">
-          <label>Password</label>
-          <input
-            type="password"
-            placeholder="Enter password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
+          <div className="modal-field">
+            <label htmlFor="username">Username</label> 
+            <input
+              id="username"
+              name="username" 
+              type="text"
+              placeholder="Enter username"
+              value={formData.username}
+              onChange={handleChange}
+              disabled={loading}
+              autoComplete="username"
+            />
+          </div>
 
-        {error && <p className="error-message">{error}</p>}
+          <div className="modal-field">
+            <label htmlFor="password">Password</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              placeholder="Enter password"
+              value={formData.password}
+              onChange={handleChange}
+              disabled={loading}
+              autoComplete="current-password"
+            />
+          </div>
 
-        <button className="modal-login-button" onClick={handleLogin}>
-          Log in
-        </button>
+          <button 
+            type="submit" 
+            className="modal-login-button" 
+            disabled={loading}
+          >
+            {loading ? 'Logging in...' : 'Log in'}
+          </button>
 
-        <div className="modal-footer">
-          <p className="modal-link create-account" onClick={onSwitchToCreateAccount}>
-            Create account
-          </p>
-        <p className="modal-link forgot-password">Forgot Password</p>
-        </div>
+          <div className="modal-footer">
+            <p 
+              className="modal-link create-account" 
+              onClick={loading ? undefined : handleSwitchToRegister}
+              style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
+            >
+              Create account
+            </p>
+          </div>
+        </form>
 
-
-        <button className="modal-close" onClick={onClose}>
+        <button className="modal-close" onClick={onClose} disabled={loading}>
           ✕
         </button>
       </div>

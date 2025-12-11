@@ -5,8 +5,8 @@ import InnerContainer1 from "./InnerContainer1";
 import InnerContainer2 from "./InnerContainer2";
 import InnerContainer3 from "./InnerContainer3";
 import { useAuth } from "../context/AuthContext";
-import RegisterUser from "../components/authentication/RegisterUser";
-import LoginModal from "../components/authentication/LoginUser";
+import RegisterModal from "../components/authentication/RegisterModal";
+import LoginModal from "../components/authentication/LoginModal";
 const UserDashboards = () => {
   const navigate = useNavigate();
   const location = useLocation();

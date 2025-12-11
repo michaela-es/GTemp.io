@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import ProfileDropDown from '../ProfileDropDown';
 import logoImage from '../../assets/logo.png';
-import LoginModal from '../authentication/LoginUser';
+import LoginModal from '../authentication/LoginModal';
 import SearchBar from '../Search/SearchBar';
-import RegisterModal from '../RegisterModal';
 import './Header.css';
 
 export default function Header() {
@@ -14,6 +13,7 @@ export default function Header() {
 
   const isLoggedIn = !!currentUser;
   const username = currentUser?.username;
+  const wallet = currentUser?.wallet;
 
   const handleOpenLogin = () => {
     setIsLoginModalOpen(true);
@@ -34,7 +34,7 @@ export default function Header() {
     setIsLoginModalOpen(true);
   };
 
-  const handleLoginSuccess = () => {
+  const handleLoginSuccess = (user) => {
     handleCloseModals();
   };
 
@@ -64,7 +64,7 @@ export default function Header() {
           <ProfileDropDown
             isLoggedIn={isLoggedIn}
             username={username}
-            wallet={currentUser?.wallet}
+            wallet={wallet} 
             onLoginClick={handleAuthAction}
             onLogout={logout}
             isLoading={loading}

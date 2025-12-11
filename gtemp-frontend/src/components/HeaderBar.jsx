@@ -4,8 +4,6 @@ import { useAuth } from '../context/AuthContext';
 import ActionButton from './ActionButton';
 import SearchBar from './Search/SearchBar';
 import HeadingText from './HeadingText';
-import { RegisterModal } from './RegisterModal';
-import { LoginModal } from './LoginModal';
 import '../styles/HeaderBar.css';
 
 const HeaderBar = ({ headingText = "GTemp.io" }) => {

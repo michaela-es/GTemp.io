@@ -5,7 +5,6 @@ import React, { useState } from "react";
 import { styles } from "../DataComponents/Credentials/styles";
 import ProfileSection from "../DataComponents/Credentials/Profile Settings/ProfileInstance";
 import SecuritySection from "../DataComponents/Credentials/Profile Settings/SecurityInstance";
-import DeleteSection from "../DataComponents/Credentials/Profile Settings/DeleteAccountInstance";
 import CreditAccountItem from "../DataComponents/Credentials/Bank Accounts/CreditAccountItem";
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
