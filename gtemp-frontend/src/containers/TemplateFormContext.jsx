@@ -1,5 +1,7 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import TemplateService from '../services/TemplateService';
+import { useAuth } from "../context/AuthContext"; // <-- added
+
 const TemplateFormContext = createContext();
 
 export const useTemplateForm = () => {
@@ -11,6 +13,8 @@ export const useTemplateForm = () => {
 };
 
 export const TemplateFormProvider = ({ children }) => {
+  const { currentUser } = useAuth(); // <-- detect logout/login
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("250.00");
@@ -28,32 +32,48 @@ export const TemplateFormProvider = ({ children }) => {
   const [message, setMessage] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [editingTemplateId, setEditingTemplateId] = useState(null);
-  const [fileIdsToDelete, setFileIdsToDelete] =  useState([]);
-  const [filenamesToDelete, setFilenamesToDelete] = useState([]); // for images
+  const [fileIdsToDelete, setFileIdsToDelete] = useState([]);
+  const [filenamesToDelete, setFilenamesToDelete] = useState([]); 
 
+  // -------------------------
+  // Reset Form (used also on logout)
+  // -------------------------
   const resetForm = () => {
     setTitle("");
     setDescription("");
-    setFileIdsToDelete([]);
     setPrice("250.00");
     setSelectedPricing("Paid");
     setSelectedVisibility("Visible to Public");
+
     setFiles([]);
     setExistingFiles([]);
     setCoverImage(null);
     setCoverImageUrl(null);
+
     setScreenshotUrls([]);
     setNewScreenshotFiles([]);
+
     setEngine("");
     setType("");
     setMessage("");
+
     setIsEditing(false);
     setEditingTemplateId(null);
+
+    setFileIdsToDelete([]);
+    setFilenamesToDelete([]);
   };
+
+  useEffect(() => {
+    if (!currentUser) {
+      resetForm(); // <-- main change
+    }
+  }, [currentUser]);
 
   const populateEditForm = async (template) => {
     setIsEditing(true);
     setEditingTemplateId(template.id);
+
     setFileIdsToDelete([]);
     setTitle(template.templateTitle || "");
     setDescription(template.templateDesc || "");
@@ -62,39 +82,31 @@ export const TemplateFormProvider = ({ children }) => {
     setSelectedVisibility(template.visibility ? "Visible to Public" : "Private");
     setEngine(template.engine || "");
     setType(template.type || "");
-    
+
     setCoverImageUrl(template.coverImagePath || null);
     setCoverImage(null);
-    
+
+    // Load Screenshots
     try {
       const screenshotsResponse = await fetch(`http://localhost:8080/api/templates/${template.id}/images`);
-      if (screenshotsResponse.ok) {
-        const urls = await screenshotsResponse.json();
-        setScreenshotUrls(urls);
-      } else {
-        setScreenshotUrls([]);
-      }
+      setScreenshotUrls(screenshotsResponse.ok ? await screenshotsResponse.json() : []);
     } catch (error) {
       console.error("Error fetching screenshots:", error);
       setScreenshotUrls([]);
     }
-    
+
+    // Load Files
     try {
-    const response = await fetch(`http://localhost:8080/api/templates/${template.id}/files`);
-    if (response.ok) {
-      const filesData = await response.json();
-      setExistingFiles(filesData);
-    } else {
+      const response = await fetch(`http://localhost:8080/api/templates/${template.id}/files`);
+      setExistingFiles(response.ok ? await response.json() : []);
+    } catch (error) {
+      console.error("Error fetching template files:", error);
       setExistingFiles([]);
     }
-  } catch (error) {
-    console.error("Error fetching template files:", error);
-    setExistingFiles([]);
-  }
-    
+
     setNewScreenshotFiles([]);
     setFiles([]);
-    
+
     console.log("Populated form for editing:", template.templateTitle);
   };
 
@@ -116,7 +128,7 @@ export const TemplateFormProvider = ({ children }) => {
     message,
     isEditing,
     editingTemplateId,
-    
+
     setTitle,
     setDescription,
     setPrice,
@@ -134,7 +146,7 @@ export const TemplateFormProvider = ({ children }) => {
     setMessage,
     setIsEditing,
     setEditingTemplateId,
-    
+
     filenamesToDelete,
     setFilenamesToDelete,
 
@@ -142,7 +154,7 @@ export const TemplateFormProvider = ({ children }) => {
     setFileIdsToDelete,
 
     resetForm,
-    populateEditForm
+    populateEditForm,
   };
 
   return (

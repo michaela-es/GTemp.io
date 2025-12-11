@@ -104,7 +104,7 @@ const TemplateDetail2 = () => {
     setDownloading(true);
     try {
       // Handle payments if required
-      if (!isFree && (template.priceSetting === "Paid" || (template.priceSetting === "₱0 or donation" && amount > 0))) {
+      if (!isFree && (template.priceSetting === "Paid" || (template.priceSetting === "$0 or donation" && amount > 0))) {
         await handlePurchasePayment(amount);
       }
 
@@ -127,7 +127,7 @@ const TemplateDetail2 = () => {
 
       setShowDownloadModal(false);
       if (isFree) alert('Template downloaded successfully!');
-      else if (amount > 0) alert(`Thank you for your ₱${amount} donation! Template downloaded.`);
+      else if (amount > 0) alert(`Thank you for your $${amount} donation! Template downloaded.`);
 
       await refreshWallet();
     } catch (err) {
@@ -277,8 +277,8 @@ const TemplateDetail2 = () => {
                 />
                 <div className="price-info">
                   {template.priceSetting === "No Payment" && <span>Free</span>}
-                  {template.priceSetting === "₱0 or donation" && <span>Name your own price</span>}
-                  {template.priceSetting === "Paid" && <span>₱{template.price?.toFixed(2) || '0.00'}</span>}
+                  {template.priceSetting === "$0 or donation" && <span>Name your own price</span>}
+                  {template.priceSetting === "Paid" && <span>${template.price?.toFixed(2) || '0.00'}</span>}
                 </div>
               </section>
 

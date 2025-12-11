@@ -256,8 +256,8 @@ const TemplateDetail = () => {
                 />
                 <div className="price-info">
                   {template.priceSetting === "No Payment" && <span>Free</span>}
-                  {template.priceSetting === "₱0 or donation" && <span>Name your own price</span>}
-                  {template.priceSetting === "Paid" && <span>₱{template.price?.toFixed(2) || '0.00'}</span>}
+                  {template.priceSetting === "$0 or donation" && <span>Name your own price</span>}
+                  {template.priceSetting === "Paid" && <span>${template.price?.toFixed(2) || '0.00'}</span>}
                 </div>
               </section>
               

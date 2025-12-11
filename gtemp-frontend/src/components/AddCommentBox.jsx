@@ -8,7 +8,7 @@ const AddCommentBox = ({ templateId }) => {
 console.log(currentUser)
 
     if (!currentUser){
-        return null;
+        return <p> Only logged in users can comment </p>;
     }
 const submit = () => {
   if (!text.trim()) return;
