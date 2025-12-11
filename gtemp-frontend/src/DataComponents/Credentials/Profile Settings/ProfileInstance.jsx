@@ -15,6 +15,9 @@ const ProfileInstance = ({ setMode }) => {
     if (currentUser) {
       setUsername(currentUser.username || "");
       setEmail(currentUser.email || "");
+    } else {
+      setUsername("");
+      setEmail("");
     }
   }, [currentUser]);
 
