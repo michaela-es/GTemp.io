@@ -94,13 +94,6 @@ export default function ProfileDropDown({
 
         {menuOpen && (
           <div className="user-menu">
-            {walletValue !== undefined && (
-              <div className="wallet-display">
-                <span className="wallet-label">Wallet Balance:</span>
-                <span className="wallet-amount">${walletValue.toFixed(2)}</span>
-              </div>
-            )}
-            
             {menuItems.map((item) => (
               <p 
                 key={item.label} 
