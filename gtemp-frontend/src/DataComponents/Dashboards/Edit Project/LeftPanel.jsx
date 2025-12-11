@@ -114,7 +114,7 @@ const LeftPanel = ({
   };
 
   const renderPricingField = () => {
-    if (selectedPricing === "₱0 or donation") {
+    if (selectedPricing === "$0 or donation") {
       return (
         <>
           <label style={styles.label}>Suggested Donation</label>
@@ -143,7 +143,7 @@ const LeftPanel = ({
 
   const renderPriceInput = (disabled) => (
     <div style={styles.currencyInputContainer}>
-      <span style={styles.pesoSymbol}>₱</span>
+      <span style={styles.pesoSymbol}>$</span>
       <input
         type="text"
         inputMode="decimal"
@@ -243,7 +243,7 @@ const LeftPanel = ({
       <div style={styles.sectionColumn}>
         <label style={styles.label}>Pricing</label>
         <div style={styles.pricingOptions}>
-          {["₱0 or donation", "Paid", "No Payment"].map((option) => (
+          {["$0 or donation", "Paid", "No Payment"].map((option) => (
             <button
               key={option}
               onClick={() => onPricingSelect(option)}

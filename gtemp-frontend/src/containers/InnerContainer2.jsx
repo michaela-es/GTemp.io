@@ -3,6 +3,7 @@ import TemplateList from "./TemplateList";
 import TemplateCreationForm from "./TemplateCreationForm";
 import { TemplateFormProvider, useTemplateForm } from "./TemplateFormContext"; 
 import TemplateService from "../services/TemplateService";
+import { useAuth } from "../context/AuthContext"; // <-- added
 
 const InnerContainer2Content = ({ 
   activeInnerTab, 
@@ -45,32 +46,6 @@ const InnerContainer2Content = ({
               populateEditForm(template);
             }} 
           />
-//           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-//             {userTemplates.length === 0 && <p>No templates created yet.</p>}
-//             {userTemplates.map((template) => (
-//               <ItemWithStats
-//                 key={template.id}
-//                 itemProps={{
-//                  image: template.coverImagePath
-//                   ? `http://localhost:8080/${template.coverImagePath}`
-//                   : "/images/default-image.jpg",
-//                   title: template.templateTitle,
-//                   price: template.priceSetting === "No Payment" ? "Free" : `$${template.price}`,
-//                   releaseDate: new Date(template.releaseDate).toLocaleDateString(),
-//                   updateDate: template.updateDate ? new Date(template.updateDate).toLocaleDateString() : "-",
-//                   rating: template.averageRating || 0,
-//                   visibility: template.visibility ? "Published" : "Owner Only", // <-- new
-//                 }}
-//                 stats={{
-//                   downloads: template.downloadCount || 0,
-//                   revenue: template.revenue || 0,
-//                   rating: template.averageRating || 0,
-//                   wishlist: template.wishlistCount || 0,
-//                 }}
-//                 onEdit={() => setActiveInnerTab(2)}
-//               />
-//             ))}
-//           </div>
         )}
 
         {activeInnerTab === 2 && (
@@ -112,23 +87,30 @@ const innerContentStyle = {
 };
 
 const InnerContainer2 = ({ activeInnerTab: propActiveInnerTab }) => {
+  const { currentUser } = useAuth(); // <-- detect logout/login
   const [activeInnerTab, setActiveInnerTab] = useState(propActiveInnerTab || 1);
   const [userTemplates, setUserTemplates] = useState([]);
 
+  // Set initial tab
   useEffect(() => {
     if (propActiveInnerTab) setActiveInnerTab(propActiveInnerTab);
   }, [propActiveInnerTab]);
 
+  // CLEAR templates when the user logs out
   useEffect(() => {
+    if (!currentUser) {
+      setUserTemplates([]); // <-- the main fix
+      return;
+    }
+
     fetchUserTemplates();
-  }, []);
+  }, [currentUser]); // runs again when login/logout happens
 
   const fetchUserTemplates = async () => {
     try {
-      const userId = JSON.parse(localStorage.getItem("currentUser") || "{}")?.userID;
-      if (!userId) return;
+      if (!currentUser?.userID) return;
 
-      const response = await TemplateService.getUserTemplates(userId);
+      const response = await TemplateService.getUserTemplates(currentUser.userID);
       setUserTemplates(response.data);
     } catch (err) {
       console.error("Failed to fetch templates:", err);

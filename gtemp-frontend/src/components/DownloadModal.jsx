@@ -31,7 +31,7 @@ const DownloadModal = ({ template, onClose, onConfirm, onFreeDownload }) => {
     try {
       let amount = 0;
 
-      if (template.priceSetting === "₱0 or donation") {
+      if (template.priceSetting === "$0 or donation") {
         amount = parseFloat(donation) || 0;
         if (amount < 0) throw new Error('Donation amount cannot be negative');
       } else if (template.priceSetting === "Paid") {
@@ -39,7 +39,7 @@ const DownloadModal = ({ template, onClose, onConfirm, onFreeDownload }) => {
       }
 
       if (amount > 0 && userBalance < amount) {
-        throw new Error(`Insufficient balance. You need ₱${amount}, but have ₱${userBalance}`);
+        throw new Error(`Insufficient balance. You need $${amount}, but have $${userBalance}`);
       }
 
       await onConfirm(amount);
@@ -92,7 +92,7 @@ const DownloadModal = ({ template, onClose, onConfirm, onFreeDownload }) => {
           {currentUser && (
             <div className="wallet-display">
               <div className="wallet-label">Your Wallet Balance</div>
-              <div className="wallet-amount">₱{userBalance.toFixed(2)}</div>
+              <div className="wallet-amount">${userBalance.toFixed(2)}</div>
               <div className="wallet-email">{userEmail}</div>
             </div>
           )}
@@ -106,12 +106,12 @@ const DownloadModal = ({ template, onClose, onConfirm, onFreeDownload }) => {
           )}
 
           {/* Donation / Paid / Free Sections */}
-          {template.priceSetting === "₱0 or donation" && (
+          {template.priceSetting === "$0 or donation" && (
             <div className="donation-section">
               <div className="share__modal_input">
-                <label>Your Donation (₱)</label>
+                <label>Your Donation ($)</label>
                 <div className="input-with-prefix">
-                  <span className="prefix">₱</span>
+                  <span className="prefix">$</span>
                   <input
                     type="number"
                     min="0"
@@ -122,9 +122,9 @@ const DownloadModal = ({ template, onClose, onConfirm, onFreeDownload }) => {
                   />
                 </div>
                 <div className="quick-buttons">
-                  <button onClick={() => setDonation('0')} className="quick-btn" disabled={isProcessing}>₱0</button>
-                  <button onClick={() => setDonation(template.price.toString())} className="quick-btn" disabled={isProcessing}>₱{template.price}</button>
-                  <button onClick={() => setDonation((template.price * 1.5).toFixed(2))} className="quick-btn" disabled={isProcessing}>₱{(template.price * 1.5).toFixed(2)}</button>
+                  <button onClick={() => setDonation('0')} className="quick-btn" disabled={isProcessing}>$0</button>
+                  <button onClick={() => setDonation(template.price.toString())} className="quick-btn" disabled={isProcessing}>${template.price}</button>
+                  <button onClick={() => setDonation((template.price * 1.5).toFixed(2))} className="quick-btn" disabled={isProcessing}>${(template.price * 1.5).toFixed(2)}</button>
                 </div>
               </div>
 
@@ -134,7 +134,7 @@ const DownloadModal = ({ template, onClose, onConfirm, onFreeDownload }) => {
                   className="btn-pay" 
                   disabled={isProcessing || (parseFloat(donation) > userBalance)}
                 >
-                  {isProcessing ? 'Processing...' : `Pay ₱${parseFloat(donation) || 0}`}
+                  {isProcessing ? 'Processing...' : `Pay $${parseFloat(donation) || 0}`}
                 </button>
                 <button 
                   onClick={handleFreeDownloadClick} 
@@ -151,9 +151,9 @@ const DownloadModal = ({ template, onClose, onConfirm, onFreeDownload }) => {
             <div className="paid-section">
               <div className="price-card">
                 <div className="price-label">Template Price</div>
-                <div className="price">₱{template.price}</div>
+                <div className="price">${template.price}</div>
                 <div className={`balance-check ${userBalance >= template.price ? 'ok' : 'low'}`}>
-                  {userBalance >= template.price ? `✓ You have enough balance` : `✗ Need ₱${(template.price - userBalance).toFixed(2)} more`}
+                  {userBalance >= template.price ? `✓ You have enough balance` : `✗ Need $${(template.price - userBalance).toFixed(2)} more`}
                 </div>
               </div>
 
@@ -163,16 +163,16 @@ const DownloadModal = ({ template, onClose, onConfirm, onFreeDownload }) => {
                   className="btn-purchase"
                   disabled={isProcessing || userBalance < template.price}
                 >
-                  {isProcessing ? 'Processing...' : `Purchase for ₱${template.price}`}
+                  {isProcessing ? 'Processing...' : `Purchase for $${template.price}`}
                 </button>
-                {userBalance < template.price && (
+                {/* {userBalance < template.price && (
                   <button 
                     onClick={() => { onClose(); window.location.href = '/wallet'; }}
                     className="btn-cancel"
                   >
                     Add Money to Wallet
                   </button>
-                )}
+                )} */}
                 <button onClick={onClose} className="btn-cancel" disabled={isProcessing}>Cancel</button>
               </div>
             </div>
