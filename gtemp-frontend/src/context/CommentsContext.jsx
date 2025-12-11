@@ -1,65 +1,77 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useState, useContext, useCallback } from 'react';
+import { commentsAPI } from '../services/commentsAPI';
 
 export const CommentsContext = createContext();
 
 export const CommentsProvider = ({ children }) => {
-  const [commentsCache, setCommentsCache] = useState({});
+  const [commentsByTemplate, setCommentsByTemplate] = useState({});
   const [loadingTemplates, setLoadingTemplates] = useState({});
+  const [error, setError] = useState(null);
 
-  const loadCommentsForTemplate = async (templateId) => {
-    if (commentsCache[templateId] || loadingTemplates[templateId]) return;
-    
+  const loadCommentsForTemplate = useCallback(async (templateId) => {
+    if (!templateId) return;
+
     setLoadingTemplates(prev => ({ ...prev, [templateId]: true }));
-    
+    setError(null);
+
     try {
-      const response = await fetch(`http://localhost:8080/api/comments?templateID=${templateId}`);
-      const data = await response.json();
-      
-      setCommentsCache(prev => ({
-        ...prev,
-        [templateId]: data
-      }));
-    } catch (error) {
-      console.error(`Failed to load comments for template ${templateId}:`, error);
+      const response = await commentsAPI.getComments(templateId);
+      const data = response.data || [];
+      setCommentsByTemplate(prev => ({ ...prev, [templateId]: data }));
+    } catch (err) {
+      console.error('Error loading comments:', err);
+      setError(err.response?.data?.message || err.message);
     } finally {
       setLoadingTemplates(prev => ({ ...prev, [templateId]: false }));
     }
-  };
+  }, []); 
 
-  const addComment = async (comment) => {
+  const getCommentsForTemplate = useCallback((templateId) => {
+    return commentsByTemplate[templateId] || [];
+  }, [commentsByTemplate]); 
+
+  const addComment = useCallback(async (commentData) => {
+    setError(null);
+
     try {
-      const response = await fetch('http://localhost:8080/api/comments', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(comment)
+      const response = await commentsAPI.addComment(commentData);
+      const newComment = response.data;
+
+      setCommentsByTemplate(prev => {
+        const updatedComments = {
+          ...prev,
+          [commentData.templateID]: [newComment, ...(prev[commentData.templateID] || [])],
+        };
+        return updatedComments;
       });
-      const newComment = await response.json();
-      
-      setCommentsCache(prev => ({
-        ...prev,
-        [comment.templateID]: [...(prev[comment.templateID] || []), newComment]
-      }));
-    } catch (error) {
-      console.error('Failed to add comment:', error);
+
+      return { success: true, data: newComment };
+    } catch (err) {
+      console.error('Error adding comment:', err);
+      setError(err.response?.data?.message || err.message);
+      return { success: false, message: err.response?.data?.message || err.message };
     }
-  };
+  }, []);
 
-  const getCommentsForTemplate = (templateId) => {
-    return commentsCache[templateId] || [];
-  };
-
-  const value = { 
-    getCommentsForTemplate, 
-    addComment, 
-    loadCommentsForTemplate,
-    loadingTemplates 
-  };
+  const clearError = useCallback(() => setError(null), []);
 
   return (
-    <CommentsContext.Provider value={value}>
+    <CommentsContext.Provider value={{
+      commentsByTemplate,
+      loadingTemplates,
+      error,
+      loadCommentsForTemplate,
+      getCommentsForTemplate,
+      addComment,
+      clearError
+    }}>
       {children}
     </CommentsContext.Provider>
   );
 };
 
-export const useComments = () => useContext(CommentsContext);
+export const useComments = () => {
+  const context = useContext(CommentsContext);
+  if (!context) throw new Error('useComments must be used within a CommentsProvider');
+  return context;
+};

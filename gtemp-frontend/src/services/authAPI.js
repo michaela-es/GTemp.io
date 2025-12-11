@@ -1,62 +1,75 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:8080/api';
-
-const api = axios.create({
-  baseURL: API_URL,
-});
-
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('currentUser');
-      console.log('Session expired. Please login again.');
-    }
-    return Promise.reject(error);
-  }
-);
+import { apiClient } from './apiClient';
 
 export const authAPI = {
-  register: async (userData) => {
-    const response = await api.post('/users/register', userData);
-    const { token, userId, username, email, wallet } = response.data;
-    
-    localStorage.setItem('token', token);
-    
-    return { userId, username, email, wallet, token };
-  },
-
   login: async (loginData) => {
-    const response = await api.post('/login', loginData);
-    const { token, userId, username, email, wallet } = response.data;
-    
-    localStorage.setItem('token', token);
-    
-    return { userId, username, email, wallet, token };
+    try {
+      console.log('authAPI.login called with:', loginData);
+      
+      const response = await fetch('http://localhost:8080/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(loginData)
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Login failed: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('authAPI.login response:', data);
+      
+      if (!data.token) {
+        throw new Error('No token in response');
+      }
+      
+      return {
+        token: data.token,
+        userId: data.userId || data.userID,
+        username: data.username,
+        email: data.email,
+        wallet: data.wallet || 0
+      };
+      
+    } catch (error) {
+      console.error('authAPI.login error:', error);
+      throw error;
+    }
   },
 
-  getCurrentUser: async () => {
-    const response = await api.get('/users/me');
-    return response.data;
-  },
-  
-  logout: async () => {
-    localStorage.removeItem('token');
-    return Promise.resolve();
-  },
+  register: async (registerData) => {
+    try {
+      const response = await fetch('http://localhost:8080/api/users/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(registerData)
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Registration failed: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (!data.token) {
+        throw new Error('No token in response');
+      }
+      
+      return {
+        token: data.token,
+        userId: data.userId || data.userID,
+        username: data.username,
+        email: data.email,
+        wallet: data.wallet || 0
+      };
+    } catch (error) {
+      console.error('authAPI.register error:', error);
+      throw error;
+    }
+  }
 };
 
-export { api };
+export {authAPI as api};

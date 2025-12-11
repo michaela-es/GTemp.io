@@ -1,26 +1,66 @@
-import { api } from './authAPI';
+import { apiClient } from './apiClient';
 
 export const userAPI = {
   updateUser: async (userData) => {
-    const response = await api.put('/users', userData);
-    return response.data;
+    try {
+      const response = await apiClient.put('/users', userData);
+      return {
+        success: true,
+        data: response.data
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || error.message || 'Failed to update user'
+      };
+    }
   },
 
   changePassword: async (currentPassword, newPassword) => {
-    const response = await api.post('/users/change-password', {
-      currentPassword,
-      newPassword
-    });
-    return response.data;
+    try {
+      const response = await apiClient.post('/users/change-password', {
+        currentPassword,
+        newPassword
+      });
+      return {
+        success: true,
+        data: response.data
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || error.message || 'Failed to change password'
+      };
+    }
   },
 
   addToWallet: async (amount) => {
-    const response = await api.post('/users/wallet/add', { amount });
-    return response.data;
+    try {
+      const response = await apiClient.post('/users/wallet/add', { amount });
+      return {
+        success: true,
+        data: response.data
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || error.message || 'Failed to add to wallet'
+      };
+    }
   },
 
   getCurrentUser: async () => {
-    const response = await api.get('/users/me');
-    return response.data;
+    try {
+      const response = await apiClient.get('/users/me');
+      return {
+        success: true,
+        data: response.data
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || error.message || 'Failed to get user data'
+      };
+    }
   },
 };

@@ -1,23 +1,38 @@
-
-import React, { useContext, useEffect, useState } from "react";
-import { CommentsContext } from "../context/CommentsContext";
+import React, { useContext, useEffect, useState, useCallback } from "react";
+import { useComments } from "../context/CommentsContext";
 import Comment from "./Comment";
-import AddCommentBox from "./AddCommentBox";const CommentList = ({ templateId }) => {
-  const { getCommentsForTemplate, loadCommentsForTemplate, loadingTemplates } = useContext(CommentsContext);
+import AddCommentBox from "./AddCommentBox";
+
+const CommentList = ({ templateId }) => {
+  const { 
+    getCommentsForTemplate, 
+    loadCommentsForTemplate, 
+    addComment, 
+    loadingTemplates 
+  } = useComments();
+  
   const [show, setShow] = useState(true);
+  const [roots, setRoots] = useState([]);
 
   useEffect(() => {
-    loadCommentsForTemplate(templateId);
-  }, [templateId]);
+    if (templateId) {
+      loadCommentsForTemplate(templateId);
+    }
+  }, [templateId]); 
 
   const comments = getCommentsForTemplate(templateId);
-  
-  console.log('All comments:', comments);
-  console.log('First comment parentId:', comments[0]?.parentId);
-  console.log('parentId === null check:', comments[0]?.parentId === null);
-  
-  const roots = comments.filter(c => c.parentId === null);
-  console.log('Roots after filter:', roots);
+
+  useEffect(() => {
+    const filteredRoots = comments.filter((c) => c.parentId === null || c.parentId === 0);
+    setRoots(filteredRoots);
+  }, [comments]);
+
+  const handleAddComment = useCallback(async (comment) => {
+    const result = await addComment(comment);
+    if (result.success) {
+    }
+    return result;
+  }, [addComment, templateId]);
 
   return (
     <div>
@@ -27,17 +42,15 @@ import AddCommentBox from "./AddCommentBox";const CommentList = ({ templateId })
 
       {show && (
         <div style={{ marginTop: 12 }}>
-          <AddCommentBox templateId={templateId} />
+          <AddCommentBox templateId={templateId} onSubmit={handleAddComment} />
 
           <div style={{ marginTop: 20 }}>
             {loadingTemplates[templateId] ? (
               <div>Loading comments...</div>
             ) : roots.length === 0 ? (
-              <div>No comments yet. </div>
+              <div>No comments yet.</div>
             ) : (
-              roots.map(comment => (
-                <Comment key={comment.id} comment={comment} />
-              ))
+              roots.map((comment) => <Comment key={comment.id} comment={comment} />)
             )}
           </div>
         </div>

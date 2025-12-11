@@ -10,9 +10,11 @@ export default function LoginModal({ onClose, onLoginSuccess }) {
     password: ''
   });
   
-  const { login: updateAuthContext, loading, error, setError, setLoading } = useAuth();
+  const { login } = useAuth();
+  
   const [localError, setLocalError] = useState('');
   const [showRegister, setShowRegister] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,38 +23,62 @@ export default function LoginModal({ onClose, onLoginSuccess }) {
       [name]: value
     }));
     if (localError) setLocalError('');
-    if (error) setError(null);
   };
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLocalError('');
-    setError(null);
-    setLoading(true);
+    setIsLoading(true);
 
-    if (!formData.username || !formData.password) {
-      setLocalError('Please fill in all fields');
-      setLoading(false);
+    if (!formData.username.trim()) {
+      setLocalError('Please enter your username');
+      setIsLoading(false);
+      return;
+    }
+
+    if (!formData.password) {
+      setLocalError('Please enter your password');
+      setIsLoading(false);
       return;
     }
 
     try {
       const loginData = {
-        username: formData.username,
+        identifier: formData.username.trim(),
         password: formData.password
       };
 
-      const user = await authAPI.login(loginData);
+      console.log('Login attempt with:', loginData);
+
+      const userData = await authAPI.login(loginData);
       
-      updateAuthContext(user);
+      console.log('Login API response:', userData);
       
-      onLoginSuccess(user); 
+      if (!userData || !userData.token) {
+        throw new Error('No token received from server');
+      }
+
+      login({
+        userId: userData.userId,
+        username: userData.username,
+        email: userData.email,
+        wallet: userData.wallet,
+        token: userData.token
+      });
+      
+      console.log('Auth context updated');
+      
+      if (onLoginSuccess) {
+        onLoginSuccess(userData);
+      }
+      
       onClose();
+      
     } catch (err) {
       console.error('Login error:', err);
-      setError(err.message || 'Login failed');
+      setLocalError(err.message || 'Login failed');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -69,8 +95,6 @@ export default function LoginModal({ onClose, onLoginSuccess }) {
     onClose();
   };
 
-  const displayError = localError || error;
-
   if (showRegister) {
     return (
       <RegisterModal 
@@ -81,24 +105,36 @@ export default function LoginModal({ onClose, onLoginSuccess }) {
   }
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay" onClick={!isLoading ? onClose : undefined}>
       <div className="modal-window" onClick={(e) => e.stopPropagation()}>
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleSubmit}>
           <h2 className="modal-title">Log in</h2>
 
-          {displayError && <p className="error-message">{displayError}</p>}
+          {localError && (
+            <div className="error-message" style={{ 
+              color: '#c62828', 
+              backgroundColor: '#ffebee',
+              padding: '10px',
+              borderRadius: '4px',
+              marginBottom: '15px',
+              fontSize: '14px'
+            }}>
+              {localError}
+            </div>
+          )}
 
           <div className="modal-field">
-            <label htmlFor="username">Username</label> 
+            <label htmlFor="username">Username or Email</label> 
             <input
               id="username"
               name="username" 
               type="text"
-              placeholder="Enter username"
+              placeholder="Enter username or email"
               value={formData.username}
               onChange={handleChange}
-              disabled={loading}
+              disabled={isLoading}
               autoComplete="username"
+              required
             />
           </div>
 
@@ -111,31 +147,47 @@ export default function LoginModal({ onClose, onLoginSuccess }) {
               placeholder="Enter password"
               value={formData.password}
               onChange={handleChange}
-              disabled={loading}
+              disabled={isLoading}
               autoComplete="current-password"
+              required
             />
           </div>
 
           <button 
             type="submit" 
             className="modal-login-button" 
-            disabled={loading}
+            disabled={isLoading || !formData.username || !formData.password}
+            style={{ 
+              opacity: (isLoading || !formData.username || !formData.password) ? 0.7 : 1,
+              cursor: (isLoading || !formData.username || !formData.password) ? 'not-allowed' : 'pointer'
+            }}
           >
-            {loading ? 'Logging in...' : 'Log in'}
+            {isLoading ? 'Logging in...' : 'Log in'}
           </button>
 
           <div className="modal-footer">
-            <p 
-              className="modal-link create-account" 
-              onClick={loading ? undefined : handleSwitchToRegister}
-              style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
-            >
-              Create account
+            <p className="modal-footer-text">
+              Don't have an account?{' '}
+              <span 
+                className="modal-link create-account" 
+                onClick={!isLoading ? handleSwitchToRegister : undefined}
+                style={{ 
+                  cursor: isLoading ? 'not-allowed' : 'pointer',
+                  color: isLoading ? '#999' : '#007bff'
+                }}
+              >
+                Create account
+              </span>
             </p>
           </div>
         </form>
 
-        <button className="modal-close" onClick={onClose} disabled={loading}>
+        <button 
+          className="modal-close" 
+          onClick={!isLoading ? onClose : undefined}
+          disabled={isLoading}
+          style={{ cursor: isLoading ? 'not-allowed' : 'pointer' }}
+        >
           ✕
         </button>
       </div>

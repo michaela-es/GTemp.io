@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 
-export default function RegisterUser({ onClose, onSwitchToLogin }) {
+export default function RegisterModal({ onClose, onSwitchToLogin }) {
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -9,36 +9,19 @@ export default function RegisterUser({ onClose, onSwitchToLogin }) {
     confirmPassword: ''
   });
   
-  const { register, loading, error, setError } = useAuth();
+  const { login } = useAuth();
   const [localError, setLocalError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    if (localError) setLocalError('');
-    if (error) setError(null);
-  };
-
-  const handleRegister = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLocalError('');
-    setError(null);
+    setIsLoading(true);
 
-    if (!formData.username || !formData.email || !formData.password) {
-      setLocalError('Please fill in all required fields');
-      return;
-    }
-
+    // Validation
     if (formData.password !== formData.confirmPassword) {
       setLocalError('Passwords do not match');
-      return;
-    }
-
-    if (formData.password.length < 6) {
-      setLocalError('Password must be at least 6 characters');
+      setIsLoading(false);
       return;
     }
 
@@ -49,10 +32,22 @@ export default function RegisterUser({ onClose, onSwitchToLogin }) {
         password: formData.password
       };
 
-      await register(registerData);
-      onClose(); 
+      const userData = await authAPI.register(registerData);
+      
+      login({
+        userId: userData.userId,
+        username: userData.username,
+        email: userData.email,
+        wallet: userData.wallet,
+        token: userData.token
+      });
+      
+      onClose();
+      
     } catch (err) {
-      console.error('Registration error:', err);
+      setLocalError(err.message || 'Registration failed');
+    } finally {
+      setIsLoading(false);
     }
   };
 

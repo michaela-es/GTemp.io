@@ -4,80 +4,99 @@ const AuthContext = createContext();
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 };
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [initializing, setInitializing] = useState(true);
+  const [token, setToken] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const initAuth = () => {
-      const token = localStorage.getItem('token');
-      const savedUser = localStorage.getItem('currentUser');
-
-      if (token && savedUser) {
-        setCurrentUser(JSON.parse(savedUser));
+    const savedToken = localStorage.getItem('token');
+    const savedUser = localStorage.getItem('currentUser');
+    
+    console.log('AuthProvider: Initializing from localStorage...');
+    console.log('Token exists:', !!savedToken);
+    console.log('User exists:', !!savedUser);
+    
+    if (savedToken && savedUser) {
+      try {
+        const parsedUser = JSON.parse(savedUser);
+        setToken(savedToken);
+        setCurrentUser(parsedUser);
+        console.log('AuthProvider: User loaded:', parsedUser.username);
+      } catch (error) {
+        console.error('AuthProvider: Error parsing user:', error);
+        localStorage.removeItem('token');
+        localStorage.removeItem('currentUser');
       }
-      setInitializing(false);
-    };
-
-    initAuth();
+    }
+    setLoading(false);
   }, []);
 
   useEffect(() => {
-    if (currentUser) {
+    console.log('AuthContext token changed:', !!token);
+    console.log('AuthContext user changed:', currentUser?.username);
+    
+    if (token && currentUser) {
+      localStorage.setItem('token', token);
       localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    } else if (!token) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('currentUser');
     }
-  }, [currentUser]);
+  }, [token, currentUser]);
 
-  const register = (user) => {
+  const login = ({ userId, username, email, wallet, token }) => {
+    console.log('AuthContext.login() called with token:', token ? 'YES' : 'NO');
+    console.log('Token value:', token?.substring(0, 20) + '...');
+    
+    if (!token) {
+      console.error('AuthContext.login() received NO token!');
+      return;
+    }
+    
+    const user = { userId, username, email, wallet };
+    setToken(token);  
     setCurrentUser(user);
-  };
-
-  const login = (user) => {
-    setCurrentUser(user);
+    
+    localStorage.setItem('token', token);
+    localStorage.setItem('currentUser', JSON.stringify(user));
+    
+    console.log('AuthContext.login() completed');
   };
 
   const logout = () => {
+    console.log('AuthContext.logout() called');
+    setToken(null);
+    setCurrentUser(null);
     localStorage.removeItem('token');
     localStorage.removeItem('currentUser');
-    setCurrentUser(null);
-    setError(null);
   };
 
   const updateUser = (updatedData) => {
-    setCurrentUser(prev => ({ ...prev, ...updatedData }));
-  };
-
-  const addToWallet = (newWalletAmount) => {
-    setCurrentUser(prev => ({
-      ...prev,
-      wallet: newWalletAmount
-    }));
-  };
-
-  const value = {
-    currentUser,
-    loading,
-    error,
-    initializing,
-    register,
-    login,
-    logout,
-    updateUser,
-    addToWallet,
-    setError,
-    setLoading,
+    console.log('AuthContext.updateUser() called with:', updatedData);
+    setCurrentUser(prev => {
+      const newUser = { ...prev, ...updatedData };
+      localStorage.setItem('currentUser', JSON.stringify(newUser));
+      return newUser;
+    });
   };
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider
+      value={{
+        currentUser,
+        token,
+        loading,
+        login,
+        logout,
+        updateUser, 
+        isAuthenticated: !!token,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

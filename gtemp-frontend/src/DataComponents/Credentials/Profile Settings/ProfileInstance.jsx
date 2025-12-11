@@ -1,85 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { useAuth } from "../../../context/AuthContext";
+import React from "react";
 import { useWishlist } from "../../../context/WishlistContext"; 
-import { userAPI } from "../../../services/userAPI";
+import { useProfileUpdate } from "../../../hooks/useProfileupdate";
 import { styles } from "../styles";
 
 const ProfileInstance = ({ setMode }) => {
-  const { currentUser, updateUser: updateAuthContext } = useAuth();
   const { wishlistCount } = useWishlist();
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (currentUser) {
-      setUsername(currentUser.username || "");
-      setEmail(currentUser.email || "");
-    } else {
-      setUsername("");
-      setEmail("");
-    }
-  }, [currentUser]);
-
-  const validateEmail = (email) => {
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    return emailRegex.test(email);
-  };
-
-  const validateForm = () => {
-    if (!username && !email) {
-      setError("Please enter at least one field (username or email).");
-      return false;
-    }
-
-    if (email && !validateEmail(email)) {
-      setError("Please enter a valid email address.");
-      return false;
-    }
-
-    return true;
-  };
-
-  const getChanges = () => {
-    const changes = {};
-    if (username !== currentUser.username) changes.username = username;
-    if (email !== currentUser.email) changes.email = email;
-    return changes;
-  };
-
-  const handleSaveChanges = async () => {
-    setError("");
-    
-    if (!validateForm()) return;
-
-    const changes = getChanges();
-    if (Object.keys(changes).length === 0) {
-      setError("No changes were made.");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const updatedUserData = await userAPI.updateUser(changes);
-      
-      updateAuthContext(updatedUserData);
-      
-      localStorage.setItem("currentUser", JSON.stringify({
-        ...currentUser,
-        ...updatedUserData
-      }));
-      
-      setError("");
-      
-    } catch (err) {
-      console.error("Update error:", err);
-      setError(err.message || "Failed to update user.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    username,
+    email,
+    error,
+    loading,
+    success,
+    handleUsernameChange,
+    handleEmailChange,
+    handleSaveChanges,
+    displayUsername
+  } = useProfileUpdate();
 
   return (
     <>
@@ -91,7 +27,7 @@ const ProfileInstance = ({ setMode }) => {
             style={styles.input}
             placeholder="Enter username"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => handleUsernameChange(e.target.value)}
             disabled={loading}
           />
 
@@ -102,19 +38,43 @@ const ProfileInstance = ({ setMode }) => {
               style={styles.input}
               placeholder="Enter email address"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => handleEmailChange(e.target.value)}
               disabled={loading}
             />
           </div>
 
           {error && (
-            <div style={{ color: "red", marginTop: "10px" }}>
+            <div style={{ 
+              color: "#c62828", 
+              backgroundColor: "#ffebee",
+              padding: "10px",
+              borderRadius: "4px",
+              marginTop: "10px",
+              fontSize: "14px"
+            }}>
               {error}
             </div>
           )}
 
+          {success && (
+            <div style={{ 
+              color: "#2e7d32", 
+              backgroundColor: "#e8f5e9",
+              padding: "10px",
+              borderRadius: "4px",
+              marginTop: "10px",
+              fontSize: "14px"
+            }}>
+              {success}
+            </div>
+          )}
+
           <button 
-            style={{ ...styles.button, opacity: loading ? 0.7 : 1 }}
+            style={{ 
+              ...styles.button, 
+              opacity: loading ? 0.7 : 1,
+              marginTop: "20px"
+            }}
             onClick={handleSaveChanges}
             disabled={loading}
           >
@@ -124,9 +84,17 @@ const ProfileInstance = ({ setMode }) => {
 
         <div style={styles.rightProfile}>
           <div style={styles.profileImage}></div>
-          <div style={styles.profileUsername}>@{username}</div>
+          <div style={styles.profileUsername}>{displayUsername}</div>
+          <div style={{ 
+            marginTop: "5px", 
+            color: "#666", 
+            fontSize: "14px" 
+          }}>
+            {email}
+          </div>
         </div>
       </div>
+
       <div style={styles.bottomButtonsContainer}>
         <button 
           style={styles.secondaryButton} 
