@@ -92,38 +92,81 @@ const TemplateDetail2 = () => {
     }
   };
 
-  const handleDownloadClick = async () => {
-    console.log(template.price);
-    if (!currentUser) {
-      alert("You must be logged in to download.");
-      return;
-    }
+ const handleDownloadClick = async () => {
+  if (!currentUser) {
+    alert("You must be logged in to download.");
+    return;
+  }
 
-    if (!template) return;
+  if (!template) return;
 
-    if (template.price === 0) {
-       handleDownload(true);
-      return;
-    }
+  // Free template
+  if (template.price === 0) {
+    handleDownload(true, 0);
+    return;
+  }
 
-    if (template.price > 0) {
-      try {
-        const hasPurchased = await checkIfPurchased();
-        if (hasPurchased) {
-           handleDownload();
-          return;
-        }
-      } catch (err) {
-        console.error(err);
-        alert("Failed to check purchase status.");
+  // Paid template - check if already purchased
+  if (template.price > 0) {
+    try {
+      const hasPurchased = await checkIfPurchased();
+      if (hasPurchased) {
+        // Already purchased, download for free
+        handleDownload(false, 0);
         return;
       }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to check purchase status.");
+      return;
+    }
+  }
+
+  // Show modal for purchase/donation
+  setShowDownloadModal(true);
+};
+
+// New handler specifically for the modal confirmation
+const handleModalConfirm = async (amount = 0) => {
+  if (!currentUser || !template) return;
+  
+  setDownloading(true);
+
+  try {
+    // If amount > 0, process payment
+    if (amount > 0) {
+      await handlePurchase(amount);
     }
 
-    setShowDownloadModal(true);
-  };
+    // Then download
+    await triggerDownload();
+    
+    setShowDownloadModal(false);
+    alert(amount > 0 ? `Thank you for your $${amount} payment!` : 'Template downloaded successfully!');
+    
+    // Update download count
+    setTemplate(prev => ({ ...prev, downloads: (prev.downloads || 0) + 1 }));
+  } catch (err) {
+    console.error(err);
+    alert(`Download failed: ${err.message || "An unexpected error occurred."}`);
+  } finally {
+    setDownloading(false);
+  }
+};
 
-  // Handle the download (either free or after payment)
+// Separate function for the actual download
+const triggerDownload = async () => {
+  const response = await templateAPI.downloadTemplate(templateId);
+  const blob = response.data;
+  const link = document.createElement('a');
+  link.href = window.URL.createObjectURL(blob);
+  link.download = `${template.templateTitle.replace(/[^a-z0-9]/gi, '_')}.zip`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(link.href);
+};
+
   const handleDownload = async (isFree = false, amount = 0) => {
     if (!currentUser || !template) return;
     setDownloading(true);
@@ -237,12 +280,12 @@ const TemplateDetail2 = () => {
         </div>
       </div>
 
-      {showDownloadModal && (
+          {showDownloadModal && (
         <DownloadModal
           template={template}
           onClose={() => !downloading && setShowDownloadModal(false)}
-          onConfirm={handleDownload}
-          disabled={downloading}
+          onConfirm={handleModalConfirm} 
+          disabled={downloading}     
         />
       )}
     </BackgroundWrapper>
