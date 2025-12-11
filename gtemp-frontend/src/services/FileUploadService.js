@@ -1,10 +1,7 @@
-import axios from 'axios';
-
-const API_BASE_URL = 'http://localhost:8080/api';
-
+import api from './api'; 
 class FileUploadService {
   uploadTemplate(formData) {
-    return axios.post(`${API_BASE_URL}/templates`, formData, {
+    return api.post('/templates', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -12,10 +9,10 @@ class FileUploadService {
   }
 
   updateTemplate(templateId, formData) {
-    return axios.put(`${API_BASE_URL}/templates/${templateId}`, formData, {
+    return api.put(`/templates/${templateId}`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+        'Content-Type': 'multipart/form-data',
+      },
     });
   }
 }

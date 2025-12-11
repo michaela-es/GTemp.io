@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 import { userAPI } from "../services";
+
 export const useProfileUpdate = () => {
-  const { currentUser, updateUser: updateAuthContext } = useAuth();
+  const { currentUser, updateUser } = useAuth(); 
   
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -53,38 +54,44 @@ export const useProfileUpdate = () => {
   }, [getChanges]);
 
   const handleSaveChanges = useCallback(async () => {
-  setError("");
-  setSuccess("");
-  
-  if (!validateForm()) return;
+    setError("");
+    setSuccess("");
 
-  const changes = getChanges();
-  if (Object.keys(changes).length === 0) {
-    setError("No changes were made.");
-    return;
-  }
+    if (!validateForm()) return;
 
-  setLoading(true);
-
-  try {
-    const result = await userAPI.updateUser(changes);
-    
-    if (result.success) {
-      const updatedUserData = result.data;
-      
-      updateUser(updatedUserData);
-      setSuccess("Profile updated successfully!");
-    } else {
-      setError(result.message || "Failed to update profile.");
+    const changes = getChanges();
+    if (Object.keys(changes).length === 0) {
+      setError("No changes were made.");
+      return;
     }
-    
-  } catch (err) {
-    console.error("Update error:", err);
-    setError(err.message || "Failed to update user.");
-  } finally {
-    setLoading(false);
-  }
-}, [validateForm, getChanges, updateUser]);
+
+    setLoading(true);
+
+    try {
+      const result = await userAPI.updateUser(changes);
+      
+      if (result.success) {
+        const updatedUserData = result.data;
+        
+        updateUser(updatedUserData); 
+        setSuccess("Profile updated successfully!");
+      } else {
+        setError(result.message || "Failed to update profile.");
+      }
+      
+    } catch (err) {
+      console.error("Update error:", err);
+      setError(err.message || "Failed to update user.");
+    } finally {
+      setLoading(false);
+    }
+  }, [validateForm, getChanges, updateUser]);
+
+  const handleUsernameChange = useCallback((value) => {
+    setUsername(value);
+    if (error) setError(""); 
+    if (success) setSuccess("");
+  }, [error, success]);
 
   const handleEmailChange = useCallback((value) => {
     setEmail(value);
@@ -108,7 +115,7 @@ export const useProfileUpdate = () => {
     loading,
     success,
     
-    handleUsernameChange,
+    handleUsernameChange,  
     handleEmailChange,
     handleSaveChanges,
     resetForm,

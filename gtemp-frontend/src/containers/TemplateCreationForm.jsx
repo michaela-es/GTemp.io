@@ -10,7 +10,7 @@ const TemplateCreationForm = ({ onRefresh }) => {
   const form = useTemplateForm();
   const handlers = useTemplateHandlers();
   console.log("TemplateCreationForm - existingFiles:", form.existingFiles);
-console.log("TemplateCreationForm - files:", form.files)
+  console.log("TemplateCreationForm - files:", form.files)
 
 const handleSubmit = async () => {
   if (form.isSubmitting) return;
@@ -58,8 +58,6 @@ const handleSubmit = async () => {
   form.setMessage("");
 
   try {
-    const userId = JSON.parse(localStorage.getItem("currentUser") || "{}")?.userID;
-    if (!userId) throw new Error("User not logged in");
 
     const templateData = {
       templateTitle: form.title.trim(),
@@ -69,7 +67,6 @@ const handleSubmit = async () => {
       visibility: form.selectedVisibility === "Visible to Public",
       engine: form.engine,
       type: form.type,
-      templateOwner: userId,
       releaseDate: new Date(), 
       filenamesToDelete: form.filenamesToDelete || [],
       fileIdsToDelete: form.fileIdsToDelete || []

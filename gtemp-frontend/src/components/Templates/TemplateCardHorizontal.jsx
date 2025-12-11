@@ -2,33 +2,33 @@ import React, { memo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL, DEFAULT_IMAGE_URL } from '../../services/apiClient';
 
-const TemplateCardHorizontal = memo(({ 
-  id, 
-  templateTitle = 'Untitled Template',
-  coverImagePath 
-}) => {
+// Component now expects a single prop (wishlistItemDTO)
+const TemplateCardHorizontal = memo(({ wishlistItemDTO }) => {
+  const { templateId, title, coverImagePath } = wishlistItemDTO;  // Destructure props from wishlistItemDTO
   const navigate = useNavigate();
   const [imageError, setImageError] = useState(false);
-  
-  // Ensure id exists
-  if (!id) {
-    console.error('TemplateCardHorizontal: No ID provided');
+
+  // Ensure templateId exists
+  if (!templateId) {
+    console.error('TemplateCardHorizontal: No templateId provided');
     return null;
   }
 
+  // Handle click to navigate to the template details page
   const handleClick = () => {
-    navigate(`/template/${id}`);
+    navigate(`/template/${templateId}`);
   };
 
+  // Get image URL, checking for errors and fallback to default image
   const getImageUrl = () => {
     if (imageError || !coverImagePath) {
       return DEFAULT_IMAGE_URL;
     }
-    
+
     if (coverImagePath.startsWith('http')) {
       return coverImagePath;
     }
-    
+
     return `${API_BASE_URL.replace('/api', '')}/${coverImagePath.replace(/\\/g, '/')}`;
   };
 
@@ -36,16 +36,17 @@ const TemplateCardHorizontal = memo(({
     <div style={styles.card} onClick={handleClick}>
       <img 
         src={getImageUrl()}
-        alt={templateTitle}
+        alt={title || 'Untitled Template'}
         style={styles.image}
-        onError={() => setImageError(true)}
+        onError={() => setImageError(true)}  // If image fails, set to error state
         loading="lazy"
       />
-      <h3 style={styles.title}>{templateTitle}</h3>
+      <h3 style={styles.title}>{title || 'Untitled Template'}</h3>
     </div>
   );
 });
 
+// Styles for the card component
 const styles = {
   card: {
     display: 'flex',

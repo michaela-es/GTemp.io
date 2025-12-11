@@ -17,31 +17,22 @@ const TemplateVerticalContainer = ({ templates = [] }) => {
     <div className="overflow-auto" style={{ maxHeight: '500px' }}>
       <div className="d-flex flex-column gap-2">
         {templates.map((template, index) => {
-          // Debug each template
           console.log(`Template ${index}:`, {
-            id: template.id,
             templateId: template.templateId,
-            title: template.templateTitle || template.title,
-            hasImage: !!template.coverImagePath
+            title: template.title,
+            coverImagePath: template.coverImagePath
           });
 
-          // Create a unique key - combine id and index if id is missing
-          const uniqueKey = template.id 
-            ? template.id.toString() 
-            : template.templateId 
-              ? `${template.templateId}-${index}`
-              : `template-${index}`;
+          const uniqueKey = template.templateId 
+            ? template.templateId.toString() 
+            : `template-${index}`;
 
-          const templateId = template.id || template.templateId;
-          const title = template.templateTitle || template.title || `Template ${templateId}`;
-          const imagePath = template.coverImagePath || template.coverImage;
+          const { templateId, title, coverImagePath } = template;
 
           return (
             <TemplateCardHorizontal
               key={uniqueKey}
-              id={templateId}
-              templateTitle={title}
-              coverImagePath={imagePath}
+              wishlistItemDTO={{ templateId, title, coverImagePath }} 
             />
           );
         })}
