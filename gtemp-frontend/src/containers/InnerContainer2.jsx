@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import TemplateList from "./TemplateList";
 import TemplateCreationForm from "./TemplateCreationForm";
 import { TemplateFormProvider, useTemplateForm } from "./TemplateFormContext"; 
-import TemplateService from "../services/TemplateService";
-import { useAuth } from "../context/AuthContext"; // <-- added
+import { useAuth } from "../context/AuthContext";  
+import api from "../services/api";  
 
 const InnerContainer2Content = ({ 
   activeInnerTab, 
@@ -11,7 +11,7 @@ const InnerContainer2Content = ({
   userTemplates, 
   refreshTemplates 
 }) => {
-  const { populateEditForm } = useTemplateForm();
+  const { populateEditForm } = useTemplateForm(); 
 
   return (
     <div
@@ -43,14 +43,14 @@ const InnerContainer2Content = ({
             templates={userTemplates} 
             onEdit={(template) => {
               setActiveInnerTab(2);
-              populateEditForm(template);
+              populateEditForm(template);  
             }} 
           />
         )}
 
         {activeInnerTab === 2 && (
           <TemplateCreationForm 
-            onRefresh={refreshTemplates}
+            onRefresh={refreshTemplates} 
           />
         )}
       </div>
@@ -87,38 +87,34 @@ const innerContentStyle = {
 };
 
 const InnerContainer2 = ({ activeInnerTab: propActiveInnerTab }) => {
-  const { currentUser } = useAuth(); // <-- detect logout/login
+  const { currentUser } = useAuth();  
   const [activeInnerTab, setActiveInnerTab] = useState(propActiveInnerTab || 1);
-  const [userTemplates, setUserTemplates] = useState([]);
+  const [userTemplates, setUserTemplates] = useState([]);  
 
-  // Set initial tab
   useEffect(() => {
     if (propActiveInnerTab) setActiveInnerTab(propActiveInnerTab);
   }, [propActiveInnerTab]);
 
-  // CLEAR templates when the user logs out
   useEffect(() => {
     if (!currentUser) {
-      setUserTemplates([]); // <-- the main fix
+      setUserTemplates([]); 
       return;
     }
 
-    fetchUserTemplates();
-  }, [currentUser]); // runs again when login/logout happens
+    fetchUserTemplates(); 
+  }, [currentUser]); 
 
-  const fetchUserTemplates = async () => {
-    try {
-      if (!currentUser?.userID) return;
-
-      const response = await TemplateService.getUserTemplates(currentUser.userID);
-      setUserTemplates(response.data);
-    } catch (err) {
-      console.error("Failed to fetch templates:", err);
-    }
-  };
+const fetchUserTemplates = async () => {
+  try {
+    const response = await api.get(`templates/user/my-templates`);
+    setUserTemplates(response.data);
+  } catch (err) {
+    console.error("Failed to fetch templates:", err.response || err);
+  }
+};
 
   const refreshTemplates = async () => {
-    await fetchUserTemplates();
+    await fetchUserTemplates(); 
   };
 
   return (

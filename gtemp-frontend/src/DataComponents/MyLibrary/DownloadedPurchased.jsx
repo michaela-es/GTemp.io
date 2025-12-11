@@ -1,17 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../../context/AuthContext"; // import your AuthContext hook
+import { useAuth } from "../../context/AuthContext";
 import filterIcon from "../../assets/filter-icon.svg";
 import ProjectItem from "./ProjectItem";
-import {
-  topRowStyle,
-  filterStyle,
-  boxStyle,
-  dropdownContainer,
-  dropdownButton,
-  dropdownMenu,
-  dropdownItem,
-  dropdownItemHover,
-} from "./styles";
+import { topRowStyle, filterStyle, boxStyle, dropdownContainer, dropdownButton, dropdownMenu, dropdownItem, dropdownItemHover } from "./styles";
+
+import api from "../../services/api"; 
 
 const DownloadedPurchased = () => {
   const { currentUser } = useAuth();
@@ -31,7 +24,6 @@ const DownloadedPurchased = () => {
     setIsOpen(false);
   };
 
-  // Clear items when user logs out
   useEffect(() => {
     if (!currentUser) {
       setItems([]);
@@ -42,30 +34,30 @@ const DownloadedPurchased = () => {
     if (!currentUser) return;
 
     const fetchLibrary = async () => {
-      try {
-        const res = await fetch(
-          `http://localhost:8080/api/templates/user/${currentUser.userID}/library`
-        );
-        if (!res.ok) throw new Error("Failed to fetch library");
-        const data = await res.json();
+  try {
+    const res = await api.get(`/templates/user/library`);
+    console.log('Fetched library:', res); 
+    if (res.status !== 200) throw new Error("Failed to fetch library");
+    
+    const data = res.data;
+    console.log('Fetched data:', data); 
 
-        // Optional: sort by Paid Amount
-        let sorted = [...data];
-        if (sort === "Most to Least Paid Amount") {
-          sorted.sort((a, b) => (b.template.price || 0) - (a.template.price || 0));
-        } else if (sort === "Least to Most Paid Amount") {
-          sorted.sort((a, b) => (a.template.price || 0) - (b.template.price || 0));
-        }
-        setItems(sorted);
-      } catch (err) {
-        console.error(err);
-      }
-    };
+    let sorted = [...data];
+    if (sort === "Most to Least Paid Amount") {
+      sorted.sort((a, b) => (b.template.price || 0) - (a.template.price || 0));
+    } else if (sort === "Least to Most Paid Amount") {
+      sorted.sort((a, b) => (a.template.price || 0) - (b.template.price || 0));
+    }
+    setItems(sorted);
+  } catch (err) {
+    console.error("Error fetching library:", err);
+  }
+};
+
 
     fetchLibrary();
   }, [currentUser, sort]);
 
-  // Count downloaded vs purchased
   const downloadedCount = items.filter(
     (i) => i.actionType === "FREE_DOWNLOAD" || i.actionType === "DONATED"
   ).length;
@@ -130,7 +122,7 @@ const DownloadedPurchased = () => {
             key={item.id}
             title={item.template?.templateTitle || "Unknown"}
             templateId={item.template?.id || 0}
-            userID={currentUser.userID}   // updated prop
+            userID={currentUser.userID}  
             timeAgo={item.actionDate ? new Date(item.actionDate).toLocaleString() : ""}
             comment={item.actionType}
             initialRating={item.ratingValue || 0}

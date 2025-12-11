@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from "react";
 import gameCover from "../../assets/logo.png";
-import axios from "axios";
+import api from "../../services/api";
 
 const ProjectItem = ({ image, title, templateId, timeAgo, initialRating = 0, comment = "My comment", userID }) => {
   const [userRating, setUserRating] = useState(initialRating);
 
-  //Display how much user rated this template
   useEffect(() => {
     const fetchRating = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/api/templates/${templateId}/rating`, {
+        const response = await api.get(`/templates/${templateId}/rating`, {
           params: { userID }
         });
-        setUserRating(response.data.ratingValue); // set the star value from database
+        setUserRating(response.data.ratingValue); 
       } catch (error) {
         console.error("Failed to fetch rating:", error);
       }
@@ -20,10 +19,9 @@ const ProjectItem = ({ image, title, templateId, timeAgo, initialRating = 0, com
     fetchRating();
   }, [templateId, userID]);
 
-  // Save rating to backend
   const saveRating = async (rating) => {
     try {
-      const response = await axios.post(`http://localhost:8080/api/templates/${templateId}/rate`, null, {
+      const response = await api.post(`/templates/${templateId}/rate`, null, {
         params: { userID, ratingValue: rating },
       });
       console.log(response.data.message);

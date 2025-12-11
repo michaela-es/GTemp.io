@@ -35,6 +35,7 @@ const TemplateDetail2 = () => {
     error: wishlistError 
   } = useWishlist(); 
 
+  // Fetch template data
   useEffect(() => {
     const fetchTemplateData = async () => {
       setLoadingTemplate(true);
@@ -56,6 +57,7 @@ const TemplateDetail2 = () => {
     fetchTemplateData();
   }, [templateId]);
 
+  // Handle fetch errors
   const handleFetchError = (err) => {
     console.error('Error fetching template:', err);
     if (err.response?.status === 403) {
@@ -67,14 +69,17 @@ const TemplateDetail2 = () => {
     }
   };
 
+  // Wishlist handling
   const wishlisted = templateId ? isInWishlist(templateId) : false;
 
+  // Get image URL (handle path formatting)
   const getImageUrl = (path) => {
     if (!path) return '/default-cover.jpg';
     const cleanPath = path.startsWith('/') ? path.substring(1) : path;
     return `http://localhost:8080/${cleanPath.replace(/\\/g, '/')}`;
   };
 
+  // Handle wishlist toggle
   const handleWishlistToggle = async () => {
     if (!currentUser) {
       alert("You must be logged in to add to wishlist.");
@@ -92,6 +97,7 @@ const TemplateDetail2 = () => {
     }
   };
 
+  // Handle download click
   const handleDownloadClick = async () => {
     if (!currentUser) {
       alert("You must be logged in to download.");
@@ -122,6 +128,7 @@ const TemplateDetail2 = () => {
     setShowDownloadModal(true);
   };
 
+  // Handle the download (either free or after payment)
   const handleDownload = async (isFree = false, amount = 0) => {
     if (!currentUser || !template) return;
     setDownloading(true);
@@ -132,7 +139,7 @@ const TemplateDetail2 = () => {
       }
 
       const response = await templateAPI.downloadTemplate(templateId); 
-      const blob = await response.blob();
+      const blob = response.data;  // Use Axios response.data for Blob
       const link = document.createElement('a');
       link.href = window.URL.createObjectURL(blob);
       link.download = `${template.templateTitle.replace(/[^a-z0-9]/gi, '_')}.zip`;
@@ -146,12 +153,13 @@ const TemplateDetail2 = () => {
       setTemplate(prev => ({ ...prev, downloads: (prev.downloads || 0) + 1 }));
     } catch (err) {
       console.error(err);
-      alert(`Download failed: ${err.message}`);
+      alert(`Download failed: ${err.message || "An unexpected error occurred."}`);
     } finally {
       setDownloading(false);
     }
   };
 
+  // Handle template purchase
   const handlePurchase = async (amount) => {
     try {
       return await templateAPI.purchaseTemplate(templateId, amount);
@@ -160,19 +168,28 @@ const TemplateDetail2 = () => {
     }
   };
 
+  // Check if the user has already purchased the template
   const checkIfPurchased = async () => {
-    const libraryItems = await templateAPI.checkPurchase(); 
-    return libraryItems.some(item => item.template.id === templateId && item.actionType === "PURCHASED");
+    try {
+      const libraryItems = await templateAPI.checkPurchase(); 
+      return libraryItems.some(item => item.template.id === templateId && item.actionType === "PURCHASED");
+    } catch (err) {
+      console.error("Error checking purchase status:", err);
+      return false; // Assume not purchased if the check fails
+    }
   };
 
+  // Format the release date of the template
   const formatDate = (dateString) => {
     if (!dateString) return 'Not specified';
     return new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   };
 
+  // Check if the current user is the owner of the template
   const isTemplateOwner = currentUser?.userId === template?.templateOwner;
   const isPrivateTemplate = template?.visibility === false;
 
+  // Loading and error states
   if (loadingTemplate) return <div>Loading template...</div>;
   if (error) return <div className="not-found">{error}</div>;
   if (isPrivateTemplate && !isTemplateOwner) return <NoAccess />;
@@ -229,7 +246,7 @@ const TemplateDetail2 = () => {
               <div className="rating-div">
                 <HeadingText text="Rating" />
                 <div className="rating-display">
-                  {/* You can keep your star rendering logic here */}
+                  {/* Add your star rating rendering logic here */}
                 </div>
               </div>
             </div>
