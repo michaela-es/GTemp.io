@@ -82,7 +82,7 @@ export default function ProfileDropDown({
           {username}
           {walletValue !== undefined && (
             <span className="wallet">
-              ₱{walletValue.toFixed(2)}
+              ${walletValue.toFixed(2)}
             </span>
           )}
         </span>
