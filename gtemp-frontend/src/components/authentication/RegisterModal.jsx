@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { authAPI } from '../../services/authAPI';
 
 export default function RegisterModal({ onClose, onSwitchToLogin }) {
   const [formData, setFormData] = useState({
@@ -13,12 +14,19 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
   const [localError, setLocalError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLocalError('');
     setIsLoading(true);
 
-    // Validation
     if (formData.password !== formData.confirmPassword) {
       setLocalError('Passwords do not match');
       setIsLoading(false);
@@ -51,15 +59,13 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
     }
   };
 
-  const displayError = localError || error;
-
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-window register-window" onClick={(e) => e.stopPropagation()}>
-        <form onSubmit={handleRegister}>
+        <form onSubmit={handleSubmit}>
           <h2 className="modal-title">Create Account</h2>
 
-          {displayError && <p className="error-message">{displayError}</p>}
+          {localError && <p className="error-message">{localError}</p>}
 
           <div className="modal-field">
             <label htmlFor="username">Username *</label>
@@ -70,8 +76,9 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
               placeholder="Choose a username"
               value={formData.username}
               onChange={handleChange}
-              disabled={loading}
+              disabled={isLoading} 
               autoComplete="username"
+              required
             />
           </div>
 
@@ -84,8 +91,9 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
               placeholder="Enter your email"
               value={formData.email}
               onChange={handleChange}
-              disabled={loading}
+              disabled={isLoading} 
               autoComplete="email"
+              required
             />
           </div>
 
@@ -98,8 +106,9 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
               placeholder="Choose a password"
               value={formData.password}
               onChange={handleChange}
-              disabled={loading}
+              disabled={isLoading}
               autoComplete="new-password"
+              required
             />
           </div>
 
@@ -112,32 +121,33 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
               placeholder="Confirm your password"
               value={formData.confirmPassword}
               onChange={handleChange}
-              disabled={loading}
+              disabled={isLoading}
               autoComplete="new-password"
+              required
             />
           </div>
 
           <button 
             type="submit" 
             className="modal-register-button" 
-            disabled={loading}
+            disabled={isLoading} 
           >
-            {loading ? 'Creating Account...' : 'Create Account'}
+            {isLoading ? 'Creating Account...' : 'Create Account'} 
           </button>
 
           <div className="modal-footer">
             <p>Already have an account?</p>
             <p 
               className="modal-link" 
-              onClick={loading ? undefined : onSwitchToLogin}
-              style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
+              onClick={isLoading ? undefined : onSwitchToLogin} 
+              style={{ cursor: isLoading ? 'not-allowed' : 'pointer' }} 
             >
               Log in
             </p>
           </div>
         </form>
 
-        <button className="modal-close" onClick={onClose} disabled={loading}>
+        <button className="modal-close" onClick={onClose} disabled={isLoading}>
           ✕
         </button>
       </div>
